@@ -2,43 +2,31 @@
    À importer dans resources/css/app.css après @import 'tailwindcss';
    Space Grotesk (500 / 700) est chargée par Vite (bunny, config/vite.config.js) et @fonts. */
 
-:root,
-[data-theme='light'] {
-    --mx-bg: #f3f3ef;
-    --mx-surface: #ffffff;
-    --mx-surface-2: #e8e8e2;
-    --mx-ink: #0c0c0c;
-    --mx-muted: #55554f;
-    --mx-accent: #0c0c0c;
-    --mx-on-accent: #ffffff;
-    --mx-highlight: #dcd9cf;
-    --mx-error: #a3341f;
-    /* Filet 2 px entre trait et ombre, dans les deux thèmes */
-    --mx-sh: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
-    --mx-sh-hover: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
-}
-
-[data-theme='dark'] {
-    --mx-bg: #0c0c0c;
-    --mx-surface: #171717;
-    --mx-surface-2: #242424;
-    --mx-ink: #f3f3ef;
-    --mx-muted: #a9a9a2;
-    --mx-accent: #f3f3ef;
-    --mx-on-accent: #0c0c0c;
-    --mx-highlight: #3a3a35;
-    --mx-error: #ff8f7a;
-    /* Trait et ombre de même couleur claire : filet 2 px entre les deux */
-    --mx-sh: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
-    --mx-sh-hover: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
-}
-
-/* Couleurs d'échiquier : identiques dans les deux thèmes */
+/* Couleurs : light-dark(1a clair, 1b sombre), résolu selon color-scheme, que fixe
+   html[data-theme]. Les contrôles natifs (formulaires, barres de défilement) suivent aussi. */
 :root {
+    color-scheme: light;
+    --mx-bg: light-dark(#f3f3ef, #0c0c0c);
+    --mx-surface: light-dark(#ffffff, #171717);
+    --mx-surface-2: light-dark(#e8e8e2, #242424);
+    --mx-ink: light-dark(#0c0c0c, #f3f3ef);
+    --mx-muted: light-dark(#55554f, #a9a9a2);
+    --mx-accent: light-dark(#0c0c0c, #f3f3ef);
+    --mx-on-accent: light-dark(#ffffff, #0c0c0c);
+    --mx-highlight: light-dark(#dcd9cf, #3a3a35);
+    --mx-error: light-dark(#a3341f, #ff8f7a);
+    /* Filet 2 px entre trait et ombre, dans les deux thèmes (le trait a la couleur de l'ombre) */
+    --mx-sh: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
+    --mx-sh-hover: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
+    /* Couleurs d'échiquier : identiques dans les deux thèmes */
     --mx-board-white: #ffffff;
     --mx-board-black: #0c0c0c;
     --mx-stroke: 2px;
     --mx-shadow: 4px;
+}
+
+[data-theme='dark'] {
+    color-scheme: dark;
 }
 
 @theme inline {
