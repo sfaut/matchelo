@@ -16,7 +16,7 @@ beforeEach(function () {
  */
 function createClubWith(string $name, array $members): Club
 {
-    $club = Club::create(['name' => $name, 'user_id' => reset($members)->id]);
+    $club = Club::create(['name' => $name, 'code' => Club::generateCode($name), 'user_id' => reset($members)->id]);
 
     foreach ($members as $role_code => $member) {
         $club->members()->attach($member, ['role_id' => Role::idFor($role_code)]);

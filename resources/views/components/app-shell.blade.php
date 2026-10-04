@@ -38,6 +38,19 @@
                 {{ $slot }}
             </main>
 
+            {{-- Message de confirmation après une action (session flash « toast »), masqué après quelques secondes --}}
+            @session('toast')
+                <div
+                    class="pointer-events-none fixed inset-x-0 bottom-5 z-20 flex justify-center px-4.5"
+                    x-data="{ shown: true }"
+                    x-init="setTimeout(() => shown = false, 3800)"
+                    x-show="shown"
+                    x-transition.opacity
+                >
+                    <p class="mx-toast" role="status">{{ $value }}</p>
+                </div>
+            @endsession
+
             {{-- Mobile : switch de mode et déconnexion en bas d'écran --}}
             <div class="flex flex-col items-center gap-3 px-4.5 pb-6 desk:hidden">
                 @if ($isAnimator())

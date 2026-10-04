@@ -37,6 +37,9 @@ return [
     'select' => 'Liste déroulante',
     'password' => 'Mot de passe',
 
+    'textarea' => 'Zone de texte',
+    'image_input' => 'Image',
+
     'badge' => 'Badge',
     'divider' => 'Séparateur',
 

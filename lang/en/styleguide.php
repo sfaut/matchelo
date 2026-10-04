@@ -37,6 +37,9 @@ return [
     'select' => 'Select',
     'password' => 'Password',
 
+    'textarea' => 'Text area',
+    'image_input' => 'Image',
+
     'badge' => 'Badge',
     'divider' => 'Divider',
 

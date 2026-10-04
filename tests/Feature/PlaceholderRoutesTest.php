@@ -17,13 +17,11 @@ test('provisional member routes render the placeholder screen to a logged in use
     $response->assertOk();
     $response->assertSee(__('placeholder.heading'));
 })->with([
-    'clubs.create',
     'club.dashboard',
 ]);
 
 test('provisional member routes send guests to the login page', function (string $route_name) {
     $this->get(route($route_name))->assertRedirect(route('login'));
 })->with([
-    'clubs.create',
     'club.dashboard',
 ]);

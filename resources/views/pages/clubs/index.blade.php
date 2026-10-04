@@ -53,8 +53,11 @@ new class extends Component
 
         @forelse ($this->clubs as $club)
             <article class="mx-card flex flex-col gap-1" wire:key="club-{{ $club->id }}">
-                <div class="flex items-center justify-between gap-2">
-                    <h2 class="text-2xl font-bold">{{ $club->name }}</h2>
+                <div class="flex items-center gap-3">
+                    @if ($club->logoUrl())
+                        <img src="{{ $club->logoUrl() }}" alt="" class="size-10 flex-none mx-border object-cover">
+                    @endif
+                    <h2 class="min-w-0 flex-1 text-2xl font-bold">{{ $club->name }}</h2>
                     @if ($this->animatedClubs->contains($club))
                         <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
                     @endif

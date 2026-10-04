@@ -15,6 +15,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::livewire('/clubs', 'pages::clubs.index')->name('clubs.index');
+    Route::livewire('/clubs/create', 'pages::clubs.create')->name('clubs.create');
 
     // Accueil du mode « Jouer » : la liste des clubs
     Route::redirect('/play', '/clubs')->name('player.home');
@@ -22,7 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', LogoutController::class)->name('logout');
 
     // Provisoires : remplacées aux étapes suivantes
-    Route::view('/clubs/create', 'placeholder')->name('clubs.create');
     Route::view('/club', 'placeholder')->name('club.dashboard');
 });
 

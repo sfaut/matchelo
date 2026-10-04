@@ -67,7 +67,7 @@ test('the initials are the first letters of the first and last names', function 
 test('a club has a creator and members with a role', function () {
     $creator = createUser();
     $player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard']);
-    $club = Club::create(['name' => 'Échecs · Collège Jean-Moulin', 'user_id' => $creator->id]);
+    $club = Club::create(['name' => 'Échecs · Collège Jean-Moulin', 'code' => 'JM-4821', 'user_id' => $creator->id]);
 
     $club->members()->attach($creator, ['role_id' => Role::where('code', 'ANIMATOR')->value('id')]);
     $club->members()->attach($player, ['role_id' => Role::where('code', 'PLAYER')->value('id')]);
@@ -86,7 +86,7 @@ test('a civility in use cannot be deleted', function () {
 
 test('a user who created a club cannot be deleted', function () {
     $creator = createUser();
-    Club::create(['name' => 'Échiquier Nord', 'user_id' => $creator->id]);
+    Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
 
     expect(fn () => $creator->delete())->toThrow(QueryException::class);
 });
@@ -112,7 +112,7 @@ test('a role id is found by its code', function () {
 
 test('a user is an animator once they animate a club', function () {
     $user = createUser();
-    $club = Club::create(['name' => 'Échiquier Nord', 'user_id' => $user->id]);
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $user->id]);
 
     $club->members()->attach($user, ['role_id' => Role::idFor(Role::PLAYER)]);
     expect($user->isAnimator())->toBeFalse();
@@ -123,4 +123,12 @@ test('a user is an animator once they animate a club', function () {
 
 test('the full name is the first name then the last name', function () {
     expect(createUser()->fullName())->toBe('Léa Martin');
+});
+
+test('a club code is unique', function () {
+    $creator = createUser();
+    Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
+
+    expect(fn () => Club::create(['name' => 'Échiquier Nouveau', 'code' => 'EN-1177', 'user_id' => $creator->id]))
+        ->toThrow(QueryException::class);
 });
