@@ -115,4 +115,22 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Thème « matchelo » (resources/views/vendor/mail/html/themes/matchelo.css)
+    | et composants surchargés (en-tête avec logo) dans resources/views/vendor/mail.
+    |
+    */
+
+    'markdown' => [
+        'theme' => env('MAIL_MARKDOWN_THEME', 'matchelo'),
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];
