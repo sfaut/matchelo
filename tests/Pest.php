@@ -2,7 +2,6 @@
 
 use App\Models\Club;
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Models\User\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -49,7 +48,7 @@ expect()->extend('toBeOne', function () {
 */
 
 /**
- * Crée un utilisateur de test, civilité « Madame » par défaut (tables de référence à alimenter avant).
+ * Crée un utilisateur de test (tables de référence à alimenter avant).
  *
  * @param  array<string, mixed>  $attributes  attributs à surcharger
  */
@@ -58,7 +57,6 @@ function createUser(array $attributes = []): User
     return User::create([
         'last_name' => 'Martin',
         'first_name' => 'Léa',
-        'civility_id' => Civility::where('code', 'MADAM')->value('id'),
         'email' => 'lea.martin@example.org',
         'password_hash' => 'secret-password',
         ...$attributes,

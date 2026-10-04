@@ -14,7 +14,6 @@ class UserSeeder extends Seeder
             'last_name' => 'Faut',
             'first_name' => 'Sébastien',
             'email' => 'sebastien.faut@gmail.com',
-            'civility_id' => 4,
             'is_administrator' => true,
             'password_hash' => Hash::make('MDP-TMP'),
         ]);

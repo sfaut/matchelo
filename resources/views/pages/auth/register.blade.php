@@ -1,18 +1,15 @@
 <?php
 
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Notifications\AccountCreated;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 /**
- * Page d'inscription : civilité, nom, prénom et e-mail ; le mot de passe est généré et envoyé par e-mail.
+ * Page d'inscription : nom, prénom et e-mail ; le mot de passe est généré et envoyé par e-mail.
  */
 new class extends Component
 {
@@ -22,11 +19,6 @@ new class extends Component
      * @var int
      */
     public const int GENERATED_PASSWORD_LENGTH = 12;
-
-    /**
-     * Identifiant de la civilité choisie (chaîne vide tant qu'aucune n'est choisie).
-     */
-    public string $civilityId = '';
 
     /**
      * Nom de famille saisi.
@@ -42,17 +34,6 @@ new class extends Component
      * E-mail saisi.
      */
     public string $email = '';
-
-    /**
-     * Civilités proposées, dans l'ordre de la table.
-     *
-     * @return Collection<int, Civility>
-     */
-    #[Computed]
-    public function civilities(): Collection
-    {
-        return Civility::query()->orderBy('id')->get();
-    }
 
     /**
      * Crée le compte avec un mot de passe généré, l'envoie par e-mail, puis renvoie vers la
@@ -71,7 +52,6 @@ new class extends Component
         // Création et envoi ensemble : sans e-mail, le compte serait inutilisable
         $user = DB::transaction(function () use ($password): User {
             $user = User::create([
-                'civility_id' => (int) $this->civilityId,
                 'last_name' => $this->lastName,
                 'first_name' => $this->firstName,
                 'email' => $this->email,
@@ -96,7 +76,6 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'civilityId' => ['required', 'integer', Rule::exists(Civility::class, 'id')],
             'lastName' => ['required', 'string', 'max:30'],
             'firstName' => ['required', 'string', 'max:30'],
             'email' => ['required', 'string', 'email', 'max:100', Rule::unique(User::class, 'email')],
@@ -111,7 +90,6 @@ new class extends Component
     protected function validationAttributes(): array
     {
         return [
-            'civilityId' => __('auth_pages.fields.civility'),
             'lastName' => __('auth_pages.fields.last_name'),
             'firstName' => __('auth_pages.fields.first_name'),
             'email' => __('auth_pages.fields.email'),
@@ -131,19 +109,6 @@ new class extends Component
 <x-auth-shell :panel-title="__('auth_pages.register.panel_title')" :panel-text="__('auth_pages.register.panel_text')">
     <form wire:submit="register" class="flex flex-col gap-4" novalidate>
         <h1 class="text-figure tracking-heading">{{ __('auth_pages.register.title') }}</h1>
-
-        <div class="flex flex-col gap-1.5">
-            <label for="civility" class="mx-label">{{ __('auth_pages.fields.civility') }}</label>
-            <select id="civility" wire:model="civilityId" class="mx-input" @error('civilityId') aria-invalid="true" @enderror>
-                <option value="">—</option>
-                @foreach ($this->civilities as $civility)
-                    <option value="{{ $civility->id }}" wire:key="civility-{{ $civility->id }}">{{ __("civilities.{$civility->code}") }}</option>
-                @endforeach
-            </select>
-            @error('civilityId')
-                <p class="mx-error">{{ $message }}</p>
-            @enderror
-        </div>
 
         <div class="grid grid-cols-2 gap-3">
             <div class="flex min-w-0 flex-col gap-1.5">

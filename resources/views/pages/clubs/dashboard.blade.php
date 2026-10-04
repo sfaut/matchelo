@@ -90,7 +90,7 @@ new class extends Component
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="flex flex-col gap-1.5">
                 <span class="mx-label">{{ $this->today }}</span>
-                <h1 class="text-h3 desk:text-h3-lg">{{ __('clubs.dashboard.greeting', ['name' => Auth::user()->addressName()]) }}</h1>
+                <h1 class="text-h3 desk:text-h3-lg">{{ __('clubs.dashboard.greeting', ['name' => Auth::user()->fullName()]) }}</h1>
             </div>
             <a href="{{ route('clubs.players.create', $club) }}" class="mx-btn">{{ __('clubs.dashboard.add_player') }}</a>
         </div>

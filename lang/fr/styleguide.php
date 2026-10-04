@@ -34,6 +34,8 @@ return [
     'email_placeholder' => 'prenom.nom@college.fr',
     'password_error' => 'Le mot de passe doit faire au moins 6 caractères.',
 
+    'select_option_swiss' => 'Suisse',
+    'select_option_round_robin' => 'Toutes rondes',
     'select' => 'Liste déroulante',
     'password' => 'Mot de passe',
 

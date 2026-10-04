@@ -11,7 +11,6 @@ return [
     'back_home' => 'Retour à l’accueil',
 
     'fields' => [
-        'civility' => 'Civilité',
         'last_name' => 'Nom',
         'first_name' => 'Prénom',
         'email' => 'E-mail',

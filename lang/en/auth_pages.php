@@ -11,7 +11,6 @@ return [
     'back_home' => 'Back to home',
 
     'fields' => [
-        'civility' => 'Title',
         'last_name' => 'Last name',
         'first_name' => 'First name',
         'email' => 'Email',

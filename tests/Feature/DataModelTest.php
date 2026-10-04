@@ -2,9 +2,7 @@
 
 use App\Models\Club;
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Models\User\Role;
-use App\Models\User\Sex;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,27 +13,10 @@ beforeEach(function () {
 });
 
 test('the seeders fill the reference tables', function () {
-    expect(Role::pluck('code')->all())->toEqualCanonicalizing(['ANIMATOR', 'PLAYER'])
-        ->and(Sex::pluck('code')->all())->toEqualCanonicalizing(['UNDEFINED', 'WOMAN', 'MAN'])
-        ->and(Civility::pluck('code')->all())->toEqualCanonicalizing(['UNDEFINED', 'MISS', 'MADAM', 'MISTER']);
+    expect(Role::pluck('code')->all())->toEqualCanonicalizing(['ANIMATOR', 'PLAYER']);
 });
 
-test('a civility belongs to a sex', function () {
-    $madam = Civility::where('code', 'MADAM')->firstOrFail();
-
-    expect($madam->sex->code)->toBe('WOMAN')
-        ->and(Sex::where('code', 'WOMAN')->firstOrFail()->civilities->pluck('code')->all())
-        ->toEqualCanonicalizing(['MISS', 'MADAM']);
-});
-
-test('a user belongs to a civility', function () {
-    $user = createUser();
-
-    expect($user->civility->code)->toBe('MADAM')
-        ->and($user->civility->users->pluck('id')->all())->toContain($user->id);
-});
-
-test('a user defaults to the undefined civility and is not an administrator', function () {
+test('a user is not an administrator by default', function () {
     $user = User::create([
         'last_name' => 'Kaci',
         'first_name' => 'Inès',
@@ -43,8 +24,7 @@ test('a user defaults to the undefined civility and is not an administrator', fu
         'password_hash' => 'secret-password',
     ])->refresh();
 
-    expect($user->civility->code)->toBe('UNDEFINED')
-        ->and($user->is_administrator)->toBeFalse();
+    expect($user->is_administrator)->toBeFalse();
 });
 
 test('the password is hashed in password_hash and used to authenticate', function () {
@@ -78,12 +58,6 @@ test('a club has a creator and members with a role', function () {
         ->and($player->clubs->first()->pivot->role_id)->toBe(Role::where('code', 'PLAYER')->value('id'));
 });
 
-test('a civility in use cannot be deleted', function () {
-    $user = createUser();
-
-    expect(fn () => $user->civility->delete())->toThrow(QueryException::class);
-});
-
 test('a user who created a club cannot be deleted', function () {
     $creator = createUser();
     Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
@@ -93,16 +67,12 @@ test('a user who created a club cannot be deleted', function () {
 
 test('a reference id change cascades to the rows using it', function () {
     $user = createUser();
-    $madam = $user->civility;
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $user->id]);
+    $club->members()->attach($user, ['role_id' => Role::idFor(Role::PLAYER)]);
 
-    DB::table('civilities')->where('id', $madam->id)->update(['id' => 40]);
+    DB::table('roles')->where('code', Role::PLAYER)->update(['id' => 40]);
 
-    expect($user->refresh()->civility_id)->toBe(40);
-});
-
-test('a civility code is unique', function () {
-    expect(fn () => Civility::create(['code' => 'MADAM', 'name' => 'Madame', 'name_short' => 'Mme', 'sex_id' => 2]))
-        ->toThrow(QueryException::class);
+    expect($club->members()->first()->pivot->role_id)->toBe(40);
 });
 
 test('a role id is found by its code', function () {
@@ -145,15 +115,3 @@ test('a player without email has no account and cannot log in', function () {
         ->and($player->hasAccount())->toBeFalse()
         ->and(createUser()->hasAccount())->toBeTrue();
 });
-
-test('the address name uses the abbreviated civility in the current language', function (string $locale, string $civility, string $expected) {
-    app()->setLocale($locale);
-
-    $user = createUser(['civility_id' => Civility::where('code', $civility)->value('id'), 'first_name' => 'Marie', 'last_name' => 'Durand']);
-
-    expect($user->addressName())->toBe($expected);
-})->with([
-    'madam in french' => ['fr', 'MADAM', 'Mme Durand'],
-    'mister in english' => ['en', 'MISTER', 'Mr Durand'],
-    'undefined civility' => ['fr', 'UNDEFINED', 'Marie Durand'],
-]);

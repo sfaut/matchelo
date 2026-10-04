@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Notifications\AccountCreated;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -21,7 +20,6 @@ beforeEach(function () {
 function registerForm(array $fields = []): Testable
 {
     return Livewire::test('pages::auth.register')->set([
-        'civilityId' => (string) Civility::where('code', 'MISTER')->value('id'),
         'lastName' => 'Bernard',
         'firstName' => 'Tom',
         'email' => 'tom.bernard@example.org',
@@ -35,21 +33,11 @@ test('the register page renders for a guest', function () {
     $response->assertOk();
     $response->assertSee(__('auth_pages.register.title'));
     $response->assertSeeInOrder([
-        __('auth_pages.fields.civility'),
         __('auth_pages.fields.last_name'),
         __('auth_pages.fields.first_name'),
         __('auth_pages.fields.email'),
     ]);
 });
-
-test('the civility options are labelled by their code in the page language', function (string $locale, string $label) {
-    $response = $this->withHeader('Accept-Language', $locale)->get(route('register'));
-
-    $response->assertSee($label);
-})->with([
-    'french' => ['fr', 'Madame'],
-    'english' => ['en', 'Mrs'],
-]);
 
 test('registering creates the account, emails a generated password and goes to login', function () {
     registerForm([
@@ -65,7 +53,6 @@ test('registering creates the account, emails a generated password and goes to l
 
     expect($user->last_name)->toBe('Bernard')
         ->and($user->first_name)->toBe('Tom')
-        ->and($user->civility->code)->toBe('MISTER')
         ->and($user->email_verified_at)->toBeNull()
         ->and(session('registered_email'))->toBe('tom.bernard@example.org');
 
@@ -96,7 +83,6 @@ test('every field is required', function () {
     Livewire::test('pages::auth.register')
         ->call('register')
         ->assertHasErrors([
-            'civilityId' => 'required',
             'lastName' => 'required',
             'firstName' => 'required',
             'email' => 'required',
@@ -111,7 +97,6 @@ test('invalid values are rejected', function (string $field, string $value, stri
         ->call('register')
         ->assertHasErrors([$field => $rule]);
 })->with([
-    'unknown civility' => ['civilityId', '999', 'exists'],
     'last name too long' => ['lastName', str_repeat('a', 31), 'max'],
     'first name too long' => ['firstName', str_repeat('a', 31), 'max'],
     'malformed email' => ['email', 'not-an-email', 'email'],

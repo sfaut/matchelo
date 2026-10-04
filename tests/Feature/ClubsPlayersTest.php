@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Models\User\Role;
 use Livewire\Livewire;
 
@@ -73,7 +72,6 @@ test('adding a player twice keeps a single membership', function () {
 
 test('creating a player makes a player without account in the club, with the starting ELO', function () {
     Livewire::test('pages::clubs.players.create', ['club' => $this->club])
-        ->set('civilityId', (string) Civility::where('code', 'MISTER')->value('id'))
         ->set('lastName', ' Diallo ')
         ->set('firstName', ' Nathan ')
         ->set('startingElo', '1050')
@@ -94,7 +92,6 @@ test('creating a player makes a player without account in the club, with the sta
 test('several players without account can coexist', function () {
     foreach (['Diallo', 'Moreau'] as $last_name) {
         Livewire::test('pages::clubs.players.create', ['club' => $this->club])
-            ->set('civilityId', (string) Civility::where('code', 'UNDEFINED')->value('id'))
             ->set('lastName', $last_name)
             ->set('firstName', 'Sam')
             ->call('create')
@@ -107,7 +104,6 @@ test('several players without account can coexist', function () {
 test('a new player is validated', function (string $field, string $value, string $rule) {
     Livewire::test('pages::clubs.players.create', ['club' => $this->club])
         ->set([
-            'civilityId' => (string) Civility::where('code', 'MISTER')->value('id'),
             'lastName' => 'Diallo',
             'firstName' => 'Nathan',
             'startingElo' => '1200',
@@ -116,7 +112,6 @@ test('a new player is validated', function (string $field, string $value, string
         ->call('create')
         ->assertHasErrors([$field => $rule]);
 })->with([
-    'missing civility' => ['civilityId', '', 'required'],
     'missing last name' => ['lastName', '', 'required'],
     'first name too long' => ['firstName', str_repeat('a', 31), 'max'],
     'ELO too low' => ['startingElo', '99', 'between'],

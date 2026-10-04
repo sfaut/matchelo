@@ -120,10 +120,10 @@
                     <span id="styleguide-error" class="mx-error">{{ __('styleguide.password_error') }}</span>
                 </label>
                 <div class="flex flex-col gap-2">
-                    <label for="styleguide-civility" class="mx-label">{{ __('styleguide.select') }}</label>
-                    <select id="styleguide-civility" class="mx-input">
-                        <option>{{ __('civilities.MADAM') }}</option>
-                        <option>{{ __('civilities.MISTER') }}</option>
+                    <label for="styleguide-select" class="mx-label">{{ __('styleguide.select') }}</label>
+                    <select id="styleguide-select" class="mx-input">
+                        <option>{{ __('styleguide.select_option_swiss') }}</option>
+                        <option>{{ __('styleguide.select_option_round_robin') }}</option>
                     </select>
                 </div>
                 <div class="flex flex-col gap-2 sm:col-span-2">

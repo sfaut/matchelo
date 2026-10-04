@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\User\Civility;
 use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -22,7 +20,6 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $last_name
  * @property string $first_name
- * @property int $civility_id
  * @property bool $is_administrator
  * @property int $elo
  * @property string|null $email
@@ -31,11 +28,10 @@ use Illuminate\Support\Str;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Civility $civility
  * @property-read Collection<int, Club> $createdClubs
  * @property-read Collection<int, Club> $clubs
  */
-#[Fillable(['last_name', 'first_name', 'civility_id', 'elo', 'email', 'password_hash'])]
+#[Fillable(['last_name', 'first_name', 'elo', 'email', 'password_hash'])]
 #[Hidden(['password_hash', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -61,16 +57,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password_hash' => 'hashed',
         ];
-    }
-
-    /**
-     * Civilité de l'utilisateur.
-     *
-     * @return BelongsTo<Civility, $this>
-     */
-    public function civility(): BelongsTo
-    {
-        return $this->belongsTo(Civility::class);
     }
 
     /**
@@ -111,19 +97,6 @@ class User extends Authenticatable
     public function hasAccount(): bool
     {
         return $this->email !== null;
-    }
-
-    /**
-     * Nom d'adresse : civilité abrégée et nom (« M. Durand »), ou prénom et nom sans civilité
-     * précisée. La civilité suit la langue courante (lang/{locale}/civility_abbreviations.php).
-     */
-    public function addressName(): string
-    {
-        if ($this->civility->code === 'UNDEFINED') {
-            return $this->fullName();
-        }
-
-        return __("civility_abbreviations.{$this->civility->code}").' '.$this->last_name;
     }
 
     /**

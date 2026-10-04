@@ -2,13 +2,11 @@
 
 use App\Models\Club;
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Models\User\Role;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
@@ -44,11 +42,6 @@ new class extends Component
      * Recherche par nom (prénom et / ou nom).
      */
     public string $search = '';
-
-    /**
-     * Civilité du nouveau joueur (chaîne vide tant qu'aucune n'est choisie).
-     */
-    public string $civilityId = '';
 
     /**
      * Nom de famille du nouveau joueur.
@@ -126,17 +119,6 @@ new class extends Component
     }
 
     /**
-     * Civilités proposées pour un nouveau joueur.
-     *
-     * @return Collection<int, Civility>
-     */
-    #[Computed]
-    public function civilities(): Collection
-    {
-        return Civility::query()->orderBy('id')->get();
-    }
-
-    /**
      * Ajoute un joueur existant au club, comme joueur.
      *
      * @param  int  $userId  joueur choisi dans les résultats
@@ -171,7 +153,6 @@ new class extends Component
         $this->validate();
 
         $player = User::create([
-            'civility_id' => (int) $this->civilityId,
             'last_name' => $this->lastName,
             'first_name' => $this->firstName,
             'elo' => (int) $this->startingElo,
@@ -190,7 +171,6 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'civilityId' => ['required', 'integer', Rule::exists(Civility::class, 'id')],
             'lastName' => ['required', 'string', 'max:30'],
             'firstName' => ['required', 'string', 'max:30'],
             'startingElo' => ['required', 'integer', 'between:100,3000'],
@@ -205,7 +185,6 @@ new class extends Component
     protected function validationAttributes(): array
     {
         return [
-            'civilityId' => __('auth_pages.fields.civility'),
             'lastName' => __('auth_pages.fields.last_name'),
             'firstName' => __('auth_pages.fields.first_name'),
             'startingElo' => __('clubs.players.starting_elo'),
@@ -269,19 +248,6 @@ new class extends Component
 
                 <form wire:submit="create" class="flex flex-col gap-3 mx-border bg-surface p-3.5" novalidate>
                     <h2 class="font-bold">{{ __('clubs.players.create_title') }}</h2>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label for="civility" class="mx-label">{{ __('auth_pages.fields.civility') }}</label>
-                        <select id="civility" wire:model="civilityId" class="mx-input" @error('civilityId') aria-invalid="true" @enderror>
-                            <option value="">—</option>
-                            @foreach ($this->civilities as $civility)
-                                <option value="{{ $civility->id }}" wire:key="civility-{{ $civility->id }}">{{ __("civilities.{$civility->code}") }}</option>
-                            @endforeach
-                        </select>
-                        @error('civilityId')
-                            <p class="mx-error">{{ $message }}</p>
-                        @enderror
-                    </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div class="flex min-w-0 flex-col gap-1.5">

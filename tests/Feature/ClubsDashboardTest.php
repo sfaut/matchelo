@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\User\Civility;
 use App\Models\User\Role;
 use Illuminate\Support\Carbon;
 
@@ -12,7 +11,6 @@ beforeEach(function () {
         'first_name' => 'Marie',
         'last_name' => 'Durand',
         'email' => 'm.durand@example.org',
-        'civility_id' => Civility::where('code', 'MADAM')->value('id'),
     ]);
     $this->player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard', 'elo' => 1190]);
     $this->club = createClubWith('Échecs · Collège Jean-Moulin', [Role::ANIMATOR => $this->animator, Role::PLAYER => $this->player]);
@@ -53,7 +51,7 @@ test('the dashboard greets the animator with the date of the day', function () {
     $response = $this->actingAs($this->animator)->withHeader('Accept-Language', 'fr')->get(route('clubs.dashboard', $this->club));
 
     $response->assertSee('Jeudi 1er octobre');
-    $response->assertSee('Bonjour Mme Durand');
+    $response->assertSee('Bonjour Marie Durand');
     $response->assertSee('href="'.route('clubs.players.create', $this->club).'"', false);
 });
 
