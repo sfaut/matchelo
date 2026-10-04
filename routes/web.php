@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing')->name('home');
@@ -11,6 +12,8 @@ Route::middleware('guest')->group(function () {
     // Provisoire : parcours de réinitialisation à venir
     Route::view('/forgot-password', 'placeholder')->name('password.request');
 });
+
+Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
 
 // Provisoires : remplacées aux étapes suivantes
 Route::view('/club', 'placeholder')->name('club.dashboard');
