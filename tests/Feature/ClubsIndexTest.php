@@ -54,10 +54,10 @@ test('the mode switch is shown only to a user who animates a club', function () 
     createClubWith('Échecs · Collège Jean-Moulin', [Role::ANIMATOR => $animator, Role::PLAYER => $player]);
 
     $this->actingAs($animator)->get(route('clubs.index'))
-        ->assertSee('href="'.route('club.dashboard').'"', false);
+        ->assertSee('href="'.route('manage.home').'"', false);
 
     $this->actingAs($player)->get(route('clubs.index'))
-        ->assertDontSee('href="'.route('club.dashboard').'"', false);
+        ->assertDontSee('href="'.route('manage.home').'"', false);
 });
 
 test('the clubs page shows no untranslated key in any supported language', function () {

@@ -53,13 +53,13 @@ test('the email is matched whatever its case and surrounding spaces', function (
 
 test('the user goes back to the page requested before logging in', function () {
     createUser();
-    session()->put('url.intended', route('club.dashboard'));
+    session()->put('url.intended', route('clubs.create'));
 
     Livewire::test('pages::auth.login')
         ->set('email', 'lea.martin@example.org')
         ->set('password', 'secret-password')
         ->call('login')
-        ->assertRedirect(route('club.dashboard'));
+        ->assertRedirect(route('clubs.create'));
 });
 
 test('the first login confirms the email address, later ones keep the date', function () {

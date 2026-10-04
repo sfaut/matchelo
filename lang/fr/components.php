@@ -14,6 +14,15 @@ return [
         'my_clubs' => 'Mes clubs',
         'animator_badge' => 'anim.',
         'create_club' => '+ Créer un club',
+        'manage_nav' => 'Gestion du club',
+        'sections' => [
+            'dashboard' => 'Tableau de bord',
+            'players' => 'Élèves',
+            'settings' => 'Paramètres du club',
+        ],
+        'invite_code' => 'Code d’invitation',
+        'copy_code' => 'Copier le code',
+        'copied' => 'Copié',
         'logout' => 'Déconnexion',
     ],
 

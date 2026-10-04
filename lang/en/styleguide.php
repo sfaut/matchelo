@@ -40,6 +40,7 @@ return [
     'textarea' => 'Text area',
     'image_input' => 'Image',
 
+    'navigation' => 'Navigation',
     'badge' => 'Badge',
     'divider' => 'Divider',
 

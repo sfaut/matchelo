@@ -14,6 +14,15 @@ return [
         'my_clubs' => 'My clubs',
         'animator_badge' => 'anim.',
         'create_club' => '+ Create a club',
+        'manage_nav' => 'Club management',
+        'sections' => [
+            'dashboard' => 'Dashboard',
+            'players' => 'Students',
+            'settings' => 'Club settings',
+        ],
+        'invite_code' => 'Invite code',
+        'copy_code' => 'Copy the code',
+        'copied' => 'Copied',
         'logout' => 'Log out',
     ],
 

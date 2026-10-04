@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\ManagementHomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing')->name('home');
@@ -17,14 +18,16 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/clubs', 'pages::clubs.index')->name('clubs.index');
     Route::livewire('/clubs/create', 'pages::clubs.create')->name('clubs.create');
     Route::livewire('/clubs/{club}/edit', 'pages::clubs.edit')->name('clubs.edit');
+    Route::livewire('/clubs/{club}/dashboard', 'pages::clubs.dashboard')->name('clubs.dashboard');
+    Route::livewire('/clubs/{club}/players/add', 'pages::clubs.players.create')->name('clubs.players.create');
+
+    // Entrée du mode « Gérer le club » : tableau de bord du premier club animé
+    Route::get('/manage', ManagementHomeController::class)->name('manage.home');
 
     // Accueil du mode « Jouer » : la liste des clubs
     Route::redirect('/play', '/clubs')->name('player.home');
 
     Route::post('/logout', LogoutController::class)->name('logout');
-
-    // Provisoires : remplacées aux étapes suivantes
-    Route::view('/club', 'placeholder')->name('club.dashboard');
 });
 
 if (! app()->isProduction()) {

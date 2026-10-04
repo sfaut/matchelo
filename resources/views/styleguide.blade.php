@@ -142,6 +142,15 @@
         </section>
 
         <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.navigation') }}</h2>
+            <nav class="flex w-60 flex-col gap-1.5 mx-border bg-surface p-3.5" aria-label="{{ __('styleguide.navigation') }}">
+                <a href="#" class="mx-nav-item" aria-current="page">{{ __('components.app_shell.sections.dashboard') }}</a>
+                <a href="#" class="mx-nav-item">{{ __('components.app_shell.sections.players') }}</a>
+                <a href="#" class="mx-nav-item">{{ __('components.app_shell.sections.settings') }}</a>
+            </nav>
+        </section>
+
+        <section class="flex flex-col gap-4">
             <h2 class="mx-label">{{ __('styleguide.badge') }}</h2>
             <div class="flex flex-wrap items-center gap-4">
                 <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>

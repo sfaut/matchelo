@@ -1,10 +1,10 @@
 <?php
 
-test('the mode switch links to the club dashboard and the player home', function () {
+test('the mode switch links to the management entry and the player home', function () {
     $view = $this->blade('<x-mode-switch />');
 
     $view->assertSeeInOrder([
-        'href="'.route('club.dashboard').'"',
+        'href="'.route('manage.home').'"',
         e(__('components.mode_switch.manage')),
         'href="'.route('player.home').'"',
         e(__('components.mode_switch.play')),
