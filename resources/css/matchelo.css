@@ -1,0 +1,308 @@
+/* Matchelo · thème 1a (clair) / 1b (sombre)
+   À importer dans resources/css/app.css après @import 'tailwindcss';
+   Space Grotesk (500 / 700) est chargée par Vite (bunny, config/vite.config.js) et @fonts. */
+
+:root,
+[data-theme='light'] {
+    --mx-bg: #f3f3ef;
+    --mx-surface: #ffffff;
+    --mx-surface-2: #e8e8e2;
+    --mx-ink: #0c0c0c;
+    --mx-muted: #55554f;
+    --mx-accent: #0c0c0c;
+    --mx-on-accent: #ffffff;
+    --mx-highlight: #dcd9cf;
+    --mx-error: #a3341f;
+    /* Filet 2 px entre trait et ombre, dans les deux thèmes */
+    --mx-sh: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
+    --mx-sh-hover: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
+}
+
+[data-theme='dark'] {
+    --mx-bg: #0c0c0c;
+    --mx-surface: #171717;
+    --mx-surface-2: #242424;
+    --mx-ink: #f3f3ef;
+    --mx-muted: #a9a9a2;
+    --mx-accent: #f3f3ef;
+    --mx-on-accent: #0c0c0c;
+    --mx-highlight: #3a3a35;
+    --mx-error: #ff8f7a;
+    /* Trait et ombre de même couleur claire : filet 2 px entre les deux */
+    --mx-sh: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
+    --mx-sh-hover: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
+}
+
+/* Couleurs d'échiquier : identiques dans les deux thèmes */
+:root {
+    --mx-board-white: #ffffff;
+    --mx-board-black: #0c0c0c;
+    --mx-stroke: 2px;
+    --mx-shadow: 4px;
+}
+
+@theme inline {
+    --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --color-bg: var(--mx-bg);
+    --color-surface: var(--mx-surface);
+    --color-surface-2: var(--mx-surface-2);
+    --color-ink: var(--mx-ink);
+    --color-muted: var(--mx-muted);
+    --color-accent: var(--mx-accent);
+    --color-on-accent: var(--mx-on-accent);
+    --color-highlight: var(--mx-highlight);
+    --color-error: var(--mx-error);
+    --radius-*: initial;
+    --radius-none: 0;
+}
+
+@layer base {
+    html {
+        background: var(--mx-bg);
+        color: var(--mx-ink);
+        font-family: var(--font-sans);
+        font-weight: 500;
+    }
+    *, *::before, *::after {
+        border-radius: 0;
+    }
+    a {
+        color: var(--mx-ink);
+    }
+    a:hover {
+        color: var(--mx-muted);
+    }
+    :focus-visible {
+        outline: 2px solid var(--mx-ink);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    /* Boutons · ombre décalée 4 px ; survol -1 px / 5 px ; pressé +4 px / 0 */
+    .mx-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 46px;
+        padding: 11px 18px;
+        font: 700 15px/1 var(--font-sans);
+        white-space: nowrap;
+        cursor: pointer;
+        border: var(--mx-stroke) solid var(--mx-ink);
+        background: var(--mx-surface);
+        color: var(--mx-ink);
+        box-shadow: var(--mx-sh);
+        transition: transform .08s, box-shadow .08s;
+        text-box: trim-both cap alphabetic;
+    }
+    .mx-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: var(--mx-sh-hover);
+    }
+    .mx-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 var(--mx-ink);
+    }
+    .mx-btn:disabled {
+        opacity: .35;
+        pointer-events: none;
+    }
+    /* Principal : forme = couleur de l'ombre → filet 2 px couleur du fond */
+    .mx-btn--primary {
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+        border-color: var(--mx-accent);
+        box-shadow: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
+    }
+    .mx-btn--primary:hover {
+        box-shadow: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
+    }
+    .mx-btn--sm {
+        min-height: 38px;
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+    .mx-btn--link {
+        border: 0;
+        box-shadow: none;
+        background: none;
+        padding: 8px 0;
+        min-height: 0;
+    }
+    .mx-btn--link:hover,
+    .mx-btn--link:active {
+        transform: none;
+        box-shadow: none;
+        text-decoration: underline;
+    }
+
+    /* Cartes */
+    .mx-card {
+        background: var(--mx-surface);
+        color: var(--mx-ink);
+        border: var(--mx-stroke) solid var(--mx-ink);
+        box-shadow: var(--mx-sh);
+        padding: 14px;
+    }
+    .mx-card--highlight {
+        background: var(--mx-highlight);
+    }
+    /* Carte posée sur une section inversée (fond accent) */
+    .mx-card--on-accent {
+        border: 0;
+        box-shadow: 2px 2px 0 var(--mx-accent), 6px 6px 0 var(--mx-highlight);
+    }
+
+    /* Formulaires */
+    .mx-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--mx-muted);
+    }
+    .mx-input {
+        width: 100%;
+        padding: 12px 14px;
+        font: 500 16px/1.3 var(--font-sans);
+        color: var(--mx-ink);
+        background: var(--mx-surface);
+        border: var(--mx-stroke) solid var(--mx-ink);
+    }
+    .mx-input:focus {
+        outline: none;
+        box-shadow: var(--mx-sh);
+    }
+    .mx-input::placeholder {
+        color: var(--mx-muted);
+    }
+    .mx-error {
+        color: var(--mx-error);
+        font-size: 14px;
+    }
+
+    /* Puces de filtre (plates, sans ombre) */
+    .mx-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 4px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        border: var(--mx-stroke) solid var(--mx-ink);
+        background: var(--mx-surface);
+        color: var(--mx-ink);
+    }
+    .mx-chip[aria-pressed='true'] {
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+    }
+
+    /* Contrôle segmenté (Gérer le club / Jouer, Élève / Prof animateur) */
+    .mx-seg {
+        display: grid;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+        border: var(--mx-stroke) solid var(--mx-ink);
+        width: max-content;
+    }
+    .mx-seg__item {
+        padding: 9px 14px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 14px;
+        white-space: nowrap;
+        text-decoration: none;
+        background: var(--mx-surface);
+        color: var(--mx-ink);
+    }
+    .mx-seg__item + .mx-seg__item {
+        border-left: var(--mx-stroke) solid var(--mx-ink);
+    }
+    .mx-seg__item[aria-current='true'],
+    .mx-seg__item[aria-pressed='true'] {
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+    }
+
+    /* Bascule de thème */
+    .mx-theme-toggle {
+        display: flex;
+        padding: 0;
+        cursor: pointer;
+        border: var(--mx-stroke) solid var(--mx-ink);
+        background: none;
+    }
+    .mx-theme-toggle > span {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+    }
+    .mx-theme-toggle svg {
+        width: 18px;
+        height: 18px;
+    }
+    .mx-theme-toggle__moon {
+        border-left: var(--mx-stroke) solid var(--mx-ink);
+    }
+    .mx-theme-toggle__sun,
+    [data-theme='dark'] .mx-theme-toggle__moon {
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+    }
+    .mx-theme-toggle__moon,
+    [data-theme='dark'] .mx-theme-toggle__sun {
+        background: var(--mx-surface);
+        color: var(--mx-ink);
+    }
+
+    /* Logo = roi + « matchelo » */
+    .mx-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .mx-logo__mark {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+        border: var(--mx-stroke) solid var(--mx-accent);
+    }
+    .mx-logo__mark svg {
+        width: 70%;
+        height: 70%;
+    }
+    .mx-logo__word {
+        font-weight: 700;
+        font-size: 19px;
+        letter-spacing: -.03em;
+    }
+    .mx-logo--inverse .mx-logo__mark {
+        background: var(--mx-on-accent);
+        color: var(--mx-accent);
+        border-color: var(--mx-on-accent);
+    }
+
+    /* Section inversée (bloc profs de la landing, panneau connexion) */
+    .mx-inverse {
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+    }
+
+    /* Toast */
+    .mx-toast {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: 14px;
+        background: var(--mx-accent);
+        color: var(--mx-on-accent);
+        border: var(--mx-stroke) solid var(--mx-accent);
+        box-shadow: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
+    }
+}

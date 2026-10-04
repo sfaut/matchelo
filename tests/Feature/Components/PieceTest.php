@@ -1,0 +1,34 @@
+<?php
+
+test('a white piece is filled white with a black outline', function () {
+    $view = $this->blade('<x-piece type="king" side="white" />');
+
+    $view->assertSee('fill="#ffffff" stroke="#0c0c0c"', false);
+});
+
+test('a black piece is filled black with a white outline', function () {
+    $view = $this->blade('<x-piece type="king" side="black" />');
+
+    $view->assertSee('fill="#0c0c0c" stroke="#ffffff"', false);
+});
+
+test('each piece type renders its own drawing', function (string $type, string $signature) {
+    $view = $this->blade('<x-piece :type="$type" />', ['type' => $type]);
+
+    $view->assertSee($signature, false);
+})->with([
+    'king' => ['king', 'points="11,1 13,1'],
+    'queen' => ['queen', 'points="4.5,7 7,11.5'],
+    'rook' => ['rook', 'points="6,2.5 9,2.5'],
+    'bishop' => ['bishop', 'd="M12 4.2'],
+    'knight' => ['knight', 'd="M7.5 18.5 L8.5 13'],
+    'pawn' => ['pawn', 'cx="12" cy="6.5" r="3.5"'],
+]);
+
+test('a piece is an svg hidden from assistive technologies with a default size', function () {
+    $view = $this->blade('<x-piece type="pawn" />');
+
+    $view->assertSee('<svg viewBox="0 0 24 24"', false);
+    $view->assertSee('aria-hidden="true"', false);
+    $view->assertSee('class="block size-8"', false);
+});

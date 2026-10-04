@@ -1,0 +1,4 @@
+<button type="button" class="mx-theme-toggle" data-theme-toggle title="Thème clair / sombre" aria-label="Basculer le thème clair / sombre">
+    <span class="mx-theme-toggle__sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><rect x="8" y="8" width="8" height="8"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.6" y2="6.6"/><line x1="17.4" y1="17.4" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.6" y2="17.4"/><line x1="17.4" y1="6.6" x2="19.4" y2="4.6"/></svg></span>
+    <span class="mx-theme-toggle__moon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.5 2.5A9.5 9.5 0 1 0 21.5 15 7.5 7.5 0 0 1 14.5 2.5Z"/></svg></span>
+</button>
