@@ -55,13 +55,35 @@ test('the dashboard greets the animator with the date of the day', function () {
     $response->assertSee('href="'.route('clubs.players.create', $this->club).'"', false);
 });
 
-test('the dashboard shows empty states while sessions and tournaments do not exist', function () {
+test('without any session, the dashboard invites to take the roll call and shows empty states', function () {
     $response = $this->actingAs($this->animator)->get(route('clubs.dashboard', $this->club));
 
-    $response->assertSee(e(__('clubs.dashboard.no_session')), false);
+    $response->assertSee(trans_choice('clubs.attendance.present_out_of', 2, ['total' => 2]));
+    $response->assertSee(trans_choice('clubs.dashboard.not_checked', 2, ['count' => 2]));
+    $response->assertSee(e(__('clubs.dashboard.take_attendance')), false);
+    $response->assertSee('href="'.route('clubs.attendance', $this->club).'"', false);
+    $response->assertDontSee(__('clubs.dashboard.in_progress'));
     $response->assertSee(__('clubs.dashboard.no_tournament'));
     $response->assertSee(__('clubs.dashboard.nothing_to_handle'));
     $response->assertSee(__('clubs.dashboard.no_sessions_yet'));
+});
+
+test('the dashboard reflects the roll call, the attendance and the members to follow up', function () {
+    Carbon::setTestNow('2026-10-01 10:00');
+    createSession($this->club, '2026-09-17', [$this->animator]);
+    createSession($this->club, '2026-09-24', [$this->animator]);
+    createSession($this->club, '2026-10-01', [$this->animator, $this->player]);
+
+    $response = $this->actingAs($this->animator)->withHeader('Accept-Language', 'fr')->get(route('clubs.dashboard', $this->club));
+
+    $response->assertSee(__('clubs.dashboard.in_progress'));
+    $response->assertSee(e(__('clubs.dashboard.edit_attendance')), false);
+    $response->assertSee(trans_choice('clubs.dashboard.not_checked', 0, ['count' => 0]));
+    // Taux : 50 % les 17 et 24/9, 100 % aujourd'hui, moyenne 67 %
+    $response->assertSeeInOrder([Number::percentage(50), Number::percentage(50), Number::percentage(100)]);
+    $response->assertSeeInOrder(['17/9', '24/9', __('clubs.dashboard.today_short')]);
+    $response->assertSee(__('clubs.dashboard.average', ['rate' => Number::percentage(67)]));
+    $response->assertSeeInOrder(['Tom Bernard', trans_choice('clubs.dashboard.absent_in_a_row', 2, ['count' => 2])]);
 });
 
 test('the club ranking lists the best members by ELO', function () {

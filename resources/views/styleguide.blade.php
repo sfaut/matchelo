@@ -142,6 +142,20 @@
         </section>
 
         <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.attendance') }}</h2>
+            <div class="grid items-end gap-6 sm:grid-cols-2">
+                <x-presence-squares :present="18" :total="24" />
+                <x-attendance-bars :bars="[
+                    ['label' => '3/9', 'rate' => 92, 'is_today' => false],
+                    ['label' => '10/9', 'rate' => 83, 'is_today' => false],
+                    ['label' => '17/9', 'rate' => 75, 'is_today' => false],
+                    ['label' => '24/9', 'rate' => 79, 'is_today' => false],
+                    ['label' => __('clubs.dashboard.today_short'), 'rate' => 75, 'is_today' => true],
+                ]" />
+            </div>
+        </section>
+
+        <section class="flex flex-col gap-4">
             <h2 class="mx-label">{{ __('styleguide.navigation') }}</h2>
             <nav class="flex w-60 flex-col gap-1.5 mx-border bg-surface p-3.5" aria-label="{{ __('styleguide.navigation') }}">
                 <a href="#" class="mx-nav-item" aria-current="page">{{ __('components.app_shell.sections.dashboard') }}</a>

@@ -42,6 +42,7 @@ return [
     'textarea' => 'Text area',
     'image_input' => 'Image',
 
+    'attendance' => 'Attendance',
     'navigation' => 'Navigation',
     'badge' => 'Badge',
     'divider' => 'Divider',

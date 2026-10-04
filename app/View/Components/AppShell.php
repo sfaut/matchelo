@@ -26,6 +26,7 @@ class AppShell extends Component
      */
     public const array MANAGE_SECTIONS = [
         'dashboard' => 'clubs.dashboard',
+        'attendance' => 'clubs.attendance',
         'players' => 'clubs.players.create',
         'settings' => 'clubs.edit',
     ];

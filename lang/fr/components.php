@@ -17,6 +17,7 @@ return [
         'manage_nav' => 'Gestion du club',
         'sections' => [
             'dashboard' => 'Tableau de bord',
+            'attendance' => 'Séances & présences',
             'players' => 'Élèves',
             'settings' => 'Paramètres du club',
         ],
@@ -35,6 +36,10 @@ return [
     'password_input' => [
         'show' => 'Afficher',
         'hide' => 'Masquer',
+    ],
+
+    'presence_squares' => [
+        'label' => ':present présent sur :total|:present présents sur :total',
     ],
 
     'scheme_toggle' => [

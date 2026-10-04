@@ -17,6 +17,7 @@ return [
         'manage_nav' => 'Club management',
         'sections' => [
             'dashboard' => 'Dashboard',
+            'attendance' => 'Sessions & attendance',
             'players' => 'Students',
             'settings' => 'Club settings',
         ],
@@ -35,6 +36,10 @@ return [
     'password_input' => [
         'show' => 'Show',
         'hide' => 'Hide',
+    ],
+
+    'presence_squares' => [
+        'label' => ':present present out of :total|:present present out of :total',
     ],
 
     'scheme_toggle' => [

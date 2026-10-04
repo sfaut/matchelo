@@ -42,6 +42,7 @@ return [
     'textarea' => 'Zone de texte',
     'image_input' => 'Image',
 
+    'attendance' => 'Assiduité',
     'navigation' => 'Navigation',
     'badge' => 'Badge',
     'divider' => 'Séparateur',

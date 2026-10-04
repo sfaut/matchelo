@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/clubs/create', 'pages::clubs.create')->name('clubs.create');
     Route::livewire('/clubs/{club}/edit', 'pages::clubs.edit')->name('clubs.edit');
     Route::livewire('/clubs/{club}/dashboard', 'pages::clubs.dashboard')->name('clubs.dashboard');
+    Route::livewire('/clubs/{club}/attendance', 'pages::clubs.attendance')->name('clubs.attendance');
     Route::livewire('/clubs/{club}/players/add', 'pages::clubs.players.create')->name('clubs.players.create');
 
     // Entrée du mode « Gérer le club » : tableau de bord du premier club animé
