@@ -32,3 +32,17 @@ test('a piece is an svg hidden from assistive technologies with a default size',
     $view->assertSee('aria-hidden="true"', false);
     $view->assertSee('class="block size-8"', false);
 });
+
+test('a current color piece is filled with currentColor and has no outline', function () {
+    $view = $this->blade('<x-piece type="rook" side="current" />');
+
+    $view->assertSee('fill="currentColor"', false);
+    $view->assertDontSee('stroke=', false);
+});
+
+test('a size class given by the caller replaces the default size', function () {
+    $view = $this->blade('<x-piece type="rook" class="size-12" />');
+
+    $view->assertSee('class="block size-12"', false);
+    $view->assertDontSee('size-8', false);
+});

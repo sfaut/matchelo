@@ -3,3 +3,8 @@
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    /* Bascule mobile / desktop de la maquette (900 px) */
+    --breakpoint-desk: 56.25rem;
+}

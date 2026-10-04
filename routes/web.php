@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::view('/', 'landing')->name('home');
 
-// Provisoires : requises par <x-mode-switch>, remplacées aux étapes suivantes
+// Provisoires : remplacées aux étapes suivantes
+Route::view('/login', 'placeholder')->name('login');
+Route::view('/register', 'placeholder')->name('register');
 Route::view('/club', 'placeholder')->name('club.dashboard');
 Route::view('/play', 'placeholder')->name('player.home');
 
