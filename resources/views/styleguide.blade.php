@@ -132,11 +132,11 @@
                 </div>
                 <div class="flex flex-col gap-2 sm:col-span-2">
                     <label for="styleguide-textarea" class="mx-label">{{ __('styleguide.textarea') }}</label>
-                    <textarea id="styleguide-textarea" rows="3" class="mx-input resize-y" placeholder="{{ __('clubs.create.placeholders.description') }}"></textarea>
+                    <textarea id="styleguide-textarea" rows="3" class="mx-input resize-y" placeholder="{{ __('clubs.form.placeholders.description') }}"></textarea>
                 </div>
                 <div class="flex flex-col gap-2">
                     <span class="mx-label">{{ __('styleguide.image_input') }}</span>
-                    <x-image-input id="styleguide-image">{{ __('clubs.create.fields.logo') }}</x-image-input>
+                    <x-image-input id="styleguide-image">{{ __('clubs.form.fields.logo') }}</x-image-input>
                 </div>
             </div>
         </section>

@@ -26,17 +26,17 @@ test('the create club page renders its fields', function () {
     $response->assertOk();
     $response->assertSee(__('clubs.create.title'));
     $response->assertSeeInOrder([
-        __('clubs.create.fields.logo'),
-        __('clubs.create.fields.name'),
-        __('clubs.create.fields.city'),
-        __('clubs.create.fields.description'),
+        __('clubs.form.fields.logo'),
+        __('clubs.form.fields.name'),
+        __('clubs.form.fields.city'),
+        __('clubs.form.fields.description'),
         __('clubs.create.submit'),
     ]);
 });
 
 test('creating a club makes the creator its animator and goes back to the clubs with a toast', function () {
     Livewire::test('pages::clubs.create')
-        ->set('name', '  Échiquier Nord ')
+        ->set('form.name', '  Échiquier Nord ')
         ->call('create')
         ->assertHasNoErrors()
         ->assertRedirectToRoute('clubs.index');
@@ -56,9 +56,9 @@ test('creating a club makes the creator its animator and goes back to the clubs 
 
 test('the optional city and description are stored trimmed', function () {
     Livewire::test('pages::clubs.create')
-        ->set('name', 'Échecs · Collège Jean-Moulin')
-        ->set('city', ' Lyon ')
-        ->set('description', ' Jeudi 12h30 · CDI ')
+        ->set('form.name', 'Échecs · Collège Jean-Moulin')
+        ->set('form.city', ' Lyon ')
+        ->set('form.description', ' Jeudi 12h30 · CDI ')
         ->call('create')
         ->assertHasNoErrors();
 
@@ -70,15 +70,15 @@ test('the optional city and description are stored trimmed', function () {
 
 test('the logo is cropped to a square webp on the public disk', function () {
     Livewire::test('pages::clubs.create')
-        ->set('name', 'Échiquier Nord')
-        ->set('logo', UploadedFile::fake()->image('logo.png', 400, 300))
+        ->set('form.name', 'Échiquier Nord')
+        ->set('form.logo', UploadedFile::fake()->image('logo.png', 400, 300))
         ->call('create')
         ->assertHasNoErrors();
 
     $club = Club::where('name', 'Échiquier Nord')->firstOrFail();
     $size = getimagesizefromstring(Storage::disk('public')->get($club->logo_path));
 
-    expect($club->logo_path)->toBe("clubs/logos/{$club->id}.webp")
+    expect($club->logo_path)->toMatch("#^clubs/logos/{$club->id}-[a-z0-9]{8}\.webp$#")
         ->and($size[0])->toBe(ClubLogo::SIZE)
         ->and($size[1])->toBe(ClubLogo::SIZE)
         ->and($size['mime'])->toBe('image/webp')
@@ -87,10 +87,10 @@ test('the logo is cropped to a square webp on the public disk', function () {
 
 test('invalid values are rejected', function (string $field, mixed $value, string $rule) {
     Livewire::test('pages::clubs.create')
-        ->set('name', 'Échiquier Nord')
-        ->set($field, $value instanceof Closure ? $value() : $value)
+        ->set('form.name', 'Échiquier Nord')
+        ->set("form.{$field}", $value instanceof Closure ? $value() : $value)
         ->call('create')
-        ->assertHasErrors([$field => $rule]);
+        ->assertHasErrors(["form.{$field}" => $rule]);
 
     expect(Club::count())->toBe(0);
 })->with([

@@ -16,8 +16,7 @@ return [
         'create' => '+ Créer un club',
     ],
 
-    'create' => [
-        'title' => 'Nouveau club',
+    'form' => [
         'close' => 'Fermer',
         'fields' => [
             'name' => 'Nom du club',
@@ -31,9 +30,23 @@ return [
             'description' => 'Facultatif : jour, heure et lieu des séances',
         ],
         'logo_hint' => 'Facultatif · PNG, JPEG ou WebP, 2 Mo maximum',
+        'remove_logo' => 'Retirer le logo',
+    ],
+
+    'create' => [
+        'title' => 'Nouveau club',
         'animator_hint' => 'Vous serez le prof animateur de ce club.',
         'submit' => 'Créer le club',
         'created' => ':name créé · vous êtes prof animateur',
+    ],
+
+    'edit' => [
+        'title' => 'Modifier le club',
+        'link' => 'Modifier',
+        'code' => 'Code d’invitation',
+        'code_hint' => 'Donnez ce code à vos élèves pour qu’ils rejoignent le club.',
+        'submit' => 'Enregistrer',
+        'updated' => ':name mis à jour',
     ],
 
 ];

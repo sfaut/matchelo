@@ -16,6 +16,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::livewire('/clubs', 'pages::clubs.index')->name('clubs.index');
     Route::livewire('/clubs/create', 'pages::clubs.create')->name('clubs.create');
+    Route::livewire('/clubs/{club}/edit', 'pages::clubs.edit')->name('clubs.edit');
 
     // Accueil du mode « Jouer » : la liste des clubs
     Route::redirect('/play', '/clubs')->name('player.home');

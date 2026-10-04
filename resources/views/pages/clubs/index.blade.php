@@ -62,7 +62,12 @@ new class extends Component
                         <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
                     @endif
                 </div>
-                <p class="text-sm text-muted">{{ trans_choice('clubs.index.members', $club->members_count) }}</p>
+                <div class="flex items-center justify-between gap-2">
+                    <p class="text-sm text-muted">{{ trans_choice('clubs.index.members', $club->members_count) }}</p>
+                    @can('update', $club)
+                        <a href="{{ route('clubs.edit', $club) }}" class="mx-btn mx-btn--sm">{{ __('clubs.edit.link') }}</a>
+                    @endcan
+                </div>
             </article>
         @empty
             <p class="text-md text-muted">{{ __('clubs.index.empty') }}</p>

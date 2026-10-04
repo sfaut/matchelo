@@ -5,11 +5,13 @@ namespace App\Support;
 use App\Models\Club;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
- * Enregistre le logo d'un club : image recadrée au centre en carré, redimensionnée et
- * convertie en WebP sur le disque public (GD, sans dépendance).
+ * Logo d'un club sur le disque public : image recadrée au centre en carré, redimensionnée et
+ * convertie en WebP (GD, sans dépendance). Chaque logo a un nom unique, pour qu'un logo
+ * remplacé ne reste pas affiché depuis le cache du navigateur.
  */
 class ClubLogo
 {
@@ -29,6 +31,7 @@ class ClubLogo
 
     /**
      * Recadre, redimensionne et enregistre le logo, puis renvoie son chemin sur le disque public.
+     * L'éventuel logo précédent du club n'est pas supprimé (voir delete()).
      *
      * @param  UploadedFile  $file  image envoyée (PNG, JPEG ou WebP, déjà validée)
      * @param  Club  $club  club auquel appartient le logo
@@ -64,9 +67,21 @@ class ClubLogo
             throw new RuntimeException('Encodage WebP du logo impossible.');
         }
 
-        $path = "clubs/logos/{$club->id}.webp";
+        $path = "clubs/logos/{$club->id}-".Str::lower(Str::random(8)).'.webp';
         Storage::disk('public')->put($path, $contents);
 
         return $path;
+    }
+
+    /**
+     * Supprime le fichier du logo actuel du club, s'il en a un.
+     *
+     * @param  Club  $club  club dont le logo est supprimé (logo_path n'est pas modifié)
+     */
+    public function delete(Club $club): void
+    {
+        if ($club->logo_path !== '') {
+            Storage::disk('public')->delete($club->logo_path);
+        }
     }
 }

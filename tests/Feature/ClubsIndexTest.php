@@ -1,29 +1,10 @@
 <?php
 
-use App\Models\Club;
-use App\Models\User;
 use App\Models\User\Role;
 
 beforeEach(function () {
     $this->seed();
 });
-
-/**
- * Crée un club et y inscrit des membres avec leur rôle.
- *
- * @param  string  $name  nom du club
- * @param  array<string, User>  $members  membres indexés par code de rôle (Role::ANIMATOR, Role::PLAYER)
- */
-function createClubWith(string $name, array $members): Club
-{
-    $club = Club::create(['name' => $name, 'code' => Club::generateCode($name), 'user_id' => reset($members)->id]);
-
-    foreach ($members as $role_code => $member) {
-        $club->members()->attach($member, ['role_id' => Role::idFor($role_code)]);
-    }
-
-    return $club;
-}
 
 test('guests are sent to the login page', function () {
     $this->get(route('clubs.index'))->assertRedirect(route('login'));

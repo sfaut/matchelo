@@ -16,8 +16,7 @@ return [
         'create' => '+ Create a club',
     ],
 
-    'create' => [
-        'title' => 'New club',
+    'form' => [
         'close' => 'Close',
         'fields' => [
             'name' => 'Club name',
@@ -31,9 +30,23 @@ return [
             'description' => 'Optional: session day, time and place',
         ],
         'logo_hint' => 'Optional · PNG, JPEG or WebP, 2 MB max',
+        'remove_logo' => 'Remove the logo',
+    ],
+
+    'create' => [
+        'title' => 'New club',
         'animator_hint' => 'You will be the teacher running this club.',
         'submit' => 'Create the club',
         'created' => ':name created · you run this club',
+    ],
+
+    'edit' => [
+        'title' => 'Edit the club',
+        'link' => 'Edit',
+        'code' => 'Invite code',
+        'code_hint' => 'Give this code to your students so they can join the club.',
+        'submit' => 'Save',
+        'updated' => ':name updated',
     ],
 
 ];
