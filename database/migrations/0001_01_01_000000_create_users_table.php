@@ -41,9 +41,12 @@ return new class extends Migration
             $table->string('first_name', length: 30)->comment('Prénom');
             $table->foreignId('civility_id')->default(1)->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->boolean('is_administrator')->default(false)->comment("L'utilisateur est-il administrateur ?");
-            $table->string('email', length: 100)->unique()->comment("E-mail de l'utilisateur");
+            $table->unsignedSmallInteger('elo')->default(1200)->comment('Classement ELO, unique tous clubs confondus');
+            // Exception à la règle « pas de nullable » : NULL = joueur sans compte (créé par un prof),
+            // l'unicité reste garantie car les NULL ne se heurtent pas
+            $table->string('email', length: 100)->nullable()->unique()->comment("E-mail de l'utilisateur, NULL pour un joueur sans compte");
             $table->dateTime('email_verified_at', precision: 6)->nullable()->comment("Horodatage de la confirmation de l'e-mail");
-            $table->string('password_hash', length: 100)->comment("Mot de passe haché de l'utilisateur");
+            $table->string('password_hash', length: 100)->default('')->comment("Mot de passe haché de l'utilisateur, vide pour un joueur sans compte");
             $table->rememberToken();
             $table->timestamps(precision: 6);
         });

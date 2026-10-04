@@ -132,3 +132,28 @@ test('a club code is unique', function () {
     expect(fn () => Club::create(['name' => 'Échiquier Nouveau', 'code' => 'EN-1177', 'user_id' => $creator->id]))
         ->toThrow(QueryException::class);
 });
+
+test('a user starts at 1200 ELO', function () {
+    expect(createUser()->refresh()->elo)->toBe(1200);
+});
+
+test('a player without email has no account and cannot log in', function () {
+    $player = User::create(['last_name' => 'Diallo', 'first_name' => 'Nathan'])->refresh();
+
+    expect($player->email)->toBeNull()
+        ->and($player->password_hash)->toBe('')
+        ->and($player->hasAccount())->toBeFalse()
+        ->and(createUser()->hasAccount())->toBeTrue();
+});
+
+test('the address name uses the abbreviated civility in the current language', function (string $locale, string $civility, string $expected) {
+    app()->setLocale($locale);
+
+    $user = createUser(['civility_id' => Civility::where('code', $civility)->value('id'), 'first_name' => 'Marie', 'last_name' => 'Durand']);
+
+    expect($user->addressName())->toBe($expected);
+})->with([
+    'madam in french' => ['fr', 'MADAM', 'Mme Durand'],
+    'mister in english' => ['en', 'MISTER', 'Mr Durand'],
+    'undefined civility' => ['fr', 'UNDEFINED', 'Marie Durand'],
+]);
