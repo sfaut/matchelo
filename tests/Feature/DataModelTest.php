@@ -104,3 +104,23 @@ test('a civility code is unique', function () {
     expect(fn () => Civility::create(['code' => 'MADAM', 'name' => 'Madame', 'name_short' => 'Mme', 'sex_id' => 2]))
         ->toThrow(QueryException::class);
 });
+
+test('a role id is found by its code', function () {
+    expect(Role::idFor(Role::ANIMATOR))->toBe(Role::where('code', 'ANIMATOR')->value('id'))
+        ->and(Role::idFor('UNKNOWN'))->toBeNull();
+});
+
+test('a user is an animator once they animate a club', function () {
+    $user = createUser();
+    $club = Club::create(['name' => 'Échiquier Nord', 'user_id' => $user->id]);
+
+    $club->members()->attach($user, ['role_id' => Role::idFor(Role::PLAYER)]);
+    expect($user->isAnimator())->toBeFalse();
+
+    $club->members()->updateExistingPivot($user->id, ['role_id' => Role::idFor(Role::ANIMATOR)]);
+    expect($user->isAnimator())->toBeTrue();
+});
+
+test('the full name is the first name then the last name', function () {
+    expect(createUser()->fullName())->toBe('Léa Martin');
+});

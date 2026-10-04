@@ -46,7 +46,7 @@ new class extends Component
     }
 
     /**
-     * Connecte l'utilisateur, puis le renvoie vers la page demandée ou l'accueil joueur.
+     * Connecte l'utilisateur, puis le renvoie vers la page demandée ou ses clubs.
      *
      * @throws ValidationException si les identifiants sont faux ou les tentatives épuisées
      */
@@ -82,7 +82,7 @@ new class extends Component
 
         session()->regenerate();
 
-        $this->redirectIntended(route('player.home'));
+        $this->redirectIntended(route('clubs.index'));
     }
 
     /**

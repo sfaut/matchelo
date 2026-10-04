@@ -18,5 +18,27 @@ use Illuminate\Support\Carbon;
 #[Fillable(['code', 'name'])]
 class Role extends Model
 {
-    //
+    /**
+     * Code du rôle d'animateur (prof qui gère le club).
+     *
+     * @var string
+     */
+    public const string ANIMATOR = 'ANIMATOR';
+
+    /**
+     * Code du rôle de joueur.
+     *
+     * @var string
+     */
+    public const string PLAYER = 'PLAYER';
+
+    /**
+     * Donne l'identifiant du rôle portant un code.
+     *
+     * @param  string  $code  code du rôle (Role::ANIMATOR, Role::PLAYER)
+     */
+    public static function idFor(string $code): ?int
+    {
+        return static::query()->where('code', $code)->value('id');
+    }
 }

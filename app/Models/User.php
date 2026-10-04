@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Models\User\Civility;
+use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -82,13 +84,30 @@ class User extends Authenticatable
     /**
      * Clubs dont l'utilisateur est membre, avec son rôle (club_user.role_id).
      *
-     * @return BelongsToMany<Club, $this>
+     * @return BelongsToMany<Club, $this, Pivot, 'pivot'>
      */
     public function clubs(): BelongsToMany
     {
         return $this->belongsToMany(Club::class)
             ->withPivot('role_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Indique si l'utilisateur anime au moins un club (rôle ANIMATOR) : il a alors accès
+     * au mode « Gérer le club ».
+     */
+    public function isAnimator(): bool
+    {
+        return $this->clubs()->wherePivot('role_id', Role::idFor(Role::ANIMATOR))->exists();
+    }
+
+    /**
+     * Prénom et nom de l'utilisateur.
+     */
+    public function fullName(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 
     /**

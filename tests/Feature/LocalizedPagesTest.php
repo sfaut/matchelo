@@ -2,7 +2,7 @@
 
 dataset('localized pages', [
     'landing' => fn (): string => route('home'),
-    'placeholder' => fn (): string => route('club.dashboard'),
+    'placeholder' => fn (): string => route('password.request'),
     'styleguide' => fn (): string => route('styleguide'),
 ]);
 

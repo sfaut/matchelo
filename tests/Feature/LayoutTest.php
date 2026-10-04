@@ -1,13 +1,13 @@
 <?php
 
 test('the layout defaults to the light scheme', function () {
-    $response = $this->get(route('club.dashboard'));
+    $response = $this->get(route('password.request'));
 
     $response->assertSee('data-scheme="light">', false);
 });
 
 test('the layout applies the stored scheme inline in the head', function () {
-    $response = $this->get(route('club.dashboard'));
+    $response = $this->get(route('password.request'));
 
     $response->assertSeeInOrder([
         '<head>',
@@ -17,13 +17,13 @@ test('the layout applies the stored scheme inline in the head', function () {
 });
 
 test('the layout suffixes the page title with the app name', function () {
-    $response = $this->get(route('club.dashboard'));
+    $response = $this->get(route('password.request'));
 
     $response->assertSee('<title>'.e(__('placeholder.title')).' · Matchelo</title>', false);
 });
 
 test('the layout loads Livewire and Alpine from the Vite bundle only', function () {
-    $response = $this->get(route('club.dashboard'));
+    $response = $this->get(route('password.request'));
 
     $response->assertSee('window.livewireScriptConfig', false);
     expect($response->getContent())->not->toMatch('#<script[^>]+src="[^"]*livewire(\.min)?\.js#');

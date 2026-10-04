@@ -37,6 +37,7 @@ return [
     'select' => 'Select',
     'password' => 'Password',
 
+    'badge' => 'Badge',
     'divider' => 'Divider',
 
     'chips' => 'Chips',

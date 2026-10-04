@@ -60,6 +60,11 @@
     border-bottom-style: solid;
     border-bottom-color: var(--mx-color-ink);
 }
+@utility mx-border-r {
+    border-right-width: var(--mx-stroke);
+    border-right-style: solid;
+    border-right-color: var(--mx-color-ink);
+}
 @utility mx-border-y {
     border-block-width: var(--mx-stroke);
     border-block-style: solid;
@@ -309,6 +314,20 @@
         color: var(--mx-color-accent);
         border-color: var(--mx-color-on-accent);
     }
+}
+
+/* Badge : étiquette à trait (rôle « prof », statut…) */
+@utility mx-badge {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: --spacing(2);
+    font-size: var(--mx-text-xs);
+    font-weight: var(--mx-font-weight-bold);
+    white-space: nowrap;
+    color: var(--mx-color-ink);
+    border-width: var(--mx-stroke);
+    border-style: solid;
+    border-color: var(--mx-color-ink);
 }
 
 /* Séparateur « ou » : texte centré entre deux filets */

@@ -40,7 +40,7 @@ test('the stylesheet path is the theme file as expected by vite', function () {
 });
 
 test('the layout loads the current theme stylesheet after the app stylesheet', function () {
-    $response = $this->get(route('club.dashboard'));
+    $response = $this->get(route('password.request'));
 
     $response->assertSeeInOrder(['/build/assets/app-', '/build/assets/black-and-white-'], false);
 });

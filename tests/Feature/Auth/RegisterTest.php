@@ -129,5 +129,5 @@ test('an email already used, whatever its case, is rejected', function () {
 test('a logged in user is sent away from the register page', function () {
     $this->actingAs(createUser())
         ->get(route('register'))
-        ->assertRedirect(route('player.home'));
+        ->assertRedirect(route('clubs.index'));
 });

@@ -20,7 +20,7 @@
         'text-title', 'text-h3', 'text-h3-lg', 'text-h2', 'text-h2-lg', 'text-h1', 'text-h1-lg',
         'text-figure-sm', 'text-figure', 'text-figure-lg', 'text-icon',
     ];
-    $strokes = ['mx-border', 'mx-border-t', 'mx-border-b', 'mx-border-y'];
+    $strokes = ['mx-border', 'mx-border-t', 'mx-border-r', 'mx-border-b', 'mx-border-y'];
 @endphp
 <x-layouts::app :title="__('styleguide.title')">
     <header class="flex items-center justify-between gap-4 mx-border-b bg-surface px-4 py-3 md:px-8">
@@ -130,6 +130,14 @@
                     <label for="styleguide-password" class="mx-label">{{ __('styleguide.password') }}</label>
                     <x-password-input id="styleguide-password" value="echecs-2026" />
                 </div>
+            </div>
+        </section>
+
+        <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.badge') }}</h2>
+            <div class="flex flex-wrap items-center gap-4">
+                <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
+                <span class="mx-badge">{{ __('components.app_shell.animator_badge') }}</span>
             </div>
         </section>
 

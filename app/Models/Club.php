@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
 
 /**
@@ -36,7 +37,7 @@ class Club extends Model
     /**
      * Membres du club, avec leur rôle (club_user.role_id).
      *
-     * @return BelongsToMany<User, $this>
+     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
      */
     public function members(): BelongsToMany
     {

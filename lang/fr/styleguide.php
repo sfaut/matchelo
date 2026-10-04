@@ -37,6 +37,7 @@ return [
     'select' => 'Liste déroulante',
     'password' => 'Mot de passe',
 
+    'badge' => 'Badge',
     'divider' => 'Séparateur',
 
     'chips' => 'Puces',

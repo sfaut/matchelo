@@ -26,7 +26,7 @@ test('after registering, the email is prefilled with a confirmation', function (
         ->assertSee(__('auth_pages.login.registered', ['email' => 'tom.bernard@example.org']));
 });
 
-test('valid credentials log the user in and go to the player home', function () {
+test('valid credentials log the user in and go to their clubs', function () {
     $user = createUser();
 
     Livewire::test('pages::auth.login')
@@ -34,7 +34,7 @@ test('valid credentials log the user in and go to the player home', function () 
         ->set('password', 'secret-password')
         ->call('login')
         ->assertHasNoErrors()
-        ->assertRedirect(route('player.home'));
+        ->assertRedirect(route('clubs.index'));
 
     expect(Auth::id())->toBe($user->id);
 });
@@ -129,5 +129,5 @@ test('too many failed attempts lock the login, even with the right password', fu
 test('a logged in user is sent away from the login page', function () {
     $this->actingAs(createUser())
         ->get(route('login'))
-        ->assertRedirect(route('player.home'));
+        ->assertRedirect(route('clubs.index'));
 });

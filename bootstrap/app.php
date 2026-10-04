@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Visiteur déjà connecté sur une page invité (connexion, inscription)
-        $middleware->redirectUsersTo(fn (): string => route('player.home'));
+        $middleware->redirectUsersTo(fn (): string => route('clubs.index'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -13,11 +13,18 @@ Route::middleware('guest')->group(function () {
     Route::view('/forgot-password', 'placeholder')->name('password.request');
 });
 
-Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
+Route::middleware('auth')->group(function () {
+    Route::livewire('/clubs', 'pages::clubs.index')->name('clubs.index');
 
-// Provisoires : remplacées aux étapes suivantes
-Route::view('/club', 'placeholder')->name('club.dashboard');
-Route::view('/play', 'placeholder')->name('player.home');
+    // Accueil du mode « Jouer » : la liste des clubs
+    Route::redirect('/play', '/clubs')->name('player.home');
+
+    Route::post('/logout', LogoutController::class)->name('logout');
+
+    // Provisoires : remplacées aux étapes suivantes
+    Route::view('/clubs/create', 'placeholder')->name('clubs.create');
+    Route::view('/club', 'placeholder')->name('club.dashboard');
+});
 
 if (! app()->isProduction()) {
     Route::view('/styleguide', 'styleguide')->name('styleguide');
