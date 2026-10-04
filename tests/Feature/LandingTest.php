@@ -31,7 +31,7 @@ test('the landing page links to login and registration', function () {
 test('the landing page offers the theme toggle', function () {
     $response = $this->get(route('home'));
 
-    $response->assertSee('data-theme-toggle', false);
+    $response->assertSee('x-on:click="$store.theme.toggle()"', false);
 });
 
 test('the landing page never draws pieces with unicode glyphs', function () {

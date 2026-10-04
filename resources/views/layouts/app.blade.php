@@ -20,8 +20,13 @@
         @fonts
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        @livewireStyles
     </head>
     <body class="min-h-screen bg-bg text-ink antialiased">
         {{ $slot }}
+
+        {{-- Livewire et Alpine viennent du bundle Vite (resources/js/app.js) : seule leur configuration est injectée --}}
+        @livewireScriptConfig
     </body>
 </html>
