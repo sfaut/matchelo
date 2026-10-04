@@ -1,16 +1,23 @@
 <?php
 
 /**
+ * Lit matchelo.css, commentaires retirés.
+ */
+function matcheloCss(): string
+{
+    $css = file_get_contents(dirname(__DIR__, 2).'/resources/css/matchelo.css');
+
+    return preg_replace('#/\*.*?\*/#s', '', $css);
+}
+
+/**
  * Lit les règles de matchelo.css, dans l'ordre du fichier.
  *
  * @return list<array{selector: string, body: string}>
  */
 function matcheloCssRules(): array
 {
-    $css = file_get_contents(dirname(__DIR__, 2).'/resources/css/matchelo.css');
-    $css = preg_replace('#/\*.*?\*/#s', '', $css);
-
-    preg_match_all('/([^{}]+)\{([^{}]*)\}/', $css, $matches, PREG_SET_ORDER);
+    preg_match_all('/([^{}]+)\{([^{}]*)\}/', matcheloCss(), $matches, PREG_SET_ORDER);
 
     return array_map(fn (array $match): array => [
         'selector' => trim($match[1]),
@@ -43,4 +50,12 @@ test('the pressed button drops its shadow', function () {
     expect($active_rule['body'])
         ->toContain('transform: translate(4px, 4px)')
         ->toContain('box-shadow: 0 0 0');
+});
+
+test('the dark variant follows the data-theme attribute', function () {
+    expect(matcheloCss())->toContain('@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));');
+});
+
+test('dark styles go through the dark variant', function () {
+    expect(matcheloCss())->not->toContain("[data-theme='dark'] .");
 });

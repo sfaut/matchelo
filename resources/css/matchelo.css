@@ -56,6 +56,9 @@
     --radius-none: 0;
 }
 
+/* Variante dark: pilotée par html[data-theme] (bascule de l'application), à la place de prefers-color-scheme */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @layer base {
     html {
         background: var(--mx-bg);
@@ -243,18 +246,25 @@
         width: 18px;
         height: 18px;
     }
-    .mx-theme-toggle__moon {
-        border-left: var(--mx-stroke) solid var(--mx-ink);
-    }
-    .mx-theme-toggle__sun,
-    [data-theme='dark'] .mx-theme-toggle__moon {
+    /* Case active : soleil en clair, lune en sombre */
+    .mx-theme-toggle__sun {
         background: var(--mx-accent);
         color: var(--mx-on-accent);
+
+        @variant dark {
+            background: var(--mx-surface);
+            color: var(--mx-ink);
+        }
     }
-    .mx-theme-toggle__moon,
-    [data-theme='dark'] .mx-theme-toggle__sun {
+    .mx-theme-toggle__moon {
+        border-left: var(--mx-stroke) solid var(--mx-ink);
         background: var(--mx-surface);
         color: var(--mx-ink);
+
+        @variant dark {
+            background: var(--mx-accent);
+            color: var(--mx-on-accent);
+        }
     }
 
     /* Logo = roi + « matchelo » */
