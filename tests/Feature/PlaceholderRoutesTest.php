@@ -6,8 +6,8 @@ test('provisional routes render the placeholder screen', function (string $route
     $response->assertOk();
     $response->assertSee(__('placeholder.heading'));
 })->with([
-    'login',
     'register',
+    'password.request',
     'club.dashboard',
     'player.home',
 ]);

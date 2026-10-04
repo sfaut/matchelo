@@ -14,6 +14,11 @@ return [
         'play' => 'Play',
     ],
 
+    'password_input' => [
+        'show' => 'Show',
+        'hide' => 'Hide',
+    ],
+
     'scheme_toggle' => [
         'title' => 'Light / dark theme',
         'label' => 'Dark theme',

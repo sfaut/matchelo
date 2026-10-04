@@ -103,6 +103,7 @@
     --leading-normal: var(--mx-leading-normal);
     --leading-relaxed: var(--mx-leading-relaxed);
 
+    --tracking-display: var(--mx-tracking-display);
     --tracking-title: var(--mx-tracking-title);
     --tracking-label: var(--mx-tracking-label);
 

@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             SetLocaleFromBrowser::class,
         ]);
+
+        // Visiteur déjà connecté sur une page invité (connexion, inscription)
+        $middleware->redirectUsersTo(fn (): string => route('player.home'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

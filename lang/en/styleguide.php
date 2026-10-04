@@ -34,6 +34,10 @@ return [
     'email_placeholder' => 'firstname.lastname@school.edu',
     'password_error' => 'The password must be at least 6 characters long.',
 
+    'password' => 'Password',
+
+    'divider' => 'Divider',
+
     'chips' => 'Chips',
     'mine' => 'Mine',
     'whole_club' => 'Whole club',

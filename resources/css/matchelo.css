@@ -32,6 +32,10 @@
         outline: var(--mx-stroke) solid var(--mx-color-ink);
         outline-offset: var(--mx-stroke);
     }
+    /* Masqué tant qu'Alpine n'a pas démarré */
+    [x-cloak] {
+        display: none;
+    }
 }
 
 /* Composants en @utility : ils acceptent les variantes Tailwind (desk:mx-card, hover:…).
@@ -304,6 +308,23 @@
         background: var(--mx-color-on-accent);
         color: var(--mx-color-accent);
         border-color: var(--mx-color-on-accent);
+    }
+}
+
+/* Séparateur « ou » : texte centré entre deux filets */
+@utility mx-divider {
+    display: flex;
+    align-items: center;
+    gap: --spacing(3);
+    font-size: var(--mx-text-sm);
+    color: var(--mx-color-muted);
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        height: var(--mx-stroke);
+        background: var(--mx-color-surface-2);
     }
 }
 

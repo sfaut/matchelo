@@ -14,6 +14,11 @@ return [
         'play' => 'Jouer',
     ],
 
+    'password_input' => [
+        'show' => 'Afficher',
+        'hide' => 'Masquer',
+    ],
+
     'scheme_toggle' => [
         'title' => 'Thème clair / sombre',
         'label' => 'Thème sombre',

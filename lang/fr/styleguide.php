@@ -34,6 +34,10 @@ return [
     'email_placeholder' => 'prenom.nom@college.fr',
     'password_error' => 'Le mot de passe doit faire au moins 6 caractères.',
 
+    'password' => 'Mot de passe',
+
+    'divider' => 'Séparateur',
+
     'chips' => 'Puces',
     'mine' => 'Les miens',
     'whole_club' => 'Tout le club',

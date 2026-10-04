@@ -119,7 +119,16 @@
                     <input type="password" class="mx-input" value="abc" aria-invalid="true" aria-describedby="styleguide-error">
                     <span id="styleguide-error" class="mx-error">{{ __('styleguide.password_error') }}</span>
                 </label>
+                <div class="flex flex-col gap-2 sm:col-span-2">
+                    <label for="styleguide-password" class="mx-label">{{ __('styleguide.password') }}</label>
+                    <x-password-input id="styleguide-password" value="echecs-2026" />
+                </div>
             </div>
+        </section>
+
+        <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.divider') }}</h2>
+            <div class="mx-divider max-w-115">{{ __('auth_pages.login.or') }}</div>
         </section>
 
         <section class="flex flex-col gap-4">
