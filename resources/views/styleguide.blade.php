@@ -119,6 +119,13 @@
                     <input type="password" class="mx-input" value="abc" aria-invalid="true" aria-describedby="styleguide-error">
                     <span id="styleguide-error" class="mx-error">{{ __('styleguide.password_error') }}</span>
                 </label>
+                <div class="flex flex-col gap-2">
+                    <label for="styleguide-civility" class="mx-label">{{ __('styleguide.select') }}</label>
+                    <select id="styleguide-civility" class="mx-input">
+                        <option>{{ __('civilities.MADAM') }}</option>
+                        <option>{{ __('civilities.MISTER') }}</option>
+                    </select>
+                </div>
                 <div class="flex flex-col gap-2 sm:col-span-2">
                     <label for="styleguide-password" class="mx-label">{{ __('styleguide.password') }}</label>
                     <x-password-input id="styleguide-password" value="echecs-2026" />

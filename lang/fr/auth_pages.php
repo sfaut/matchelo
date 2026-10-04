@@ -32,4 +32,14 @@ return [
         'registered' => 'Votre compte est créé. Votre mot de passe a été envoyé à :email.',
     ],
 
+    'register' => [
+        'title' => 'Créer un compte',
+        'panel_title' => 'Chaque partie compte pour votre classement.',
+        'panel_text' => 'ELO unique · suisse, toutes rondes, élimination · plusieurs clubs, un seul compte',
+        'password_by_email' => 'Votre mot de passe vous sera envoyé à cette adresse.',
+        'submit' => 'Créer mon compte',
+        'already_registered' => 'Déjà inscrit ?',
+        'log_in' => 'Se connecter',
+    ],
+
 ];

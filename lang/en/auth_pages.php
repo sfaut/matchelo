@@ -32,4 +32,14 @@ return [
         'registered' => 'Your account has been created. Your password has been sent to :email.',
     ],
 
+    'register' => [
+        'title' => 'Create an account',
+        'panel_title' => 'Every game counts towards your rating.',
+        'panel_text' => 'One ELO rating · Swiss, round robin, knockout · several clubs, one account',
+        'password_by_email' => 'Your password will be sent to this address.',
+        'submit' => 'Create my account',
+        'already_registered' => 'Already registered?',
+        'log_in' => 'Log in',
+    ],
+
 ];
