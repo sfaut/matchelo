@@ -10,23 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-/**
- * Crée un utilisateur de test, civilité « Madame » par défaut.
- *
- * @param  array<string, mixed>  $attributes  attributs à surcharger
- */
-function createUser(array $attributes = []): User
-{
-    return User::create([
-        'last_name' => 'Martin',
-        'first_name' => 'Léa',
-        'civility_id' => Civility::where('code', 'MADAM')->value('id'),
-        'email' => 'lea.martin@example.org',
-        'password_hash' => 'secret-password',
-        ...$attributes,
-    ]);
-}
-
 beforeEach(function () {
     $this->seed();
 });
