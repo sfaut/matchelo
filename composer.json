@@ -70,7 +70,8 @@
             "@php artisan config:clear --ansi",
             "@lint:check",
             "@types:check",
-            "@php vendor/bin/pest"
+            "@php vendor/bin/pest",
+            "npm test"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
