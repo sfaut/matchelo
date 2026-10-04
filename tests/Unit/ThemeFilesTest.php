@@ -22,8 +22,8 @@ test('each theme color is declared once with light-dark()', function (string $th
     $css = file_get_contents($theme_file);
 
     foreach (['bg', 'surface', 'surface-2', 'ink', 'muted', 'accent', 'on-accent', 'highlight', 'error'] as $token) {
-        expect(substr_count($css, "--mx-{$token}:"))->toBe(1)
-            ->and($css)->toMatch("/--mx-{$token}: light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\);/");
+        expect(substr_count($css, "--mx-color-{$token}:"))->toBe(1)
+            ->and($css)->toMatch("/--mx-color-{$token}: light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\);/");
     }
 })->with(themeFiles());
 

@@ -1,15 +1,15 @@
-{{-- Planche de référence des fondations visuelles (thèmes 1a / 1b), hors production --}}
+{{-- Planche de référence des fondations visuelles du thème courant (modes clair / sombre), hors production --}}
 @php
     $piece_types = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'];
 @endphp
 <x-layouts::app title="Styleguide">
-    <header class="flex items-center justify-between gap-4 border-b-2 border-ink bg-surface px-4 py-3 md:px-8">
+    <header class="flex items-center justify-between gap-4 mx-border-b bg-surface px-4 py-3 md:px-8">
         <x-logo />
         <x-scheme-toggle />
     </header>
 
-    <main class="mx-auto flex max-w-5xl flex-col gap-14 px-4 py-10 md:px-8">
-        <h1 class="text-[46px] leading-[.96] font-bold tracking-[-.04em]">Styleguide</h1>
+    <main class="mx-auto flex max-w-256 flex-col gap-14 px-4 py-10 md:px-8">
+        <h1 class="text-h1">Styleguide</h1>
 
         <section class="flex flex-col gap-4">
             <h2 class="mx-label">Boutons</h2>
@@ -26,12 +26,12 @@
             <h2 class="mx-label">Cartes</h2>
             <div class="grid gap-6 sm:grid-cols-2">
                 <div class="mx-card">
-                    <p class="text-[13px] text-muted">Mon ELO</p>
-                    <p class="text-[32px] leading-none font-bold tracking-[-.03em]">1 248</p>
+                    <p class="text-sm text-muted">Mon ELO</p>
+                    <p class="text-figure-sm">1 248</p>
                 </div>
                 <div class="mx-card mx-card--highlight">
-                    <p class="text-[13px] text-muted">Carte surlignée</p>
-                    <p class="text-[32px] leading-none font-bold tracking-[-.03em]">1 312</p>
+                    <p class="text-sm text-muted">Carte surlignée</p>
+                    <p class="text-figure-sm">1 312</p>
                 </div>
             </div>
         </section>
@@ -46,7 +46,7 @@
                 <label class="flex flex-col gap-2">
                     <span class="mx-label">Focus</span>
                     {{-- Ombre de :focus reproduite pour la planche ; au repos, un champ n'a pas d'ombre --}}
-                    <input type="text" class="mx-input" style="box-shadow: var(--mx-sh)" value="JM-4821">
+                    <input type="text" class="mx-input shadow-solid" value="JM-4821">
                 </label>
                 <label class="flex flex-col gap-2">
                     <span class="mx-label">Erreur</span>
@@ -82,7 +82,7 @@
         </section>
 
         <section class="flex flex-col gap-4">
-            <h2 class="mx-label">Bascule de thème</h2>
+            <h2 class="mx-label">Bascule clair / sombre</h2>
             <x-scheme-toggle />
         </section>
 
@@ -108,7 +108,7 @@
         <section class="flex flex-col gap-4">
             <h2 class="mx-label">Pièces</h2>
             @foreach (['white', 'black'] as $side)
-                <div class="flex w-max border-2 border-ink bg-[#ffffff]">
+                <div class="flex w-max mx-border bg-board-white">
                     @foreach ($piece_types as $type)
                         <span class="grid size-10 place-items-center">
                             <x-piece :type="$type" :side="$side" />
@@ -116,7 +116,7 @@
                     @endforeach
                 </div>
             @endforeach
-            <div class="flex w-max border-2 border-ink bg-[#0c0c0c]">
+            <div class="flex w-max mx-border bg-board-black">
                 @foreach (['white', 'black'] as $side)
                     @foreach ($piece_types as $type)
                         <span class="grid size-10 place-items-center">
@@ -125,8 +125,8 @@
                     @endforeach
                 @endforeach
             </div>
-            <p class="text-[13px] text-muted">Fichiers de <code>public/images/pieces</code> :</p>
-            <div class="flex w-max border-2 border-ink bg-[#ffffff]">
+            <p class="text-sm text-muted">Fichiers de <code>public/images/pieces</code> :</p>
+            <div class="flex w-max mx-border bg-board-white">
                 @foreach (['white', 'black'] as $side)
                     @foreach ($piece_types as $type)
                         <span class="grid size-10 place-items-center">

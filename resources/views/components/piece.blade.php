@@ -1,5 +1,5 @@
 @props(['type' => 'king', 'side' => 'white'])
-{{-- Pièce validée (cartouche 1a) · viewBox 24 · contour 1,6 couleur opposée · paint-order stroke
+{{-- Pièce validée (cartouche 1a) · viewBox 24 · couleurs d'échiquier du thème · contour 1,6 couleur opposée · paint-order stroke
      side="current" : pièce pleine en currentColor, sans contour (icônes, pastilles) --}}
 @php
 $paths = [
@@ -18,5 +18,5 @@ $classes = ['block', 'size-8' => ! preg_match('/(^|\s|:)size-/', $attributes->ge
 @if ($is_current)
 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {{ $attributes->class($classes) }}>{!! $paths[$type] !!}</svg>
 @else
-<svg viewBox="0 0 24 24" fill="{{ $is_white ? '#ffffff' : '#0c0c0c' }}" stroke="{{ $is_white ? '#0c0c0c' : '#ffffff' }}" stroke-width="1.6" stroke-linejoin="miter" paint-order="stroke" aria-hidden="true" {{ $attributes->class($classes) }}>{!! $paths[$type] !!}</svg>
+<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linejoin="miter" paint-order="stroke" aria-hidden="true" {{ $attributes->class([...$classes, 'fill-board-white stroke-board-black' => $is_white, 'fill-board-black stroke-board-white' => ! $is_white]) }}>{!! $paths[$type] !!}</svg>
 @endif

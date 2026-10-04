@@ -1,15 +1,15 @@
 <?php
 
-test('a white piece is filled white with a black outline', function () {
+test('a white piece uses the theme board white with a board black outline', function () {
     $view = $this->blade('<x-piece type="king" side="white" />');
 
-    $view->assertSee('fill="#ffffff" stroke="#0c0c0c"', false);
+    $view->assertSee('fill-board-white stroke-board-black', false);
 });
 
-test('a black piece is filled black with a white outline', function () {
+test('a black piece uses the theme board black with a board white outline', function () {
     $view = $this->blade('<x-piece type="king" side="black" />');
 
-    $view->assertSee('fill="#0c0c0c" stroke="#ffffff"', false);
+    $view->assertSee('fill-board-black stroke-board-white', false);
 });
 
 test('each piece type renders its own drawing', function (string $type, string $signature) {
@@ -30,7 +30,7 @@ test('a piece is an svg hidden from assistive technologies with a default size',
 
     $view->assertSee('<svg viewBox="0 0 24 24"', false);
     $view->assertSee('aria-hidden="true"', false);
-    $view->assertSee('class="block size-8"', false);
+    $view->assertSee('class="block size-8 ', false);
 });
 
 test('a current color piece is filled with currentColor and has no outline', function () {
@@ -43,6 +43,6 @@ test('a current color piece is filled with currentColor and has no outline', fun
 test('a size class given by the caller replaces the default size', function () {
     $view = $this->blade('<x-piece type="rook" class="size-12" />');
 
-    $view->assertSee('class="block size-12"', false);
+    $view->assertSee('size-12"', false);
     $view->assertDontSee('size-8', false);
 });

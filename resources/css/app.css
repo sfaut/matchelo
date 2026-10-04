@@ -4,7 +4,112 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+/* Configuration Tailwind : les échelles par défaut sont retirées pour que chaque
+   utilitaire passe par une variable du thème (resources/css/themes/*.css). */
 @theme {
-    /* Bascule mobile / desktop de la maquette (900 px) */
+    --color-*: initial;
+    --font-*: initial;
+    --font-weight-*: initial;
+    --text-*: initial;
+    --leading-*: initial;
+    --tracking-*: initial;
+    --radius-*: initial;
+    --shadow-*: initial;
+    --container-*: initial;
+
+    /* Bascule mobile / desktop de la maquette (900 px) ; une media query n'accepte pas
+       de variable CSS, le point de rupture reste donc ici. */
     --breakpoint-desk: 56.25rem;
 }
+
+@theme inline {
+    --spacing: var(--mx-spacing);
+    --container-page: var(--mx-container);
+
+    --color-bg: var(--mx-color-bg);
+    --color-surface: var(--mx-color-surface);
+    --color-surface-2: var(--mx-color-surface-2);
+    --color-ink: var(--mx-color-ink);
+    --color-muted: var(--mx-color-muted);
+    --color-accent: var(--mx-color-accent);
+    --color-on-accent: var(--mx-color-on-accent);
+    --color-highlight: var(--mx-color-highlight);
+    --color-error: var(--mx-color-error);
+    --color-board-white: var(--mx-color-board-white);
+    --color-board-black: var(--mx-color-board-black);
+
+    --font-sans: var(--mx-font-family);
+    --font-weight-normal: var(--mx-font-weight);
+    --font-weight-bold: var(--mx-font-weight-bold);
+
+    --text-xs: var(--mx-text-xs);
+    --text-sm: var(--mx-text-sm);
+    --text-md: var(--mx-text-md);
+    --text-base: var(--mx-text-base);
+    --text-lg: var(--mx-text-lg);
+    --text-xl: var(--mx-text-xl);
+    --text-2xl: var(--mx-text-2xl);
+    --text-3xl: var(--mx-text-3xl);
+    --text-4xl: var(--mx-text-4xl);
+    --text-5xl: var(--mx-text-5xl);
+
+    /* Titres et chiffres : taille, interlignage, approche et graisse en une classe */
+    --text-title: var(--mx-text-title);
+    --text-title--line-height: var(--mx-leading-title);
+    --text-title--letter-spacing: var(--mx-tracking-heading);
+    --text-title--font-weight: var(--mx-font-weight-bold);
+    --text-h1: var(--mx-text-h1);
+    --text-h1--line-height: var(--mx-leading-display);
+    --text-h1--letter-spacing: var(--mx-tracking-display);
+    --text-h1--font-weight: var(--mx-font-weight-bold);
+    --text-h1-lg: var(--mx-text-h1-lg);
+    --text-h1-lg--line-height: var(--mx-leading-display);
+    --text-h1-lg--letter-spacing: var(--mx-tracking-display);
+    --text-h1-lg--font-weight: var(--mx-font-weight-bold);
+    --text-h2: var(--mx-text-h2);
+    --text-h2--line-height: var(--mx-leading-heading-sm);
+    --text-h2--letter-spacing: var(--mx-tracking-heading);
+    --text-h2--font-weight: var(--mx-font-weight-bold);
+    --text-h2-lg: var(--mx-text-h2-lg);
+    --text-h2-lg--line-height: var(--mx-leading-heading);
+    --text-h2-lg--letter-spacing: var(--mx-tracking-heading);
+    --text-h2-lg--font-weight: var(--mx-font-weight-bold);
+    --text-h3: var(--mx-text-h3);
+    --text-h3--line-height: var(--mx-leading-heading-sm);
+    --text-h3--letter-spacing: var(--mx-tracking-heading);
+    --text-h3--font-weight: var(--mx-font-weight-bold);
+    --text-h3-lg: var(--mx-text-h3-lg);
+    --text-h3-lg--line-height: var(--mx-leading-heading-sm);
+    --text-h3-lg--letter-spacing: var(--mx-tracking-heading);
+    --text-h3-lg--font-weight: var(--mx-font-weight-bold);
+    --text-figure-sm: var(--mx-text-figure-sm);
+    --text-figure-sm--line-height: var(--mx-leading-none);
+    --text-figure-sm--letter-spacing: var(--mx-tracking-heading);
+    --text-figure-sm--font-weight: var(--mx-font-weight-bold);
+    --text-figure: var(--mx-text-figure);
+    --text-figure--line-height: var(--mx-leading-none);
+    --text-figure--letter-spacing: var(--mx-tracking-figure);
+    --text-figure--font-weight: var(--mx-font-weight-bold);
+    --text-figure-lg: var(--mx-text-figure-lg);
+    --text-figure-lg--line-height: var(--mx-leading-none);
+    --text-figure-lg--letter-spacing: var(--mx-tracking-heading);
+    --text-figure-lg--font-weight: var(--mx-font-weight-bold);
+    --text-icon: var(--mx-text-icon);
+    --text-icon--line-height: var(--mx-leading-none);
+    --text-icon--font-weight: var(--mx-font-weight-bold);
+
+    --leading-none: var(--mx-leading-none);
+    --leading-snug: var(--mx-leading-snug);
+    --leading-normal: var(--mx-leading-normal);
+    --leading-relaxed: var(--mx-leading-relaxed);
+
+    --tracking-title: var(--mx-tracking-title);
+    --tracking-label: var(--mx-tracking-label);
+
+    --radius-theme: var(--mx-radius);
+
+    --shadow-solid: var(--mx-shadow);
+}
+
+/* Variante dark: pilotée par html[data-scheme] (bascule de l'application), à la place de prefers-color-scheme */
+@custom-variant dark (&:where([data-scheme=dark], [data-scheme=dark] *));

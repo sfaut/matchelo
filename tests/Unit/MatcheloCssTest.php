@@ -60,7 +60,8 @@ test('components are declared as utilities so they accept variants', function ()
     foreach (['mx-btn', 'mx-btn--primary', 'mx-btn--sm', 'mx-btn--link', 'mx-card', 'mx-card--highlight',
         'mx-card--on-accent', 'mx-label', 'mx-input', 'mx-error', 'mx-chip', 'mx-seg', 'mx-seg__item',
         'mx-scheme-toggle', 'mx-scheme-toggle__sun', 'mx-scheme-toggle__moon', 'mx-logo', 'mx-logo__mark',
-        'mx-logo__word', 'mx-logo--inverse', 'mx-inverse', 'mx-toast'] as $name) {
+        'mx-logo__word', 'mx-logo--inverse', 'mx-logo--sm', 'mx-logo--lg', 'mx-inverse', 'mx-toast',
+        'mx-border', 'mx-border-t', 'mx-border-b', 'mx-border-y'] as $name) {
         expect(matcheloUtility($name))->not->toBeEmpty();
     }
 });
@@ -84,17 +85,26 @@ test('the pressed button drops its shadow', function () {
     $active_rule = collect(matcheloNestedRules('mx-btn'))->firstWhere('selector', '&:active');
 
     expect($active_rule['body'])
-        ->toContain('transform: translate(4px, 4px)')
-        ->toContain('box-shadow: 0 0 0');
+        ->toContain('transform: translate(var(--mx-press-shift), var(--mx-press-shift))')
+        ->toContain('box-shadow: none');
 });
 
-test('the logo sizes can be tuned with custom properties', function () {
-    expect(matcheloUtility('mx-logo__mark'))->toContain('width: var(--mx-logo-mark, 38px)')
-        ->and(matcheloUtility('mx-logo__word'))->toContain('font-size: var(--mx-logo-word, 19px)');
+test('the logo size modifiers switch to the theme logo sizes', function () {
+    expect(matcheloUtility('mx-logo__mark'))->toContain('width: var(--mx-logo-mark-size, var(--mx-logo-mark))')
+        ->and(matcheloUtility('mx-logo__word'))->toContain('font-size: var(--mx-logo-word-size, var(--mx-logo-word))')
+        ->and(matcheloUtility('mx-logo--sm'))->toContain('--mx-logo-mark-size: var(--mx-logo-mark-sm)')
+        ->and(matcheloUtility('mx-logo--lg'))->toContain('--mx-logo-mark-size: var(--mx-logo-mark-lg)');
+});
+
+test('the stroke utilities use detailed properties so border colors can override them', function () {
+    expect(matcheloUtility('mx-border'))
+        ->toContain('border-width: var(--mx-stroke)')
+        ->toContain('border-color: var(--mx-color-ink)')
+        ->not->toMatch('/\bborder:/');
 });
 
 test('the dark variant follows the data-scheme attribute', function () {
-    expect(matcheloCss())->toContain('@custom-variant dark (&:where([data-scheme=dark], [data-scheme=dark] *));');
+    expect(file_get_contents(dirname(__DIR__, 2).'/resources/css/app.css'))->toContain('@custom-variant dark (&:where([data-scheme=dark], [data-scheme=dark] *));');
 });
 
 test('dark styles go through the dark variant', function () {
