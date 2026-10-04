@@ -99,3 +99,8 @@ test('a reference id change cascades to the rows using it', function () {
 
     expect($user->refresh()->civility_id)->toBe(40);
 });
+
+test('a civility code is unique', function () {
+    expect(fn () => Civility::create(['code' => 'MADAM', 'name' => 'Madame', 'name_short' => 'Mme', 'sex_id' => 2]))
+        ->toThrow(QueryException::class);
+});

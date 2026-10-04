@@ -27,8 +27,8 @@ return new class extends Migration
 
         Schema::create('civilities', function (Blueprint $table) {
             $table->id();
-            $table->string('code', length: 10)->comment('Code de la civilité');
-            $table->string('name', length: 10)->comment('Civilité en toutes lettres');
+            $table->string('code', length: 20)->comment('Code de la civilité')->unique();
+            $table->string('name', length: 20)->comment('Civilité en toutes lettres');
             $table->string('name_short', length: 10)->comment('Forme courte de la civilité');
             $table->foreignId('sex_id')->default(1)->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps(precision: 6);
