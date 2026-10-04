@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\User\Role;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -35,7 +37,8 @@ use Illuminate\Support\Str;
 #[Hidden(['password_hash', 'remember_token'])]
 class User extends Authenticatable
 {
-    use Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
 
     /**
      * Colonne du mot de passe haché, lue par l'authentification.

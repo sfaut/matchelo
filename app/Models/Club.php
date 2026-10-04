@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Closure;
+use Database\Factories\ClubFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -33,6 +35,9 @@ use Illuminate\Support\Str;
 #[Fillable(['name', 'code', 'city', 'description', 'logo_path', 'user_id'])]
 class Club extends Model
 {
+    /** @use HasFactory<ClubFactory> */
+    use HasFactory;
+
     /**
      * Génère un code d'invitation libre : deux initiales du nom (complétées par X) et quatre
      * chiffres, ex. « Échiquier Nord » → EN-1177.

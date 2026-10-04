@@ -16,5 +16,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ClubSeeder::class,
         ]);
+
+        // Données de démonstration en local seulement : les tests (environnement testing)
+        // gardent une base minimale
+        if (app()->isLocal()) {
+            $this->call(DemoSeeder::class);
+        }
     }
 }
