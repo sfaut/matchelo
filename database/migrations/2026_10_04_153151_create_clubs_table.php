@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('name', length: 50);
             $table->string('code', length: 10)->unique()->comment("Code d'invitation à donner aux élèves (ex. JM-4821)");
-            $table->string('city', length: 50)->nullable()->comment('Ville du club');
-            $table->string('description')->nullable()->comment('Jour, heure et lieu des séances');
-            $table->string('logo_path')->nullable()->comment('Chemin du logo sur le disque public');
+            $table->string('city', length: 50)->default('')->comment('Ville du club (vide si non renseignée)');
+            $table->string('description', length: 300)->default('')->comment('Jour, heure et lieu des séances (vide si non renseignés)');
+            $table->string('logo_path', length: 100)->default('')->comment('Chemin du logo sur le disque public (vide sans logo)');
             $table->foreignId('user_id')->comment('Créateur du club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps(precision: 6);
         });

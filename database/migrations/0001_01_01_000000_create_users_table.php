@@ -43,7 +43,7 @@ return new class extends Migration
             $table->boolean('is_administrator')->default(false)->comment("L'utilisateur est-il administrateur ?");
             $table->string('email', length: 100)->unique()->comment("E-mail de l'utilisateur");
             $table->dateTime('email_verified_at', precision: 6)->nullable()->comment("Horodatage de la confirmation de l'e-mail");
-            $table->string('password_hash')->comment("Mot de passe haché de l'utilisateur");
+            $table->string('password_hash', length: 100)->comment("Mot de passe haché de l'utilisateur");
             $table->rememberToken();
             $table->timestamps(precision: 6);
         });

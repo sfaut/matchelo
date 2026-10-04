@@ -56,8 +56,8 @@ new class extends Component
             $club = Club::create([
                 'name' => $this->name,
                 'code' => Club::generateCode($this->name),
-                'city' => $this->city === '' ? null : $this->city,
-                'description' => $this->description === '' ? null : $this->description,
+                'city' => $this->city,
+                'description' => $this->description,
                 'user_id' => $user->id,
             ]);
 
@@ -85,7 +85,7 @@ new class extends Component
         return [
             'name' => ['required', 'string', 'min:2', 'max:50'],
             'city' => ['nullable', 'string', 'max:50'],
-            'description' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:300'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
         ];
     }
@@ -151,7 +151,7 @@ new class extends Component
 
         <div class="flex flex-col gap-1.5">
             <label for="description" class="mx-label">{{ __('clubs.create.fields.description') }}</label>
-            <textarea id="description" wire:model="description" rows="3" maxlength="255" placeholder="{{ __('clubs.create.placeholders.description') }}" class="mx-input resize-y" @error('description') aria-invalid="true" @enderror></textarea>
+            <textarea id="description" wire:model="description" rows="3" maxlength="300" placeholder="{{ __('clubs.create.placeholders.description') }}" class="mx-input resize-y" @error('description') aria-invalid="true" @enderror></textarea>
             @error('description')
                 <p class="mx-error">{{ $message }}</p>
             @enderror

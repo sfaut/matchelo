@@ -19,9 +19,9 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $name
  * @property string $code
- * @property string|null $city
- * @property string|null $description
- * @property string|null $logo_path
+ * @property string $city
+ * @property string $description
+ * @property string $logo_path
  * @property int $user_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -55,11 +55,11 @@ class Club extends Model
     }
 
     /**
-     * URL publique du logo, ou null sans logo.
+     * URL publique du logo, ou null sans logo (logo_path vide).
      */
     public function logoUrl(): ?string
     {
-        return $this->logo_path === null ? null : Storage::disk('public')->url($this->logo_path);
+        return $this->logo_path === '' ? null : Storage::disk('public')->url($this->logo_path);
     }
 
     /**

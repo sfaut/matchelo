@@ -44,9 +44,10 @@ test('creating a club makes the creator its animator and goes back to the clubs 
     $club = Club::where('name', 'Échiquier Nord')->firstOrFail();
 
     expect($club->code)->toMatch('/^EN-\d{4}$/')
-        ->and($club->city)->toBeNull()
-        ->and($club->description)->toBeNull()
-        ->and($club->logo_path)->toBeNull()
+        ->and($club->city)->toBe('')
+        ->and($club->description)->toBe('')
+        ->and($club->logo_path)->toBe('')
+        ->and($club->logoUrl())->toBeNull()
         ->and($club->creator->is($this->user))->toBeTrue()
         ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::ANIMATOR))
         ->and($this->user->isAnimator())->toBeTrue()
@@ -97,7 +98,7 @@ test('invalid values are rejected', function (string $field, mixed $value, strin
     'name too short' => ['name', 'E', 'min'],
     'name too long' => ['name', str_repeat('a', 51), 'max'],
     'city too long' => ['city', str_repeat('a', 51), 'max'],
-    'description too long' => ['description', str_repeat('a', 256), 'max'],
+    'description too long' => ['description', str_repeat('a', 301), 'max'],
     'logo not an image' => ['logo', fn () => UploadedFile::fake()->create('logo.pdf', 10, 'application/pdf'), 'image'],
     'logo in another format' => ['logo', fn () => UploadedFile::fake()->image('logo.gif'), 'mimes'],
     'logo too heavy' => ['logo', fn () => UploadedFile::fake()->image('logo.png')->size(2049), 'max'],
