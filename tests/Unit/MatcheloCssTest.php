@@ -101,13 +101,6 @@ test('dark styles go through the dark variant', function () {
     expect(matcheloCss())->not->toContain("[data-scheme='dark'] .");
 });
 
-test('each theme color is declared once with light-dark()', function (string $token) {
-    $css = matcheloCss();
-
-    expect(substr_count($css, "--mx-{$token}:"))->toBe(1)
-        ->and($css)->toMatch("/--mx-{$token}: light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\);/");
-})->with(['bg', 'surface', 'surface-2', 'ink', 'muted', 'accent', 'on-accent', 'highlight', 'error']);
-
 test('the data-scheme attribute drives the color scheme', function () {
     expect(matcheloCss())
         ->toMatch('/:root \{\s*color-scheme: light;/')

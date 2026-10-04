@@ -19,7 +19,9 @@
 
         @fonts
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        {{-- Thème de l'utilisateur (variables CSS), chargé après app.css --}}
+        @inject('themes', \App\Support\Themes::class)
+        @vite(['resources/css/app.css', $themes->stylesheet(), 'resources/js/app.js'])
 
         @livewireStyles
     </head>
