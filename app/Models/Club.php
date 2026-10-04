@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +28,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read User $creator
  * @property-read Collection<int, User> $members
+ * @property-read Collection<int, ClubSession> $sessions
  */
 #[Fillable(['name', 'code', 'city', 'description', 'logo_path', 'user_id'])]
 class Club extends Model
@@ -70,6 +72,16 @@ class Club extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Séances du club.
+     *
+     * @return HasMany<ClubSession, $this>
+     */
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(ClubSession::class);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Club;
+use App\Models\ClubSession;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -78,4 +79,18 @@ function createClubWith(string $name, array $members): Club
     }
 
     return $club;
+}
+
+/**
+ * Crée une séance d'un club à une date, avec ses présents.
+ *
+ * @param  string  $date  date de la séance (AAAA-MM-JJ)
+ * @param  list<User>  $attendees  membres présents
+ */
+function createSession(Club $club, string $date, array $attendees = []): ClubSession
+{
+    $session = $club->sessions()->create(['held_on' => $date]);
+    $session->attendees()->attach(collect($attendees)->pluck('id'));
+
+    return $session;
 }
