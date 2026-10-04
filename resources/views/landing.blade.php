@@ -22,7 +22,7 @@
     <header class="sticky top-0 z-10 border-b-2 border-ink bg-surface">
         <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-[18px] py-2.5 desk:px-14 desk:py-[18px]">
             <a href="{{ route('home') }}" aria-label="Matchelo, accueil">
-                <x-logo class="desk:[&_.mx-logo\_\_mark]:size-[46px] desk:[&_.mx-logo\_\_word]:text-[22px]" />
+                <x-logo class="desk:[--mx-logo-mark:46px] desk:[--mx-logo-word:22px]" />
             </a>
             <nav class="hidden gap-8 text-[15px] lg:flex" aria-label="Sections">
                 <a href="#fonctionnalites" class="no-underline">Fonctionnalités</a>
@@ -148,7 +148,7 @@
             </div>
             <div class="grid gap-[18px] desk:grid-cols-3 desk:gap-[22px]">
                 @foreach ($student_features as [$piece, $title, $text])
-                    <div class="flex items-start gap-3.5 desk:flex-col desk:gap-3 desk:border-2 desk:border-ink desk:bg-surface desk:p-6 desk:shadow-(--mx-sh)">
+                    <div class="flex items-start gap-3.5 desk:mx-card desk:flex-col desk:gap-3 desk:p-6">
                         <span class="grid size-16 flex-none place-items-center border-2 border-ink bg-highlight desk:size-[76px]">
                             <x-piece :type="$piece" side="current" class="size-[41px] desk:size-12" />
                         </span>
@@ -228,7 +228,7 @@
 
     <footer class="border-t-2 border-ink">
         <div class="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-[18px] text-[13px] text-muted desk:px-14 desk:py-[22px] desk:text-sm">
-            <x-logo class="hidden text-ink desk:inline-flex [&_.mx-logo\_\_mark]:size-[35px] [&_.mx-logo\_\_word]:text-[17px]" />
+            <x-logo class="hidden text-ink desk:inline-flex [--mx-logo-mark:35px] [--mx-logo-word:17px]" />
             <span class="desk:hidden">Mentions légales · Contact</span>
             <span class="hidden desk:inline">Mentions légales · Confidentialité · Contact</span>
         </div>
