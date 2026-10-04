@@ -16,10 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 class SetLocaleFromBrowser
 {
     /**
-     * @param  list<string>  $supportedLocales
-     *                                          langues supportées par l'application (matchelo.locales)
-     * @param  string  $fallbackLocale
-     *                                  langue appliquée quand le navigateur n'en préfère aucune supportée (app.fallback_locale)
+     * @param  list<string>  $supportedLocales  langues supportées par l'application (matchelo.locales)
+     * @param  string  $fallbackLocale  langue appliquée quand le navigateur n'en préfère aucune supportée (app.fallback_locale)
      */
     public function __construct(
         #[Config('matchelo.locales')]
@@ -34,10 +32,8 @@ class SetLocaleFromBrowser
      * Fixe la locale de la requête, puis signale aux caches que la réponse dépend
      * de l'en-tête Accept-Language.
      *
-     * @param  Request  $request
-     *                            requête entrante
-     * @param  Closure(Request): Response  $next
-     *                                            suite de la chaîne de middlewares
+     * @param  Request  $request  requête entrante
+     * @param  Closure(Request): Response  $next  suite de la chaîne de middlewares
      */
     public function handle(Request $request, Closure $next): Response
     {

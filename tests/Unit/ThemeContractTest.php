@@ -3,8 +3,7 @@
 /**
  * Lit un fichier du projet, commentaires CSS et Blade retirés.
  *
- * @param  string  $relative_path
- *                                 chemin relatif à la racine du projet
+ * @param  string  $relative_path  chemin relatif à la racine du projet
  */
 function projectSource(string $relative_path): string
 {

@@ -32,10 +32,8 @@ test('the styleguide is not exposed in production', function () {
 /**
  * Indique si une classe figure dans un attribut class du HTML rendu.
  *
- * @param  string  $html
- *                        page rendue
- * @param  string  $class
- *                         classe recherchée, sans variante
+ * @param  string  $html  page rendue
+ * @param  string  $class  classe recherchée, sans variante
  */
 function htmlUsesClass(string $html, string $class): bool
 {
