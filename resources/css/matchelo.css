@@ -109,15 +109,13 @@
         opacity: .35;
         pointer-events: none;
     }
-    /* Principal : forme = couleur de l'ombre → filet 2 px couleur du fond */
+    /* Principal : forme = couleur de l'ombre → filet 2 px couleur du fond, déjà porté par
+       --mx-sh / --mx-sh-hover de .mx-btn. Ne pas redéclarer box-shadow ici : un :hover
+       placé après .mx-btn:active écraserait l'ombre 0 de l'état pressé. */
     .mx-btn--primary {
         background: var(--mx-accent);
         color: var(--mx-on-accent);
         border-color: var(--mx-accent);
-        box-shadow: 2px 2px 0 var(--mx-surface), 4px 4px 0 var(--mx-ink);
-    }
-    .mx-btn--primary:hover {
-        box-shadow: 2px 2px 0 var(--mx-surface), 5px 5px 0 var(--mx-ink);
     }
     .mx-btn--sm {
         min-height: 38px;
