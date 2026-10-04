@@ -4,7 +4,7 @@ test('the scheme toggle is a toggle button bound to the scheme store', function 
     $view = $this->blade('<x-scheme-toggle />');
 
     $view->assertSee('<button type="button" class="mx-scheme-toggle"', false);
-    $view->assertSee('aria-label="Thème sombre"', false);
+    $view->assertSee('aria-label="'.e(__('components.scheme_toggle.label')).'"', false);
     $view->assertSee('x-bind:aria-pressed="$store.scheme.isDark"', false);
     $view->assertSee('x-on:click="$store.scheme.toggle()"', false);
 });

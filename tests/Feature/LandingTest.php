@@ -4,7 +4,7 @@ test('the landing page is the home page', function () {
     $response = $this->get(route('home'));
 
     $response->assertOk();
-    $response->assertSee('Pointez, jouez, progressez.');
+    $response->assertSee(__('landing.hero.title'));
 });
 
 test('the landing page shows the student, teacher and how-it-works sections', function () {
@@ -12,12 +12,12 @@ test('the landing page shows the student, teacher and how-it-works sections', fu
 
     $response->assertSeeInOrder([
         'id="features"',
-        'Chaque partie fait bouger ton classement.',
+        e(__('landing.students.title')),
         'id="teachers"',
-        'Le prof anime, Matchelo organise.',
+        e(__('landing.teachers.title')),
         'id="how-it-works"',
-        'Prêt en une séance.',
-        'Prêt pour la prochaine séance ?',
+        e(__('landing.how_it_works.title')),
+        e(__('landing.cta.title')),
     ], false);
 });
 

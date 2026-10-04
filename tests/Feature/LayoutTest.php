@@ -19,7 +19,7 @@ test('the layout applies the stored scheme inline in the head', function () {
 test('the layout suffixes the page title with the app name', function () {
     $response = $this->get(route('club.dashboard'));
 
-    $response->assertSee('<title>À venir · Matchelo</title>', false);
+    $response->assertSee('<title>'.e(__('placeholder.title')).' · Matchelo</title>', false);
 });
 
 test('the layout loads Livewire and Alpine from the Vite bundle only', function () {

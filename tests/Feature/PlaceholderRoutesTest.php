@@ -4,7 +4,7 @@ test('provisional routes render the placeholder screen', function (string $route
     $response = $this->get(route($route_name));
 
     $response->assertOk();
-    $response->assertSee('Écran à venir');
+    $response->assertSee(__('placeholder.heading'));
 })->with([
     'login',
     'register',
