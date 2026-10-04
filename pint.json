@@ -1,7 +1,3 @@
 {
-    "preset": "laravel",
-    "rules": {
-        "phpdoc_align": false,
-        "no_superfluous_phpdoc_tags": false
-    }
+    "preset": "laravel"
 }

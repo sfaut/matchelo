@@ -12,10 +12,10 @@ use RuntimeException;
 class Themes
 {
     /**
-     * @param string $directory
-     *     dossier des fichiers de thème, relatif à la racine du projet (matchelo.themes_directory)
-     * @param string|null $defaultTheme
-     *     thème appliqué par défaut (matchelo.default_theme)
+     * @param  string  $directory
+     *                             dossier des fichiers de thème, relatif à la racine du projet (matchelo.themes_directory)
+     * @param  string|null  $defaultTheme
+     *                                     thème appliqué par défaut (matchelo.default_theme)
      */
     public function __construct(
         #[Config('matchelo.themes_directory')]
@@ -30,7 +30,7 @@ class Themes
      * Liste les thèmes disponibles, d'après les fichiers du dossier des thèmes.
      *
      * @return list<string>
-     *     noms des thèmes (nom de fichier sans extension), triés
+     *                      noms des thèmes (nom de fichier sans extension), triés
      */
     public function available(): array
     {
@@ -46,8 +46,6 @@ class Themes
      * thème disponible.
      *
      * @todo Lire le réglage de l'utilisateur connecté quand les comptes existeront.
-     *
-     * @return string
      *
      * @throws RuntimeException si aucun fichier de thème n'existe
      */
@@ -65,9 +63,8 @@ class Themes
     /**
      * Donne le chemin de la feuille de style d'un thème, tel que l'attend @vite.
      *
-     * @param string|null $theme
-     *     nom du thème ; le thème courant si null
-     * @return string
+     * @param  string|null  $theme
+     *                              nom du thème ; le thème courant si null
      */
     public function stylesheet(?string $theme = null): string
     {
