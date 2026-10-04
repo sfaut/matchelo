@@ -54,23 +54,23 @@
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"npm run dev\" --names='server,queue,vite'"
         ],
         "lint": [
-            "pint --config=config/pint.json --parallel"
+            "pint --parallel"
         ],
         "lint:check": [
-            "pint --config=config/pint.json --parallel --test"
+            "pint --parallel --test"
         ],
         "ci:check": [
             "Composer\\Config::disableProcessTimeout",
             "@test"
         ],
         "types:check": [
-            "phpstan analyse -c config/phpstan.neon"
+            "phpstan analyse"
         ],
         "test": [
             "@php artisan config:clear --ansi",
             "@lint:check",
             "@types:check",
-            "@php vendor/bin/pest --configuration=config/phpunit.xml"
+            "@php vendor/bin/pest"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

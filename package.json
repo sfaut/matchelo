@@ -3,8 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vp build --config config/vite.config.js",
-        "dev": "vp dev --config config/vite.config.js"
+        "build": "vp build",
+        "dev": "vp dev"
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.11",
