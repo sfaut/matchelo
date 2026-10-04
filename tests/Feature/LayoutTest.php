@@ -1,17 +1,17 @@
 <?php
 
-test('the layout defaults to the light theme', function () {
+test('the layout defaults to the light scheme', function () {
     $response = $this->get(route('club.dashboard'));
 
-    $response->assertSee('<html lang="fr" data-theme="light">', false);
+    $response->assertSee('<html lang="fr" data-scheme="light">', false);
 });
 
-test('the layout applies the stored theme inline in the head', function () {
+test('the layout applies the stored scheme inline in the head', function () {
     $response = $this->get(route('club.dashboard'));
 
     $response->assertSeeInOrder([
         '<head>',
-        "localStorage.getItem('matchelo-theme')",
+        "localStorage.getItem('matchelo-scheme')",
         '</head>',
     ], false);
 });

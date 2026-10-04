@@ -59,7 +59,7 @@ test('components are declared as utilities so they accept variants', function ()
 
     foreach (['mx-btn', 'mx-btn--primary', 'mx-btn--sm', 'mx-btn--link', 'mx-card', 'mx-card--highlight',
         'mx-card--on-accent', 'mx-label', 'mx-input', 'mx-error', 'mx-chip', 'mx-seg', 'mx-seg__item',
-        'mx-theme-toggle', 'mx-theme-toggle__sun', 'mx-theme-toggle__moon', 'mx-logo', 'mx-logo__mark',
+        'mx-scheme-toggle', 'mx-scheme-toggle__sun', 'mx-scheme-toggle__moon', 'mx-logo', 'mx-logo__mark',
         'mx-logo__word', 'mx-logo--inverse', 'mx-inverse', 'mx-toast'] as $name) {
         expect(matcheloUtility($name))->not->toBeEmpty();
     }
@@ -93,12 +93,12 @@ test('the logo sizes can be tuned with custom properties', function () {
         ->and(matcheloUtility('mx-logo__word'))->toContain('font-size: var(--mx-logo-word, 19px)');
 });
 
-test('the dark variant follows the data-theme attribute', function () {
-    expect(matcheloCss())->toContain('@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));');
+test('the dark variant follows the data-scheme attribute', function () {
+    expect(matcheloCss())->toContain('@custom-variant dark (&:where([data-scheme=dark], [data-scheme=dark] *));');
 });
 
 test('dark styles go through the dark variant', function () {
-    expect(matcheloCss())->not->toContain("[data-theme='dark'] .");
+    expect(matcheloCss())->not->toContain("[data-scheme='dark'] .");
 });
 
 test('each theme color is declared once with light-dark()', function (string $token) {
@@ -108,8 +108,8 @@ test('each theme color is declared once with light-dark()', function (string $to
         ->and($css)->toMatch("/--mx-{$token}: light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\);/");
 })->with(['bg', 'surface', 'surface-2', 'ink', 'muted', 'accent', 'on-accent', 'highlight', 'error']);
 
-test('the data-theme attribute drives the color scheme', function () {
+test('the data-scheme attribute drives the color scheme', function () {
     expect(matcheloCss())
         ->toMatch('/:root \{\s*color-scheme: light;/')
-        ->toMatch("/\[data-theme='dark'\] \{\s*color-scheme: dark;\s*\}/");
+        ->toMatch("/\[data-scheme='dark'\] \{\s*color-scheme: dark;\s*\}/");
 });

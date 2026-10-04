@@ -1,17 +1,17 @@
 /**
- * Plugin Alpine du thème clair (1a) / sombre (1b), mémorisé dans localStorage('matchelo-theme').
+ * Plugin Alpine du mode clair (1a) / sombre (1b), mémorisé dans localStorage('matchelo-scheme').
  *
- * Le script en ligne du <head> du layout applique le thème avant le premier rendu ;
- * ce plugin expose $store.theme pour la bascule (<x-theme-toggle>).
+ * Le script en ligne du <head> du layout applique le mode avant le premier rendu ;
+ * ce plugin expose $store.scheme pour la bascule (<x-scheme-toggle>).
  *
  * @param {object} Alpine instance Alpine fournie par Livewire
  */
-export default function theme(Alpine) {
-    const KEY = 'matchelo-theme';
+export default function scheme(Alpine) {
+    const KEY = 'matchelo-scheme';
     const root = document.documentElement;
 
-    Alpine.store('theme', {
-        current: root.dataset.theme === 'dark' ? 'dark' : 'light',
+    Alpine.store('scheme', {
+        current: root.dataset.scheme === 'dark' ? 'dark' : 'light',
 
         get isDark() {
             return this.current === 'dark';
@@ -19,7 +19,7 @@ export default function theme(Alpine) {
 
         toggle() {
             this.current = this.isDark ? 'light' : 'dark';
-            root.dataset.theme = this.current;
+            root.dataset.scheme = this.current;
 
             try {
                 localStorage.setItem(KEY, this.current);

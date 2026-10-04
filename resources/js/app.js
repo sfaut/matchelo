@@ -1,6 +1,6 @@
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
-import theme from './theme';
+import scheme from './scheme';
 
-Alpine.plugin(theme);
+Alpine.plugin(scheme);
 
 Livewire.start();

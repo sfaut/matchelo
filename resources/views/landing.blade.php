@@ -30,7 +30,7 @@
                 <a href="#how-it-works" class="no-underline">Comment ça marche</a>
             </nav>
             <div class="flex items-center gap-2.5 desk:gap-3">
-                <x-theme-toggle />
+                <x-scheme-toggle />
                 <a href="{{ route('login') }}" class="mx-btn mx-btn--sm px-3 desk:hidden">Connexion</a>
                 <a href="{{ route('login') }}" class="mx-btn hidden desk:inline-flex">Se connecter</a>
                 <a href="{{ route('register') }}" class="mx-btn mx-btn--primary hidden desk:inline-flex">Créer un compte</a>

@@ -28,10 +28,10 @@ test('the landing page links to login and registration', function () {
     $response->assertSee('href="'.route('register').'"', false);
 });
 
-test('the landing page offers the theme toggle', function () {
+test('the landing page offers the scheme toggle', function () {
     $response = $this->get(route('home'));
 
-    $response->assertSee('x-on:click="$store.theme.toggle()"', false);
+    $response->assertSee('x-on:click="$store.scheme.toggle()"', false);
 });
 
 test('the landing page never draws pieces with unicode glyphs', function () {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-scheme="light">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
         {{-- Thème mémorisé appliqué avant le premier rendu, pour éviter le flash clair / sombre --}}
         <script>
             try {
-                document.documentElement.dataset.theme = localStorage.getItem('matchelo-theme') || 'light';
+                document.documentElement.dataset.scheme = localStorage.getItem('matchelo-scheme') || 'light';
             } catch {}
         </script>
 

@@ -5,7 +5,7 @@
 <x-layouts::app title="Styleguide">
     <header class="flex items-center justify-between gap-4 border-b-2 border-ink bg-surface px-4 py-3 md:px-8">
         <x-logo />
-        <x-theme-toggle />
+        <x-scheme-toggle />
     </header>
 
     <main class="mx-auto flex max-w-5xl flex-col gap-14 px-4 py-10 md:px-8">
@@ -83,7 +83,7 @@
 
         <section class="flex flex-col gap-4">
             <h2 class="mx-label">Bascule de thème</h2>
-            <x-theme-toggle />
+            <x-scheme-toggle />
         </section>
 
         <section class="flex flex-col gap-4">
