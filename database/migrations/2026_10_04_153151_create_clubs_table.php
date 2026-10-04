@@ -16,15 +16,18 @@ return new class extends Migration
             $table->string('description', length: 300)->default('')->comment('Jour, heure et lieu des séances (vide si non renseignés)');
             $table->string('logo_path', length: 100)->default('')->comment('Chemin du logo sur le disque public (vide sans logo)');
             $table->foreignId('user_id')->comment('Créateur du club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->timestamps(precision: 6);
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent();
         });
 
         Schema::create('club_user', function (Blueprint $table) {
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('role_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent();
+
             $table->primary(['club_id', 'user_id']);
-            $table->timestamps(precision: 6);
         });
     }
 

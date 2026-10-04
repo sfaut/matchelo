@@ -11,17 +11,21 @@ return new class extends Migration
         Schema::create('club_sessions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->date('held_on')->comment('Date de la séance');
-            $table->timestamps(precision: 6);
-            $table->unique(['club_id', 'held_on']);
+            $table->date('scheduled_at')->comment('Date de la séance');
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent();
+
+            $table->unique(['club_id', 'scheduled_at']);
             $table->comment("Séances d'un club, une par date");
         });
 
         Schema::create('attendances', function (Blueprint $table) {
             $table->foreignId('club_session_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent();
+
             $table->primary(['club_session_id', 'user_id']);
-            $table->timestamps(precision: 6);
             $table->comment('Présences : une ligne par membre présent à une séance');
         });
     }

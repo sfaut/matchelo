@@ -12,7 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('code', length: 10)->unique();
             $table->string('name', length: 10);
-            $table->timestamps(precision: 6);
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent();
         });
 
         Schema::create('users', function (Blueprint $table) {
@@ -27,7 +28,8 @@ return new class extends Migration
             $table->dateTime('email_verified_at', precision: 6)->nullable()->comment("Horodatage de la confirmation de l'e-mail");
             $table->string('password_hash', length: 100)->default('')->comment("Mot de passe haché de l'utilisateur, vide pour un joueur sans compte");
             $table->rememberToken();
-            $table->timestamps(precision: 6);
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

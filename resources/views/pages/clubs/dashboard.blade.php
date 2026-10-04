@@ -100,11 +100,11 @@ new class extends Component
     {
         return $this->report->recentSessions(self::ATTENDANCE_SESSIONS)
             ->map(fn (ClubSession $session): array => [
-                'label' => $session->held_on->isToday()
+                'label' => $session->scheduled_at->isToday()
                     ? __('clubs.dashboard.today_short')
-                    : $session->held_on->locale(app()->getLocale())->isoFormat(__('clubs.dashboard.bar_date_format')),
+                    : $session->scheduled_at->locale(app()->getLocale())->isoFormat(__('clubs.dashboard.bar_date_format')),
                 'rate' => $this->report->rate($session, $this->membersCount),
-                'is_today' => $session->held_on->isToday(),
+                'is_today' => $session->scheduled_at->isToday(),
             ])
             ->all();
     }

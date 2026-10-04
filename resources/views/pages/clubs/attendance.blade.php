@@ -74,11 +74,11 @@ new class extends Component
     public function availableDates(): array
     {
         $previous_dates = $this->club->sessions()
-            ->whereDate('held_on', '<', $this->today())
-            ->orderByDesc('held_on')
+            ->whereDate('scheduled_at', '<', $this->today())
+            ->orderByDesc('scheduled_at')
             ->limit(self::PREVIOUS_SESSIONS)
-            ->pluck('held_on')
-            ->map(fn (CarbonImmutable $held_on): string => $held_on->toDateString())
+            ->pluck('scheduled_at')
+            ->map(fn (CarbonImmutable $scheduled_at): string => $scheduled_at->toDateString())
             ->all();
 
         return [$this->today(), ...$previous_dates];
@@ -90,7 +90,7 @@ new class extends Component
     #[Computed]
     public function session(): ?ClubSession
     {
-        return $this->club->sessions()->whereDate('held_on', $this->date)->first();
+        return $this->club->sessions()->whereDate('scheduled_at', $this->date)->first();
     }
 
     /**
@@ -218,10 +218,10 @@ new class extends Component
     {
         abort_unless(in_array($this->date, $this->availableDates, true), 404);
 
-        // whereDate et non firstOrCreate : held_on est stocké avec une heure (00:00:00), une
+        // whereDate et non firstOrCreate : scheduled_at est stocké avec une heure (00:00:00), une
         // comparaison avec la date seule ne retrouverait pas la séance existante
-        return $this->club->sessions()->whereDate('held_on', $this->date)->first()
-            ?? $this->club->sessions()->create(['held_on' => $this->date]);
+        return $this->club->sessions()->whereDate('scheduled_at', $this->date)->first()
+            ?? $this->club->sessions()->create(['scheduled_at' => $this->date]);
     }
 
     /**

@@ -25,7 +25,7 @@ test('a session belongs to its club and lists its attendees', function () {
     $session = createSession($this->club, '2026-09-24', [$this->lea, $this->tom]);
 
     expect($session->club->is($this->club))->toBeTrue()
-        ->and($session->held_on->toDateString())->toBe('2026-09-24')
+        ->and($session->scheduled_at->toDateString())->toBe('2026-09-24')
         ->and($session->attendees->pluck('id')->all())->toEqualCanonicalizing([$this->lea->id, $this->tom->id])
         ->and($this->club->sessions->pluck('id')->all())->toBe([$session->id]);
 });
@@ -57,7 +57,7 @@ test('the recent sessions run from oldest to newest, up to today', function () {
     }
 
     $dates = AttendanceReport::for($this->club)->recentSessions(3)
-        ->map(fn (ClubSession $session): string => $session->held_on->toDateString())
+        ->map(fn (ClubSession $session): string => $session->scheduled_at->toDateString())
         ->all();
 
     expect($dates)->toBe(['2026-09-17', '2026-09-24', '2026-10-01']);

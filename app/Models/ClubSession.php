@@ -14,14 +14,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @property int $id
  * @property int $club_id
- * @property CarbonImmutable $held_on
+ * @property CarbonImmutable $scheduled_at
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property int|null $attendees_count
  * @property-read Club $club
  * @property-read Collection<int, User> $attendees
  */
-#[Fillable(['club_id', 'held_on'])]
+#[Fillable(['club_id', 'scheduled_at'])]
 class ClubSession extends Model
 {
     /**
@@ -32,7 +32,7 @@ class ClubSession extends Model
     protected function casts(): array
     {
         return [
-            'held_on' => 'date',
+            'scheduled_at' => 'date',
         ];
     }
 

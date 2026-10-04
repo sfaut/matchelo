@@ -22,7 +22,7 @@ beforeEach(function () {
  */
 function sessionOn(string $date): ?ClubSession
 {
-    return ClubSession::whereDate('held_on', $date)->first();
+    return ClubSession::whereDate('scheduled_at', $date)->first();
 }
 
 test('only animators and administrators can take the roll call', function () {

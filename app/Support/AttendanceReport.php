@@ -41,7 +41,7 @@ class AttendanceReport
     {
         return $this->club->sessions()
             ->withCount('attendees')
-            ->whereDate('held_on', $this->today)
+            ->whereDate('scheduled_at', $this->today)
             ->first();
     }
 
@@ -56,8 +56,8 @@ class AttendanceReport
     {
         return $this->club->sessions()
             ->withCount('attendees')
-            ->whereDate('held_on', '<=', $this->today)
-            ->orderByDesc('held_on')
+            ->whereDate('scheduled_at', '<=', $this->today)
+            ->orderByDesc('scheduled_at')
             ->limit($count)
             ->get()
             ->reverse()
@@ -102,8 +102,8 @@ class AttendanceReport
     {
         $past_sessions = $this->club->sessions()
             ->with('attendees:id')
-            ->whereDate('held_on', '<', $this->today)
-            ->orderByDesc('held_on')
+            ->whereDate('scheduled_at', '<', $this->today)
+            ->orderByDesc('scheduled_at')
             ->get();
 
         return $this->club->members()
@@ -132,7 +132,7 @@ class AttendanceReport
     {
         $past_sessions = $this->club->sessions()
             ->with('attendees:id')
-            ->whereDate('held_on', '<', $this->today)
+            ->whereDate('scheduled_at', '<', $this->today)
             ->get();
 
         $presences = $past_sessions

@@ -89,7 +89,7 @@ function createClubWith(string $name, array $members): Club
  */
 function createSession(Club $club, string $date, array $attendees = []): ClubSession
 {
-    $session = $club->sessions()->create(['held_on' => $date]);
+    $session = $club->sessions()->create(['scheduled_at' => $date]);
     $session->attendees()->attach(collect($attendees)->pluck('id'));
 
     return $session;
