@@ -20,4 +20,16 @@ return [
 
     'default_theme' => env('MATCHELO_THEME', 'black-and-white'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Langues
+    |--------------------------------------------------------------------------
+    |
+    | Langues supportées (dossiers de lang/). Chaque requête prend la langue
+    | préférée du navigateur parmi celles-ci, à défaut app.fallback_locale.
+    |
+    */
+
+    'locales' => ['en', 'fr'],
+
 ];

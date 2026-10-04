@@ -3,7 +3,7 @@
 test('the layout defaults to the light scheme', function () {
     $response = $this->get(route('club.dashboard'));
 
-    $response->assertSee('<html lang="fr" data-scheme="light">', false);
+    $response->assertSee('data-scheme="light">', false);
 });
 
 test('the layout applies the stored scheme inline in the head', function () {
