@@ -1,6 +1,6 @@
 /* Matchelo · thème 1a (clair) / 1b (sombre)
    À importer dans resources/css/app.css après @import 'tailwindcss';
-   Space Grotesk (500 / 700) est chargée par Vite (bunny, config/vite.config.js) et @fonts. */
+   Space Grotesk (500 / 700) est chargée par Vite (bunny) et @fonts. */
 
 /* Couleurs : light-dark(1a clair, 1b sombre), résolu selon color-scheme, que fixe
    html[data-theme]. Les contrôles natifs (formulaires, barres de défilement) suivent aussi. */
