@@ -25,9 +25,9 @@
                 <x-logo class="desk:[--mx-logo-mark:46px] desk:[--mx-logo-word:22px]" />
             </a>
             <nav class="hidden gap-8 text-[15px] lg:flex" aria-label="Sections">
-                <a href="#fonctionnalites" class="no-underline">Fonctionnalités</a>
-                <a href="#profs" class="no-underline">Pour les profs</a>
-                <a href="#comment" class="no-underline">Comment ça marche</a>
+                <a href="#features" class="no-underline">Fonctionnalités</a>
+                <a href="#teachers" class="no-underline">Pour les profs</a>
+                <a href="#how-it-works" class="no-underline">Comment ça marche</a>
             </nav>
             <div class="flex items-center gap-2.5 desk:gap-3">
                 <x-theme-toggle />
@@ -141,7 +141,7 @@
         </div>
 
         {{-- Pour les élèves --}}
-        <section id="fonctionnalites" class="mx-auto flex max-w-[1280px] scroll-mt-20 flex-col gap-[18px] px-5 py-[34px] desk:gap-9 desk:px-14 desk:py-[84px]">
+        <section id="features" class="mx-auto flex max-w-[1280px] scroll-mt-20 flex-col gap-[18px] px-5 py-[34px] desk:gap-9 desk:px-14 desk:py-[84px]">
             <div class="flex flex-col gap-3">
                 <span class="mx-label">Pour les élèves</span>
                 <h2 class="text-[30px] leading-[1.05] font-bold tracking-[-.03em] text-balance desk:max-w-[720px] desk:text-[46px] desk:leading-[1.02]">Chaque partie fait bouger ton classement.</h2>
@@ -162,7 +162,7 @@
         </section>
 
         {{-- Pour les profs animateurs --}}
-        <section id="profs" class="mx-inverse scroll-mt-20">
+        <section id="teachers" class="mx-inverse scroll-mt-20">
             <div class="mx-auto flex max-w-[1280px] flex-col gap-4 px-5 py-[34px] desk:gap-9 desk:px-14 desk:py-[84px]">
                 <div class="flex flex-col gap-3">
                     <span class="mx-label text-surface-2">Pour les profs animateurs</span>
@@ -196,7 +196,7 @@
         </section>
 
         {{-- Comment ça marche --}}
-        <section id="comment" class="mx-auto hidden max-w-[1280px] scroll-mt-20 flex-col gap-9 px-14 py-[84px] desk:flex">
+        <section id="how-it-works" class="mx-auto hidden max-w-[1280px] scroll-mt-20 flex-col gap-9 px-14 py-[84px] desk:flex">
             <div class="flex flex-col gap-3">
                 <span class="mx-label">Comment ça marche</span>
                 <h2 class="text-[46px] leading-[1.02] font-bold tracking-[-.03em]">Prêt en une séance.</h2>

@@ -11,11 +11,11 @@ test('the landing page shows the student, teacher and how-it-works sections', fu
     $response = $this->get(route('home'));
 
     $response->assertSeeInOrder([
-        'id="fonctionnalites"',
+        'id="features"',
         'Chaque partie fait bouger ton classement.',
-        'id="profs"',
+        'id="teachers"',
         'Le prof anime, Matchelo organise.',
-        'id="comment"',
+        'id="how-it-works"',
         'Prêt en une séance.',
         'Prêt pour la prochaine séance ?',
     ], false);
@@ -41,3 +41,10 @@ test('the landing page never draws pieces with unicode glyphs', function () {
         $response->assertDontSee($glyph);
     }
 });
+
+test('the header navigation targets the page sections', function (string $anchor) {
+    $response = $this->get(route('home'));
+
+    $response->assertSee("href=\"#{$anchor}\"", false);
+    $response->assertSee("id=\"{$anchor}\"", false);
+})->with(['features', 'teachers', 'how-it-works']);
