@@ -10,6 +10,11 @@ return [
 
     'title' => 'Styleguide',
 
+    'colors' => 'Couleurs',
+    'typography' => 'Typographie',
+    'typography_sample' => 'Pointez, jouez, progressez. 1 248',
+    'strokes_shadows' => 'Traits et ombres',
+
     'buttons' => 'Boutons',
     'take_attendance' => 'Faire l’appel',
     'enter_results' => 'Saisir les résultats',
@@ -20,6 +25,7 @@ return [
     'cards' => 'Cartes',
     'my_elo' => 'Mon ELO',
     'highlighted_card' => 'Carte surlignée',
+    'card_on_accent' => 'Carte sur section inversée',
 
     'fields' => 'Champs',
     'idle' => 'Repos',

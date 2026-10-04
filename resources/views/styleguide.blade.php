@@ -1,6 +1,26 @@
 {{-- Planche de référence des fondations visuelles du thème courant (modes clair / sombre), hors production --}}
 @php
     $piece_types = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'];
+    // Classes écrites en entier : Tailwind ne détecte pas les noms construits dynamiquement
+    $colors = [
+        'bg' => 'bg-bg',
+        'surface' => 'bg-surface',
+        'surface-2' => 'bg-surface-2',
+        'ink' => 'bg-ink',
+        'muted' => 'bg-muted',
+        'accent' => 'bg-accent',
+        'on-accent' => 'bg-on-accent',
+        'highlight' => 'bg-highlight',
+        'error' => 'bg-error',
+        'board-white' => 'bg-board-white',
+        'board-black' => 'bg-board-black',
+    ];
+    $text_sizes = [
+        'text-xs', 'text-sm', 'text-md', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl',
+        'text-title', 'text-h3', 'text-h3-lg', 'text-h2', 'text-h2-lg', 'text-h1', 'text-h1-lg',
+        'text-figure-sm', 'text-figure', 'text-figure-lg', 'text-icon',
+    ];
+    $strokes = ['mx-border', 'mx-border-t', 'mx-border-b', 'mx-border-y'];
 @endphp
 <x-layouts::app :title="__('styleguide.title')">
     <header class="flex items-center justify-between gap-4 mx-border-b bg-surface px-4 py-3 md:px-8">
@@ -10,6 +30,46 @@
 
     <main class="mx-auto flex max-w-256 flex-col gap-14 px-4 py-10 md:px-8">
         <h1 class="text-h1">{{ __('styleguide.title') }}</h1>
+
+        <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.colors') }}</h2>
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+                @foreach ($colors as $color => $color_class)
+                    <div class="flex flex-col gap-1.5">
+                        <span @class(['h-12 mx-border', $color_class])></span>
+                        <code class="text-sm">{{ $color }}</code>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.typography') }}</h2>
+            <div class="flex flex-col gap-3">
+                @foreach ($text_sizes as $text_size)
+                    <div class="flex flex-col gap-1 mx-border-b pb-3">
+                        <code class="text-xs text-muted">{{ $text_size }}</code>
+                        <p @class([$text_size])>{{ __('styleguide.typography_sample') }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <section class="flex flex-col gap-4">
+            <h2 class="mx-label">{{ __('styleguide.strokes_shadows') }}</h2>
+            <div class="flex flex-wrap gap-6">
+                @foreach ($strokes as $stroke)
+                    <div class="flex flex-col gap-1.5">
+                        <span @class(['size-16 bg-surface', $stroke])></span>
+                        <code class="text-sm">{{ $stroke }}</code>
+                    </div>
+                @endforeach
+                <div class="flex flex-col gap-1.5">
+                    <span class="size-16 mx-border bg-surface shadow-solid"></span>
+                    <code class="text-sm">shadow-solid</code>
+                </div>
+            </div>
+        </section>
 
         <section class="flex flex-col gap-4">
             <h2 class="mx-label">{{ __('styleguide.buttons') }}</h2>
@@ -32,6 +92,12 @@
                 <div class="mx-card mx-card--highlight">
                     <p class="text-sm text-muted">{{ __('styleguide.highlighted_card') }}</p>
                     <p class="text-figure-sm">{{ Number::format(1312) }}</p>
+                </div>
+                <div class="mx-inverse p-6 sm:col-span-2">
+                    <div class="mx-card mx-card--on-accent">
+                        <p class="text-sm text-muted">{{ __('styleguide.card_on_accent') }}</p>
+                        <p class="text-figure-sm">{{ Number::format(1190) }}</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -89,8 +155,10 @@
         <section class="flex flex-col gap-4">
             <h2 class="mx-label">{{ __('styleguide.logo') }}</h2>
             <div class="flex flex-wrap items-stretch gap-6">
-                <div class="flex items-center p-6">
+                <div class="flex items-center gap-6 p-6">
+                    <x-logo class="mx-logo--sm" />
                     <x-logo />
+                    <x-logo class="mx-logo--lg" />
                 </div>
                 <div class="mx-inverse flex items-center p-6">
                     <x-logo inverse />
@@ -123,6 +191,11 @@
                             <x-piece :type="$type" :side="$side" />
                         </span>
                     @endforeach
+                @endforeach
+            </div>
+            <div class="flex w-max gap-1 text-ink">
+                @foreach ($piece_types as $type)
+                    <x-piece :type="$type" side="current" />
                 @endforeach
             </div>
             <p class="text-sm text-muted">{!! __('styleguide.piece_files', ['path' => '<code>public/images/pieces</code>']) !!}</p>

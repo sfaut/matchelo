@@ -10,6 +10,11 @@ return [
 
     'title' => 'Styleguide',
 
+    'colors' => 'Colors',
+    'typography' => 'Typography',
+    'typography_sample' => 'Check in, play, improve. 1,248',
+    'strokes_shadows' => 'Strokes and shadows',
+
     'buttons' => 'Buttons',
     'take_attendance' => 'Take attendance',
     'enter_results' => 'Enter results',
@@ -20,6 +25,7 @@ return [
     'cards' => 'Cards',
     'my_elo' => 'My ELO',
     'highlighted_card' => 'Highlighted card',
+    'card_on_accent' => 'Card on an inverted section',
 
     'fields' => 'Fields',
     'idle' => 'Idle',
