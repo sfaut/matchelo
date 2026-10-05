@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Carbon\CarbonImmutable;
+use Database\Factories\ClubSessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -24,6 +26,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Fillable(['club_id', 'scheduled_at'])]
 class ClubSession extends Model
 {
+    /** @use HasFactory<ClubSessionFactory> */
+    use HasFactory;
+
     /**
      * Get the attributes that should be cast.
      *
