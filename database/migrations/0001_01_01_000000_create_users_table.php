@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('last_name', length: 30)->comment('Nom de famille');
             $table->string('first_name', length: 30)->comment('Prénom');
             $table->boolean('is_administrator')->default(false)->comment("L'utilisateur est-il administrateur ?");
-            $table->unsignedSmallInteger('elo')->default(1200)->comment('Classement ELO, unique tous clubs confondus');
+            $table->unsignedSmallInteger('elo_rating')->default(1200)->comment('Classement ELO, unique tous clubs confondus');
             // Exception à la règle « pas de nullable » : NULL = joueur sans compte (créé par un prof),
             // l'unicité reste garantie car les NULL ne se heurtent pas
             $table->string('email', length: 100)->nullable()->unique()->comment("E-mail de l'utilisateur, NULL pour un joueur sans compte");

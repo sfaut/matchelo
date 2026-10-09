@@ -155,7 +155,7 @@ new class extends Component
         $player = User::create([
             'last_name' => $this->lastName,
             'first_name' => $this->firstName,
-            'elo' => (int) $this->startingElo,
+            'elo_rating' => (int) $this->startingElo,
         ]);
 
         $this->club->members()->attach($player, ['role_id' => Role::idFor(Role::PLAYER)]);
@@ -232,7 +232,7 @@ new class extends Component
                     @foreach ($this->results as $result)
                         <div class="mx-card flex items-center justify-between gap-2.5 px-2.5 py-2" wire:key="result-{{ $result->id }}">
                             <div class="flex min-w-0 flex-col">
-                                <b class="truncate">{{ $result->fullName() }} · {{ Number::format($result->elo) }}</b>
+                                <b class="truncate">{{ $result->fullName() }} · {{ Number::format($result->elo_rating) }}</b>
                                 <span class="truncate text-xs text-muted">
                                     {{ $result->clubs->isEmpty() ? __('clubs.players.no_club') : $result->clubs->pluck('name')->join(', ') }}
                                 </span>
@@ -293,7 +293,7 @@ new class extends Component
                             @if ($member->pivot->role_id === $this->animatorRoleId)
                                 <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
                             @endif
-                            <span class="tabular-nums text-muted">{{ Number::format($member->elo) }}</span>
+                            <span class="tabular-nums text-muted">{{ Number::format($member->elo_rating) }}</span>
                         </div>
                     </div>
                 @endforeach

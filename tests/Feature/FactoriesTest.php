@@ -20,7 +20,7 @@ test('a factory user has a verified account with the known password', function (
 
     expect($user->hasAccount())->toBeTrue()
         ->and($user->email_verified_at)->not->toBeNull()
-        ->and($user->elo)->toBeBetween(900, 1600)
+        ->and($user->elo_rating)->toBeBetween(900, 1600)
         ->and(Auth::attempt(['email' => $user->email, 'password' => UserFactory::PASSWORD]))->toBeTrue();
 });
 

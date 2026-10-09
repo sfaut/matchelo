@@ -22,7 +22,7 @@ test('only animators and administrators can open the add students page', functio
 
 test('the search finds players outside the club by first and last name', function () {
     $other_club = createClubWith('Échiquier Nord', [Role::ANIMATOR => createUser(['email' => 'a@example.org', 'first_name' => 'Anne', 'last_name' => 'Roy'])]);
-    $lea = createUser(['email' => 'lea@example.org', 'first_name' => 'Léa', 'last_name' => 'Martin', 'elo' => 1248]);
+    $lea = createUser(['email' => 'lea@example.org', 'first_name' => 'Léa', 'last_name' => 'Martin', 'elo_rating' => 1248]);
     $other_club->members()->attach($lea, ['role_id' => Role::idFor(Role::PLAYER)]);
     createUser(['email' => 'leon@example.org', 'first_name' => 'Léon', 'last_name' => 'Petit']);
 
@@ -82,7 +82,7 @@ test('creating a player makes a player without account in the club, with the sta
     $nathan = User::where('last_name', 'Diallo')->firstOrFail();
 
     expect($nathan->first_name)->toBe('Nathan')
-        ->and($nathan->elo)->toBe(1050)
+        ->and($nathan->elo_rating)->toBe(1050)
         ->and($nathan->email)->toBeNull()
         ->and($nathan->hasAccount())->toBeFalse()
         ->and($this->club->members()->whereKey($nathan->id)->exists())->toBeTrue()

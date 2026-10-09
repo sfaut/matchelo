@@ -104,7 +104,7 @@ test('a club code is unique', function () {
 });
 
 test('a user starts at 1200 ELO', function () {
-    expect(createUser()->refresh()->elo)->toBe(1200);
+    expect(createUser()->refresh()->elo_rating)->toBe(1200);
 });
 
 test('a player without email has no account and cannot log in', function () {

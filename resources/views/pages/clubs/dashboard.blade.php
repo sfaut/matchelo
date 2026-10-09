@@ -138,7 +138,7 @@ new class extends Component
     public function ranking(): Collection
     {
         return $this->club->members()
-            ->orderByDesc('elo')
+            ->orderByDesc('elo_rating')
             ->orderBy('last_name')
             ->limit(self::RANKING_SIZE)
             ->get();
@@ -245,7 +245,7 @@ new class extends Component
                             'bg-surface' => $rank > 0,
                         ])>{{ $rank + 1 }}</span>
                         <b class="min-w-0 flex-1 truncate">{{ $player->fullName() }}</b>
-                        <span class="font-bold tabular-nums">{{ Number::format($player->elo) }}</span>
+                        <span class="font-bold tabular-nums">{{ Number::format($player->elo_rating) }}</span>
                     </div>
                 @endforeach
             </section>

@@ -283,7 +283,7 @@ new class extends Component
                     <div class="flex min-w-0 flex-1 flex-col">
                         <b class="truncate">{{ $member->fullName() }}</b>
                         <span class="text-xs text-muted">
-                            {{ __('clubs.attendance.elo', ['elo' => Number::format($member->elo)]) }}
+                            {{ __('clubs.attendance.elo', ['elo' => Number::format($member->elo_rating)]) }}
                             @if ($this->pastPresences['sessions'] > 0)
                                 · {{ __('clubs.attendance.rate', ['count' => $this->pastPresences['presences'][$member->id] ?? 0, 'total' => $this->pastPresences['sessions']]) }}
                             @endif

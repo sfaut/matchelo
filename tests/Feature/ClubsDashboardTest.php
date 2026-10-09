@@ -12,7 +12,7 @@ beforeEach(function () {
         'last_name' => 'Durand',
         'email' => 'm.durand@example.org',
     ]);
-    $this->player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard', 'elo' => 1190]);
+    $this->player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard', 'elo_rating' => 1190]);
     $this->club = createClubWith('Échecs · Collège Jean-Moulin', [Role::ANIMATOR => $this->animator, Role::PLAYER => $this->player]);
 });
 
@@ -87,7 +87,7 @@ test('the dashboard reflects the roll call, the attendance and the members to fo
 });
 
 test('the club ranking lists the best members by ELO', function () {
-    $ines = createUser(['email' => 'ines.kaci@example.org', 'first_name' => 'Inès', 'last_name' => 'Kaci', 'elo' => 1302]);
+    $ines = createUser(['email' => 'ines.kaci@example.org', 'first_name' => 'Inès', 'last_name' => 'Kaci', 'elo_rating' => 1302]);
     $this->club->members()->attach($ines, ['role_id' => Role::idFor(Role::PLAYER)]);
 
     $response = $this->actingAs($this->animator)->get(route('clubs.dashboard', $this->club));

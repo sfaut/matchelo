@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
  * @property string $last_name
  * @property string $first_name
  * @property bool $is_administrator
- * @property int $elo
+ * @property int $elo_rating
  * @property string|null $email
  * @property Carbon|null $email_verified_at
  * @property string $password_hash
@@ -33,7 +33,7 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, Club> $createdClubs
  * @property-read Collection<int, Club> $clubs
  */
-#[Fillable(['last_name', 'first_name', 'elo', 'email', 'password_hash'])]
+#[Fillable(['last_name', 'first_name', 'elo_rating', 'email', 'password_hash'])]
 #[Hidden(['password_hash', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -56,7 +56,7 @@ class User extends Authenticatable
     {
         return [
             'is_administrator' => 'boolean',
-            'elo' => 'integer',
+            'elo_rating' => 'integer',
             'email_verified_at' => 'datetime',
             'password_hash' => 'hashed',
         ];
