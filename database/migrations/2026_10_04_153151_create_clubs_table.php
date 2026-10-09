@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('logo_path', length: 100)->default('')->comment('Chemin du logo sur le disque public (vide sans logo)');
             $table->foreignId('user_id')->comment('Créateur du club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
-            $table->dateTime('updated_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
         });
 
         Schema::create('club_user', function (Blueprint $table) {
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('role_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
-            $table->dateTime('updated_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
             $table->primary(['club_id', 'user_id']);
         });

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->date('scheduled_at')->comment('Date de la séance');
             $table->dateTime('created_at', precision: 6)->useCurrent();
-            $table->dateTime('updated_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
             $table->unique(['club_id', 'scheduled_at']);
             $table->comment("Séances d'un club, une par date");
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('club_session_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
-            $table->dateTime('updated_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
             $table->primary(['club_session_id', 'user_id']);
             $table->comment('Présences : une ligne par membre présent à une séance');

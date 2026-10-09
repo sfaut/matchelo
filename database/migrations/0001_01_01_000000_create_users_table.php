@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('code', length: 10)->unique();
             $table->string('name', length: 10);
             $table->dateTime('created_at', precision: 6)->useCurrent();
-            $table->dateTime('updated_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
         });
 
         Schema::create('users', function (Blueprint $table) {
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('password_hash', length: 100)->default('')->comment("Mot de passe haché de l'utilisateur, vide pour un joueur sans compte");
             $table->rememberToken();
             $table->dateTime('created_at', precision: 6)->useCurrent();
-            $table->dateTime('updated_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
