@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasMicrosecondDates;
 use Carbon\CarbonImmutable;
 use Database\Factories\ClubSessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class ClubSession extends Model
 {
     /** @use HasFactory<ClubSessionFactory> */
-    use HasFactory;
+    use HasFactory, HasMicrosecondDates;
 
     /**
      * Get the attributes that should be cast.

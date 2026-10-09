@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasMicrosecondDates;
 use Closure;
 use Database\Factories\ClubFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -36,7 +37,7 @@ use Illuminate\Support\Str;
 class Club extends Model
 {
     /** @use HasFactory<ClubFactory> */
-    use HasFactory;
+    use HasFactory, HasMicrosecondDates;
 
     /**
      * Génère un code d'invitation libre : deux initiales du nom (complétées par X) et quatre

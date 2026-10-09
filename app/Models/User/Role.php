@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Concerns\HasMicrosecondDates;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -18,6 +19,8 @@ use Illuminate\Support\Carbon;
 #[Fillable(['code', 'name'])]
 class Role extends Model
 {
+    use HasMicrosecondDates;
+
     /**
      * Code du rôle d'animateur (prof qui gère le club).
      *

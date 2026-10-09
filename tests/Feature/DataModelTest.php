@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\Club;
+use App\Models\ClubSession;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -115,3 +117,20 @@ test('a player without email has no account and cannot log in', function () {
         ->and($player->hasAccount())->toBeFalse()
         ->and(createUser()->hasAccount())->toBeTrue();
 });
+
+test('the model timestamps keep their microseconds', function (Closure $create_model) {
+    $this->travelTo(Carbon::parse('2026-10-09 10:15:30.123456'));
+    $model = $create_model();
+
+    $this->travelTo(Carbon::parse('2026-10-09 10:15:31.654321'));
+    $model->touch();
+
+    expect(DB::table($model->getTable())->where('id', $model->id)->first())
+        ->created_at->toBe('2026-10-09 10:15:30.123456')
+        ->updated_at->toBe('2026-10-09 10:15:31.654321');
+})->with([
+    'role' => fn (): Role => Role::create(['code' => 'COACH', 'name' => 'Coach']),
+    'user' => fn (): User => createUser(),
+    'club' => fn (): Club => Club::factory()->create(),
+    'club session' => fn (): ClubSession => ClubSession::factory()->create(),
+]);
