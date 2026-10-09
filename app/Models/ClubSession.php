@@ -6,6 +6,7 @@ use App\Models\Concerns\HasMicrosecondDates;
 use Carbon\CarbonImmutable;
 use Database\Factories\ClubSessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Séance d'un club à une date ; ses présents sont les membres pointés (table attendances).
+ * Séance d'un club, horodatée ; ses présents sont les membres pointés (table attendances).
  *
  * @property int $id
  * @property int $club_id
@@ -38,8 +39,21 @@ class ClubSession extends Model
     protected function casts(): array
     {
         return [
-            'scheduled_at' => 'date',
+            'scheduled_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Écrit l'horodatage de la séance à la seconde, comme sa colonne (`precision: 0`), en dépit
+     * du format à microsecondes de HasMicrosecondDates.
+     *
+     * @return Attribute<never, string>
+     */
+    protected function scheduledAt(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value): string => $this->asDateTime($value)->format('Y-m-d H:i:s'),
+        );
     }
 
     /**

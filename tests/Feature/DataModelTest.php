@@ -134,3 +134,10 @@ test('the model timestamps keep their microseconds', function (Closure $create_m
     'club' => fn (): Club => Club::factory()->create(),
     'club session' => fn (): ClubSession => ClubSession::factory()->create(),
 ]);
+
+test('a club session is scheduled to the second', function () {
+    $session = ClubSession::factory()->create(['scheduled_at' => Carbon::parse('2026-10-09 18:30:15.987654')]);
+
+    expect(DB::table('club_sessions')->where('id', $session->id)->value('scheduled_at'))->toBe('2026-10-09 18:30:15')
+        ->and($session->refresh()->scheduled_at->format('Y-m-d H:i:s.u'))->toBe('2026-10-09 18:30:15.000000');
+});

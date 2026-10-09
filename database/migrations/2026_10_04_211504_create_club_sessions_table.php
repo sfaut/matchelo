@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('club_sessions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->date('scheduled_at')->comment('Date de la séance');
+            $table->dateTime('scheduled_at', precision: 0)->comment('Horodatage de la séance');
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
