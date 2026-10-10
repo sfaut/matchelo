@@ -51,7 +51,9 @@ Dispose de tous les droits de l'animateur, et en plus :
 
 - ajoute des membres au club avec n'importe quel rôle : présidents, animateurs ou joueurs ;
 - nomme et retire les animateurs et les autres présidents ;
-- modifie et supprime le club (`ClubPolicy::update()`).
+- modifie et supprime le club (`ClubPolicy::update()`) ;
+- personnalise les sections du club : renomme la section générale, en crée d'autres
+  (« Section jeunes », « Section mardi »…).
 
 Un club compte **un ou plusieurs présidents**, et **toujours au moins un** : le dernier président
 ne peut être ni retiré du club ni changé de rôle. Pour partir, il nomme d'abord un autre président.
@@ -97,6 +99,7 @@ saisies reçues :
 | Créer un club                            | ✅             | ✅         | ✅         | ✅     |
 | Modifier / supprimer le club             | ✅ tous        | ✅ le sien | ❌         | ❌     |
 | Ajouter / retirer présidents, animateurs | ✅ tous        | ✅ le sien | ❌         | ❌     |
+| Créer / renommer les sections            | ✅ tous        | ✅ le sien | ❌         | ❌     |
 | Gérer le club (tableau de bord)          | ✅ tous        | ✅ le sien | ✅ le sien | ❌     |
 | Ajouter un joueur au club                | ✅             | ✅         | ✅         | ❌     |
 | Gérer les séances et les présences       | ✅             | ✅         | ✅         | ❌     |
@@ -118,6 +121,7 @@ Ces règles sont fixées ; les écrans correspondants restent à faire.
   rôle (président, animateur), le changement de rôle et le retrait d'un membre restent à faire,
   avec la garde du dernier président.
 - **Suppression d'un club**, réservée au président et à l'administrateur.
+- **Gestion des sections** : création, renommage et répartition des joueurs.
 - **Saisie et validation des résultats**, **tournois**, **statistiques du joueur**.
 - **Badges** : présidents et animateurs portent le même badge « prof » (« anim. » dans la barre
   latérale).
