@@ -15,7 +15,8 @@ beforeEach(function () {
 });
 
 test('the seeders fill the reference tables', function () {
-    expect(Role::pluck('code')->all())->toEqualCanonicalizing(['ANIMATOR', 'PLAYER']);
+    expect(Role::pluck('code')->all())->toEqualCanonicalizing(['PRESIDENT', 'ANIMATOR', 'PLAYER'])
+        ->and(Role::where('description', '')->exists())->toBeFalse();
 });
 
 test('a user is not an administrator by default', function () {

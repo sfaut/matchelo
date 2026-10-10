@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('code', length: 10)->unique();
             $table->string('name', length: 10);
+            $table->string('description', length: 200)->default('');
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
         });
