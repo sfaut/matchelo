@@ -32,6 +32,7 @@ use Illuminate\Support\Str;
  * @property-read User $creator
  * @property-read Collection<int, User> $members
  * @property-read Collection<int, ClubSession> $sessions
+ * @property-read Collection<int, ClubSection> $sections
  */
 #[Fillable(['name', 'code', 'city', 'description', 'logo_path', 'user_id'])]
 class Club extends Model
@@ -88,6 +89,25 @@ class Club extends Model
     public function sessions(): HasMany
     {
         return $this->hasMany(ClubSession::class);
+    }
+
+    /**
+     * Sections du club, dont la section générale.
+     *
+     * @return HasMany<ClubSection, $this>
+     */
+    public function sections(): HasMany
+    {
+        return $this->hasMany(ClubSection::class);
+    }
+
+    /**
+     * Crée la section générale du club, nommée dans la langue courante ; à appeler à la
+     * création du club, qui compte toujours au moins une section.
+     */
+    public function createDefaultSection(): ClubSection
+    {
+        return $this->sections()->create(['name' => __('clubs.sections.default_name')]);
     }
 
     /**

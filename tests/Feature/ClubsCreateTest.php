@@ -34,7 +34,7 @@ test('the create club page renders its fields', function () {
     ]);
 });
 
-test('creating a club makes the creator its animator and goes back to the clubs with a toast', function () {
+test('creating a club makes the creator its president, opens the general section and goes back to the clubs with a toast', function () {
     Livewire::test('pages::clubs.create')
         ->set('form.name', '  Échiquier Nord ')
         ->call('create')
@@ -51,6 +51,7 @@ test('creating a club makes the creator its animator and goes back to the clubs 
         ->and($club->creator->is($this->user))->toBeTrue()
         ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT))
         ->and($this->user->presides($club))->toBeTrue()
+        ->and($club->sections->pluck('name')->all())->toBe([__('clubs.sections.default_name')])
         ->and(session('toast'))->toBe(__('clubs.create.created', ['name' => 'Échiquier Nord']));
 });
 

@@ -61,6 +61,58 @@ test('a club has a creator and members with a role', function () {
         ->and($player->clubs->first()->pivot->role_id)->toBe(Role::where('code', 'PLAYER')->value('id'));
 });
 
+test('a club section belongs to its club and gathers players', function () {
+    $creator = createUser();
+    $player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard']);
+    $club = Club::create(['name' => 'Échecs · Collège Jean-Moulin', 'code' => 'JM-4821', 'user_id' => $creator->id]);
+
+    $general_section = $club->createDefaultSection();
+    $youth_section = $club->sections()->create(['name' => 'Section jeunes']);
+    $general_section->players()->attach($player);
+    $youth_section->players()->attach($player);
+
+    expect($general_section->name)->toBe(__('clubs.sections.default_name'))
+        ->and($general_section->club->is($club))->toBeTrue()
+        ->and($club->sections->pluck('name')->all())->toEqualCanonicalizing([__('clubs.sections.default_name'), 'Section jeunes'])
+        ->and($player->clubSections->pluck('id')->all())->toEqualCanonicalizing([$general_section->id, $youth_section->id])
+        ->and($creator->clubSections)->toBeEmpty();
+});
+
+test('the general section is named in the current language', function () {
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => createUser()->id]);
+    $other_club = Club::create(['name' => 'Club voisin', 'code' => 'CV-1234', 'user_id' => createUser(['email' => 'tom.bernard@example.org'])->id]);
+
+    app()->setLocale('en');
+    expect($club->createDefaultSection()->name)->toBe('General section');
+
+    app()->setLocale('fr');
+    expect($other_club->createDefaultSection()->name)->toBe('Section générale');
+});
+
+test('a section name is unique within its club only', function () {
+    $creator = createUser();
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
+    $other_club = Club::create(['name' => 'Club voisin', 'code' => 'CV-1234', 'user_id' => $creator->id]);
+    $club->createDefaultSection();
+
+    expect($other_club->createDefaultSection()->name)->toBe(__('clubs.sections.default_name'))
+        ->and(fn () => $club->createDefaultSection())->toThrow(QueryException::class);
+});
+
+test('a club with sections cannot be deleted, and deleting a section frees its players', function () {
+    $creator = createUser();
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
+    $section = $club->createDefaultSection();
+    $section->players()->attach($creator);
+
+    expect(fn () => $club->delete())->toThrow(QueryException::class);
+
+    $section->delete();
+
+    expect(DB::table('club_section_user')->count())->toBe(0)
+        ->and($creator->fresh())->not->toBeNull();
+});
+
 test('a user who created a club cannot be deleted', function () {
     $creator = createUser();
     Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);

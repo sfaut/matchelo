@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\User\Role;
 use Carbon\CarbonImmutable;
 use Database\Factories\ClubFactory;
+use Database\Factories\ClubSectionFactory;
 use Database\Factories\UserFactory;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Support\Carbon;
@@ -45,7 +46,25 @@ test('a factory club has an invite code and its creator as president', function 
         ->and($club->city)->not->toBe('')
         ->and($club->members)->toHaveCount(1)
         ->and($club->members->first()->is($club->creator))->toBeTrue()
-        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT));
+        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT))
+        ->and($club->sections->pluck('name')->all())->toBe([__('clubs.sections.default_name')]);
+});
+
+test('a factory club puts its students in the general section', function () {
+    $club = Club::factory()->withStudents(10)->create();
+
+    expect($club->sections)->toHaveCount(1)
+        ->and($club->sections->first()->players)->toHaveCount(10);
+});
+
+test('a factory club can get an extra section with half of its students', function () {
+    $club = Club::factory()->withStudents(10)->withExtraSection()->create();
+    $extra_section = $club->sections()->where('name', '!=', __('clubs.sections.default_name'))->firstOrFail();
+
+    expect($club->sections)->toHaveCount(2)
+        ->and(ClubSectionFactory::NAMES)->toContain($extra_section->name)
+        ->and($extra_section->players)->toHaveCount(5)
+        ->and($club->members()->whereKey($extra_section->players->pluck('id'))->count())->toBe(5);
 });
 
 test('a bare factory club has neither city nor description', function () {

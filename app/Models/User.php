@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Club> $createdClubs
  * @property-read Collection<int, Club> $clubs
+ * @property-read Collection<int, ClubSection> $clubSections
  */
 #[Fillable(['last_name', 'first_name', 'elo_rating', 'email', 'password_hash'])]
 #[Hidden(['password_hash', 'remember_token'])]
@@ -83,6 +84,16 @@ class User extends Authenticatable
         return $this->belongsToMany(Club::class)
             ->withPivot('role_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Sections de club dont l'utilisateur est joueur.
+     *
+     * @return BelongsToMany<ClubSection, $this>
+     */
+    public function clubSections(): BelongsToMany
+    {
+        return $this->belongsToMany(ClubSection::class)->withTimestamps();
     }
 
     /**

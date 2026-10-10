@@ -33,6 +33,10 @@ return [
         'remove_logo' => 'Remove the logo',
     ],
 
+    'sections' => [
+        'default_name' => 'General section',
+    ],
+
     'create' => [
         'title' => 'New club',
         'president_hint' => 'You will be the president of this club.',
