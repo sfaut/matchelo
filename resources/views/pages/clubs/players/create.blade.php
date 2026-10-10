@@ -110,12 +110,14 @@ new class extends Component
     }
 
     /**
-     * Identifiant du rôle d'animateur, pour le badge « prof » des membres.
+     * Identifiants des rôles de président et d'animateur, pour le badge « prof » des membres.
+     *
+     * @return list<int>
      */
     #[Computed]
-    public function animatorRoleId(): ?int
+    public function managerRoleIds(): array
     {
-        return Role::idFor(Role::ANIMATOR);
+        return Role::idsFor(Role::MANAGERS);
     }
 
     /**
@@ -290,7 +292,7 @@ new class extends Component
                             @unless ($member->hasAccount())
                                 <span class="mx-badge text-muted">{{ __('clubs.players.no_account') }}</span>
                             @endunless
-                            @if ($member->pivot->role_id === $this->animatorRoleId)
+                            @if (in_array($member->pivot->role_id, $this->managerRoleIds, true))
                                 <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
                             @endif
                             <span class="tabular-nums text-muted">{{ Number::format($member->elo_rating) }}</span>

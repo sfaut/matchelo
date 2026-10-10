@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Club;
-use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -25,16 +24,14 @@ new class extends Component
     }
 
     /**
-     * Clubs que l'utilisateur anime, pour le badge « prof ».
+     * Clubs que l'utilisateur gère (président ou animateur), pour le badge « prof ».
      *
      * @return Collection<int, Club>
      */
     #[Computed]
-    public function animatedClubs(): Collection
+    public function managedClubs(): Collection
     {
-        return Auth::user()->clubs()
-            ->wherePivot('role_id', Role::idFor(Role::ANIMATOR))
-            ->get();
+        return Auth::user()->managedClubs()->get();
     }
 
     /**
@@ -58,7 +55,7 @@ new class extends Component
                         <img src="{{ $club->logoUrl() }}" alt="" class="size-10 flex-none mx-border object-cover">
                     @endif
                     <h2 class="min-w-0 flex-1 text-2xl font-bold">{{ $club->name }}</h2>
-                    @if ($this->animatedClubs->contains($club))
+                    @if ($this->managedClubs->contains($club))
                         <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
                     @endif
                 </div>

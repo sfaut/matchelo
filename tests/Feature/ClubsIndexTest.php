@@ -25,15 +25,17 @@ test('a user without club sees an invitation to create one', function () {
     $response->assertSee('href="'.route('clubs.create').'"', false);
 });
 
-test('a user sees their clubs with the member count and a teacher badge where they animate', function () {
+test('a user sees their clubs with the member count and a teacher badge where they preside or animate', function () {
     $user = createUser();
     $other = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard']);
+    createClubWith('Atelier du jeudi', [Role::PRESIDENT => $user]);
     createClubWith('Échecs · Collège Jean-Moulin', [Role::ANIMATOR => $user, Role::PLAYER => $other]);
     createClubWith('Échiquier Nord', [Role::PLAYER => $user]);
     createClubWith('Club voisin', [Role::ANIMATOR => $other]);
 
     $response = $this->actingAs($user)->get(route('clubs.index'));
 
+    $response->assertSeeInOrder(['Atelier du jeudi', __('clubs.index.animator_badge'), trans_choice('clubs.index.members', 1)]);
     $response->assertSeeInOrder(['Échecs · Collège Jean-Moulin', __('clubs.index.animator_badge'), trans_choice('clubs.index.members', 2)]);
     $response->assertSeeInOrder(['Échiquier Nord', trans_choice('clubs.index.members', 1)]);
     $response->assertDontSee('Club voisin');
@@ -48,10 +50,14 @@ test('the shell shows the user initials, the scheme toggle and a logout form', f
     $response->assertSee('action="'.route('logout').'"', false);
 });
 
-test('the mode switch is shown only to a user who animates a club', function () {
-    $animator = createUser();
+test('the mode switch is shown only to a user who presides or animates a club', function () {
+    $president = createUser();
+    $animator = createUser(['email' => 'hugo.petit@example.org', 'first_name' => 'Hugo', 'last_name' => 'Petit']);
     $player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard']);
-    createClubWith('Échecs · Collège Jean-Moulin', [Role::ANIMATOR => $animator, Role::PLAYER => $player]);
+    createClubWith('Échecs · Collège Jean-Moulin', [Role::PRESIDENT => $president, Role::ANIMATOR => $animator, Role::PLAYER => $player]);
+
+    $this->actingAs($president)->get(route('clubs.index'))
+        ->assertSee('href="'.route('manage.home').'"', false);
 
     $this->actingAs($animator)->get(route('clubs.index'))
         ->assertSee('href="'.route('manage.home').'"', false);

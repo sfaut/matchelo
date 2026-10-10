@@ -35,9 +35,9 @@ return [
 
     'create' => [
         'title' => 'New club',
-        'animator_hint' => 'You will be the teacher running this club.',
+        'president_hint' => 'You will be the president of this club.',
         'submit' => 'Create the club',
-        'created' => ':name created · you run this club',
+        'created' => ':name created · you are its president',
     ],
 
     'edit' => [

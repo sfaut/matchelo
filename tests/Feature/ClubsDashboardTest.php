@@ -31,8 +31,9 @@ test('the management entry sends a non animator back to their clubs', function (
         ->assertRedirect(route('clubs.index'));
 });
 
-test('only animators and administrators can open the dashboard', function (string $who, int $status) {
+test('only presidents, animators and administrators can open the dashboard', function (string $who, int $status) {
     $user = match ($who) {
+        'president' => tap(createUser(['email' => 'president@example.org']), fn (User $president) => $this->club->members()->attach($president, ['role_id' => Role::idFor(Role::PRESIDENT)])),
         'animator' => $this->animator,
         'player' => $this->player,
         'administrator' => tap(createUser(['email' => 'admin@example.org']), fn (User $admin) => $admin->forceFill(['is_administrator' => true])->save()),
@@ -40,6 +41,7 @@ test('only animators and administrators can open the dashboard', function (strin
 
     $this->actingAs($user)->get(route('clubs.dashboard', $this->club))->assertStatus($status);
 })->with([
+    'president' => ['president', 200],
     'animator' => ['animator', 200],
     'administrator' => ['administrator', 200],
     'player' => ['player', 403],

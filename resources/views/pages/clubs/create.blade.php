@@ -9,7 +9,7 @@ use Livewire\WithFileUploads;
 
 /**
  * Création d'un club : nom, ville, description et logo facultatifs, code d'invitation
- * généré ; le créateur en devient le prof animateur.
+ * généré ; le créateur en devient président.
  */
 new class extends Component
 {
@@ -52,7 +52,7 @@ new class extends Component
 
         <x-club-fields :form="$form" />
 
-        <p class="text-sm text-muted">{{ __('clubs.create.animator_hint') }}</p>
+        <p class="text-sm text-muted">{{ __('clubs.create.president_hint') }}</p>
 
         <button type="submit" class="mx-btn mx-btn--primary mt-2 w-full p-3.5 text-xl" wire:loading.attr="disabled">
             {{ __('clubs.create.submit') }}

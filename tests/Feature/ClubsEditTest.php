@@ -12,10 +12,11 @@ beforeEach(function () {
     $this->seed();
     Storage::fake('public');
 
-    $this->animator = createUser();
+    $this->president = createUser();
+    $this->animator = createUser(['email' => 'hugo.petit@example.org', 'first_name' => 'Hugo', 'last_name' => 'Petit']);
     $this->player = createUser(['email' => 'tom.bernard@example.org', 'first_name' => 'Tom', 'last_name' => 'Bernard']);
     $this->outsider = createUser(['email' => 'ines.kaci@example.org', 'first_name' => 'Inès', 'last_name' => 'Kaci']);
-    $this->club = createClubWith('Échiquier Nord', [Role::ANIMATOR => $this->animator, Role::PLAYER => $this->player]);
+    $this->club = createClubWith('Échiquier Nord', [Role::PRESIDENT => $this->president, Role::ANIMATOR => $this->animator, Role::PLAYER => $this->player]);
     $this->club->update(['city' => 'Lille', 'description' => 'Mercredi 14h']);
 });
 
@@ -40,8 +41,9 @@ function makeAdministrator(User $user): User
     return $user;
 }
 
-test('the club policy lets its animators and administrators update it', function (string $who, bool $allowed) {
+test('the club policy lets its presidents and administrators update it', function (string $who, bool $allowed) {
     $user = match ($who) {
+        'president' => $this->president,
         'animator' => $this->animator,
         'player' => $this->player,
         'outsider' => $this->outsider,
@@ -50,7 +52,8 @@ test('the club policy lets its animators and administrators update it', function
 
     expect($user->fresh()->can('update', $this->club))->toBe($allowed);
 })->with([
-    'animator of the club' => ['animator', true],
+    'president of the club' => ['president', true],
+    'animator of the club' => ['animator', false],
     'player of the club' => ['player', false],
     'outsider' => ['outsider', false],
     'administrator' => ['administrator', true],
@@ -60,19 +63,20 @@ test('guests are sent to the login page', function () {
     $this->get(route('clubs.edit', $this->club))->assertRedirect(route('login'));
 });
 
-test('only animators and administrators can open the edit page', function (string $who, int $status) {
+test('only presidents and administrators can open the edit page', function (string $who, int $status) {
     $user = $who === 'administrator' ? makeAdministrator($this->outsider) : $this->{$who};
 
     $this->actingAs($user->fresh())->get(route('clubs.edit', $this->club))->assertStatus($status);
 })->with([
-    'animator' => ['animator', 200],
+    'president' => ['president', 200],
     'administrator' => ['administrator', 200],
+    'animator' => ['animator', 403],
     'player' => ['player', 403],
     'outsider' => ['outsider', 403],
 ]);
 
 test('the edit page is prefilled and shows the invite code', function () {
-    $this->actingAs($this->animator);
+    $this->actingAs($this->president);
 
     Livewire::test('pages::clubs.edit', ['club' => $this->club])
         ->assertSet('form.name', 'Échiquier Nord')
@@ -82,7 +86,7 @@ test('the edit page is prefilled and shows the invite code', function () {
 });
 
 test('saving updates the club, keeps its code and goes back with a toast', function () {
-    $this->actingAs($this->animator);
+    $this->actingAs($this->president);
     $code = $this->club->code;
 
     Livewire::test('pages::clubs.edit', ['club' => $this->club])
@@ -103,7 +107,7 @@ test('saving updates the club, keeps its code and goes back with a toast', funct
 });
 
 test('the edit form validates like the create form', function () {
-    $this->actingAs($this->animator);
+    $this->actingAs($this->president);
 
     Livewire::test('pages::clubs.edit', ['club' => $this->club])
         ->set('form.name', 'E')
@@ -115,7 +119,7 @@ test('the edit form validates like the create form', function () {
 });
 
 test('a new logo replaces the old one and deletes its file', function () {
-    $this->actingAs($this->animator);
+    $this->actingAs($this->president);
     $old_path = giveClubLogo($this->club);
 
     Livewire::test('pages::clubs.edit', ['club' => $this->club])
@@ -131,7 +135,7 @@ test('a new logo replaces the old one and deletes its file', function () {
 });
 
 test('the logo can be removed', function () {
-    $this->actingAs($this->animator);
+    $this->actingAs($this->president);
     $old_path = giveClubLogo($this->club);
 
     Livewire::test('pages::clubs.edit', ['club' => $this->club])
@@ -144,21 +148,21 @@ test('the logo can be removed', function () {
     Storage::disk('public')->assertMissing($old_path);
 });
 
-test('saving is refused if the user stopped animating the club meanwhile', function () {
-    $this->actingAs($this->animator);
+test('saving is refused if the user stopped presiding the club meanwhile', function () {
+    $this->actingAs($this->president);
     $component = Livewire::test('pages::clubs.edit', ['club' => $this->club]);
 
-    $this->club->members()->updateExistingPivot($this->animator->id, ['role_id' => Role::idFor(Role::PLAYER)]);
+    $this->club->members()->updateExistingPivot($this->president->id, ['role_id' => Role::idFor(Role::ANIMATOR)]);
 
     $component->set('form.name', 'Club détourné')->call('save')->assertForbidden();
 
     expect($this->club->fresh()->name)->toBe('Échiquier Nord');
 });
 
-test('the clubs page offers the edit link only on clubs the user animates', function () {
-    $other_club = createClubWith('Club voisin', [Role::ANIMATOR => $this->outsider, Role::PLAYER => $this->animator]);
+test('the clubs page offers the edit link only on clubs the user presides', function () {
+    $other_club = createClubWith('Club voisin', [Role::PRESIDENT => $this->outsider, Role::ANIMATOR => $this->president]);
 
-    $response = $this->actingAs($this->animator)->get(route('clubs.index'));
+    $response = $this->actingAs($this->president)->get(route('clubs.index'));
 
     $response->assertSee('href="'.route('clubs.edit', $this->club).'"', false);
     $response->assertDontSee('href="'.route('clubs.edit', $other_club).'"', false);

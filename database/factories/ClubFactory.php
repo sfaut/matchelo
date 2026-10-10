@@ -75,13 +75,13 @@ class ClubFactory extends Factory
     }
 
     /**
-     * Configure the model factory : le créateur devient animateur du club.
+     * Configure the model factory : le créateur devient président du club.
      */
     public function configure(): static
     {
         return $this->afterCreating(function (Club $club): void {
             $club->members()->syncWithoutDetaching([
-                $club->user_id => ['role_id' => Role::idFor(Role::ANIMATOR)],
+                $club->user_id => ['role_id' => Role::idFor(Role::PRESIDENT)],
             ]);
         });
     }

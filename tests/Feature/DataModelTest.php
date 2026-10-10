@@ -83,15 +83,29 @@ test('a role id is found by its code', function () {
         ->and(Role::idFor('UNKNOWN'))->toBeNull();
 });
 
-test('a user is an animator once they animate a club', function () {
+test('role ids are found by their codes', function () {
+    expect(Role::idsFor(Role::MANAGERS))->toEqualCanonicalizing([Role::idFor(Role::PRESIDENT), Role::idFor(Role::ANIMATOR)])
+        ->and(Role::idsFor(['UNKNOWN']))->toBe([]);
+});
+
+test('a user manages a club once they preside or animate it', function () {
     $user = createUser();
     $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $user->id]);
 
     $club->members()->attach($user, ['role_id' => Role::idFor(Role::PLAYER)]);
-    expect($user->isAnimator())->toBeFalse();
+    expect($user->isManager())->toBeFalse()
+        ->and($user->managedClubs()->count())->toBe(0)
+        ->and($user->presides($club))->toBeFalse();
 
     $club->members()->updateExistingPivot($user->id, ['role_id' => Role::idFor(Role::ANIMATOR)]);
-    expect($user->isAnimator())->toBeTrue();
+    expect($user->isManager())->toBeTrue()
+        ->and($user->managedClubs()->count())->toBe(1)
+        ->and($user->presides($club))->toBeFalse();
+
+    $club->members()->updateExistingPivot($user->id, ['role_id' => Role::idFor(Role::PRESIDENT)]);
+    expect($user->isManager())->toBeTrue()
+        ->and($user->managedClubs()->count())->toBe(1)
+        ->and($user->presides($club))->toBeTrue();
 });
 
 test('the full name is the first name then the last name', function () {

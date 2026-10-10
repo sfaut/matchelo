@@ -4,15 +4,17 @@ namespace App\Policies;
 
 use App\Models\Club;
 use App\Models\User;
-use App\Models\User\Role;
 
 /**
  * Droits sur les clubs.
+ *
+ * @see docs/roles.md
  */
 class ClubPolicy
 {
     /**
-     * Gérer un club (tableau de bord, élèves) : l'un de ses animateurs, ou un administrateur.
+     * Gérer un club (tableau de bord, élèves, présences) : l'un de ses présidents ou
+     * animateurs, ou un administrateur.
      */
     public function manage(User $user, Club $club): bool
     {
@@ -20,17 +22,14 @@ class ClubPolicy
             return true;
         }
 
-        return $club->members()
-            ->whereKey($user->id)
-            ->wherePivot('role_id', Role::idFor(Role::ANIMATOR))
-            ->exists();
+        return $user->managedClubs()->whereKey($club->id)->exists();
     }
 
     /**
-     * Modifier un club : mêmes droits que pour le gérer.
+     * Modifier un club : l'un de ses présidents, ou un administrateur.
      */
     public function update(User $user, Club $club): bool
     {
-        return $this->manage($user, $club);
+        return $user->is_administrator || $user->presides($club);
     }
 }

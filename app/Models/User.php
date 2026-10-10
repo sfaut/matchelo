@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * Compte d'un utilisateur : élève, prof animateur ou administrateur.
+ * Compte d'un utilisateur : joueur, animateur ou président d'un club, ou administrateur.
  *
  * @property int $id
  * @property string $last_name
@@ -86,12 +86,35 @@ class User extends Authenticatable
     }
 
     /**
-     * Indique si l'utilisateur anime au moins un club (rôle ANIMATOR) : il a alors accès
-     * au mode « Gérer le club ».
+     * Clubs que l'utilisateur gère, comme président ou animateur (Role::MANAGERS).
+     *
+     * @return BelongsToMany<Club, $this, Pivot, 'pivot'>
      */
-    public function isAnimator(): bool
+    public function managedClubs(): BelongsToMany
     {
-        return $this->clubs()->wherePivot('role_id', Role::idFor(Role::ANIMATOR))->exists();
+        return $this->clubs()->wherePivotIn('role_id', Role::idsFor(Role::MANAGERS));
+    }
+
+    /**
+     * Indique si l'utilisateur gère au moins un club (président ou animateur) : il a alors
+     * accès au mode « Gérer le club ».
+     */
+    public function isManager(): bool
+    {
+        return $this->managedClubs()->exists();
+    }
+
+    /**
+     * Indique si l'utilisateur est président d'un club donné.
+     *
+     * @param  Club  $club  club concerné
+     */
+    public function presides(Club $club): bool
+    {
+        return $this->clubs()
+            ->whereKey($club->id)
+            ->wherePivot('role_id', Role::idFor(Role::PRESIDENT))
+            ->exists();
     }
 
     /**

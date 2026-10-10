@@ -38,14 +38,14 @@ test('factory states make unverified accounts and administrators', function () {
         ->and(User::factory()->administrator()->create()->refresh()->is_administrator)->toBeTrue();
 });
 
-test('a factory club has an invite code and its creator as animator', function () {
+test('a factory club has an invite code and its creator as president', function () {
     $club = Club::factory()->create();
 
     expect($club->code)->toMatch('/^[A-Z]{2}-\d{4}$/')
         ->and($club->city)->not->toBe('')
         ->and($club->members)->toHaveCount(1)
         ->and($club->members->first()->is($club->creator))->toBeTrue()
-        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::ANIMATOR));
+        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT));
 });
 
 test('a bare factory club has neither city nor description', function () {
@@ -73,7 +73,7 @@ test('the demo seeder makes 3 animators with 3 to 5 clubs of 8 to 12 students', 
         $clubs = $animator->createdClubs;
 
         expect($clubs->count())->toBeBetween(...DemoSeeder::CLUBS_PER_ANIMATOR)
-            ->and($animator->isAnimator())->toBeTrue();
+            ->and($animator->isManager())->toBeTrue();
 
         foreach ($clubs as $club) {
             expect($club->members()->wherePivot('role_id', Role::idFor(Role::PLAYER))->count())

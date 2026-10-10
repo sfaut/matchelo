@@ -4,7 +4,6 @@ namespace App\View\Components;
 
 use App\Models\Club;
 use App\Models\User;
-use App\Models\User\Role;
 use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Contracts\View\View;
@@ -13,9 +12,9 @@ use Illuminate\View\Component;
 
 /**
  * Coque de l'application pour un utilisateur connecté : en-tête (logo, switch de mode pour
- * un animateur, bascule clair / sombre, initiales) et barre latérale desktop. En mode
+ * un président ou animateur, bascule clair / sombre, initiales) et barre latérale desktop. En mode
  * « jouer » : mes clubs, création de club, déconnexion. En mode « gérer » un club : sélecteur
- * des clubs animés, navigation de gestion et code d'invitation.
+ * des clubs gérés, navigation de gestion et code d'invitation.
  */
 class AppShell extends Component
 {
@@ -39,11 +38,11 @@ class AppShell extends Component
     public Collection $clubs;
 
     /**
-     * Clubs que l'utilisateur anime (rôle ANIMATOR), par nom.
+     * Clubs que l'utilisateur gère (président ou animateur), par nom.
      *
      * @var Collection<int, Club>
      */
-    public Collection $animatedClubs;
+    public Collection $managedClubs;
 
     /**
      * @param  User  $user  utilisateur connecté
@@ -59,28 +58,27 @@ class AppShell extends Component
         public string $section = 'dashboard',
     ) {
         $this->clubs = $user->clubs()->orderBy('name')->get();
-        $this->animatedClubs = $user->clubs()
-            ->wherePivot('role_id', Role::idFor(Role::ANIMATOR))
+        $this->managedClubs = $user->managedClubs()
             ->orderBy('name')
             ->get();
     }
 
     /**
-     * Indique si l'utilisateur anime l'un de ses clubs, et voit donc le switch de mode.
+     * Indique si l'utilisateur gère l'un de ses clubs, et voit donc le switch de mode.
      */
-    public function isAnimator(): bool
+    public function isManager(): bool
     {
-        return $this->animatedClubs->isNotEmpty();
+        return $this->managedClubs->isNotEmpty();
     }
 
     /**
-     * Indique si l'utilisateur anime un club donné de sa liste.
+     * Indique si l'utilisateur gère un club donné de sa liste.
      *
      * @param  Club  $club  club de la liste
      */
-    public function animates(Club $club): bool
+    public function manages(Club $club): bool
     {
-        return $this->animatedClubs->contains($club);
+        return $this->managedClubs->contains($club);
     }
 
     /**

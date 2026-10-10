@@ -49,8 +49,8 @@ test('creating a club makes the creator its animator and goes back to the clubs 
         ->and($club->logo_path)->toBe('')
         ->and($club->logoUrl())->toBeNull()
         ->and($club->creator->is($this->user))->toBeTrue()
-        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::ANIMATOR))
-        ->and($this->user->isAnimator())->toBeTrue()
+        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT))
+        ->and($this->user->presides($club))->toBeTrue()
         ->and(session('toast'))->toBe(__('clubs.create.created', ['name' => 'Échiquier Nord']));
 });
 

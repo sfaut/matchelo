@@ -8,15 +8,15 @@
             </a>
 
             @if ($isManaging())
-                {{-- Sélecteur des clubs animés --}}
+                {{-- Sélecteur des clubs gérés --}}
                 <div class="relative min-w-0" x-data="{ open: false }" x-on:click.outside="open = false" x-on:keydown.escape="open = false">
                     <button type="button" class="mx-btn mx-btn--sm max-w-full" aria-haspopup="true" aria-expanded="false" x-bind:aria-expanded="open" x-on:click="open = ! open">
                         <span class="truncate">{{ $club->name }}</span> ▾
                     </button>
                     <div class="mx-card absolute top-full left-0 z-30 mt-2 flex min-w-64 flex-col p-1.5" x-show="open" x-cloak>
-                        @foreach ($animatedClubs as $animated_club)
-                            <a href="{{ route('clubs.dashboard', $animated_club) }}" class="mx-nav-item" @if ($animated_club->is($club)) aria-current="page" @endif wire:key="managed-club-{{ $animated_club->id }}">
-                                {{ $animated_club->name }}
+                        @foreach ($managedClubs as $managed_club)
+                            <a href="{{ route('clubs.dashboard', $managed_club) }}" class="mx-nav-item" @if ($managed_club->is($club)) aria-current="page" @endif wire:key="managed-club-{{ $managed_club->id }}">
+                                {{ $managed_club->name }}
                             </a>
                         @endforeach
                     </div>
@@ -25,7 +25,7 @@
         </div>
 
         <div class="flex items-center gap-2.5">
-            @if ($isAnimator())
+            @if ($isManager())
                 <x-mode-switch :mode="$mode" class="hidden desk:grid" />
             @endif
             <x-scheme-toggle />
@@ -34,7 +34,7 @@
             </span>
         </div>
 
-        @if ($isAnimator())
+        @if ($isManager())
             <x-mode-switch :mode="$mode" class="w-full desk:hidden" />
         @endif
     </header>
@@ -76,7 +76,7 @@
                 @foreach ($clubs as $member_club)
                     <div class="mx-card flex items-center justify-between gap-1.5 px-2.5 py-2" wire:key="sidebar-club-{{ $member_club->id }}">
                         <b class="truncate">{{ $member_club->name }}</b>
-                        @if ($animates($member_club))
+                        @if ($manages($member_club))
                             <span class="mx-badge">{{ __('components.app_shell.animator_badge') }}</span>
                         @endif
                     </div>

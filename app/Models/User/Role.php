@@ -46,6 +46,13 @@ class Role extends Model
     public const string PLAYER = 'PLAYER';
 
     /**
+     * Codes des rôles qui gèrent un club (mode « Gérer le club »).
+     *
+     * @var list<string>
+     */
+    public const array MANAGERS = [self::PRESIDENT, self::ANIMATOR];
+
+    /**
      * Donne l'identifiant du rôle portant un code.
      *
      * @param  string  $code  code du rôle (Role::PRESIDENT, Role::ANIMATOR, Role::PLAYER)
@@ -53,5 +60,16 @@ class Role extends Model
     public static function idFor(string $code): ?int
     {
         return static::query()->where('code', $code)->value('id');
+    }
+
+    /**
+     * Donne les identifiants des rôles portant des codes.
+     *
+     * @param  list<string>  $codes  codes des rôles (ex. Role::MANAGERS)
+     * @return list<int>
+     */
+    public static function idsFor(array $codes): array
+    {
+        return array_values(static::query()->whereIn('code', $codes)->get()->map(fn (Role $role): int => $role->id)->all());
     }
 }

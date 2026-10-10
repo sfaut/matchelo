@@ -52,7 +52,7 @@ class ClubForm extends Form
     }
 
     /**
-     * Crée le club, avec un code d'invitation, et y inscrit son créateur comme animateur.
+     * Crée le club, avec un code d'invitation, et y inscrit son créateur comme président.
      */
     public function create(User $creator, ClubLogo $club_logo): Club
     {
@@ -68,7 +68,7 @@ class ClubForm extends Form
                 'user_id' => $creator->id,
             ]);
 
-            $club->members()->attach($creator, ['role_id' => Role::idFor(Role::ANIMATOR)]);
+            $club->members()->attach($creator, ['role_id' => Role::idFor(Role::PRESIDENT)]);
 
             if ($this->logo !== null) {
                 $club->update(['logo_path' => $club_logo->store($this->logo, $club)]);
