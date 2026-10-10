@@ -1,3 +1,15 @@
+# Spécifications métier
+
+Les spécifications de Matchelo se trouvent dans `docs/`, un fichier par domaine, listés dans
+`docs/README.md`.
+
+- Avant de modifier un domaine (rôles, clubs, sections…), lire son fichier dans `docs/` et
+  respecter les règles qui y figurent.
+- Toute information structurante (règle métier, rôle ou droit, entité et relations, invariant)
+  se documente dans `docs/`, dans le même mouvement que le code, avec un commit de doc à part.
+- Le code reste la référence des valeurs (codes, longueurs, identifiants) : la doc y renvoie sans
+  les recopier.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
