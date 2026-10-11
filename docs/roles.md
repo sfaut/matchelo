@@ -9,7 +9,9 @@ Matchelo distingue deux niveaux :
 
 - **l'administrateur**, global à l'application, signalé par l'indicateur `users.is_administrator` ;
 - **les rôles de club** (président, animateur, arbitre, joueur), portés par les adhésions
-  (`memberships.role_id` → `roles.id`, modèle `Membership`).
+  (`memberships.role_id` → `roles.id`, modèle `Membership`). Seule une adhésion active donne
+  des droits : un membre en attente, suspendu ou parti n'en a aucun dans le club (voir
+  [clubs.md](clubs.md)).
 
 L'unicité `(club_id, user_id)` des adhésions limite chaque utilisateur à **un seul rôle
 par club** ; il peut tenir des rôles différents dans des clubs différents (animateur ici, joueur

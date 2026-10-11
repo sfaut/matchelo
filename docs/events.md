@@ -8,7 +8,9 @@ enregistre la présence de chacun. L'organisation du club figure dans [clubs.md]
 - **Horodatage** : à la seconde (`events.scheduled_at`). Un club peut tenir plusieurs événements
   au même horodatage, par exemple un cours et un tournoi.
 - **Type** : cours, tournoi ou autre (`event_types`, constantes de `EventType`).
-- **Statut** : suit la vie de l'événement (`event_statuses`, constantes de `EventStatus`).
+- **Statut** : suit la vie de l'événement (`event_statuses`, constantes de `EventStatus`),
+  historisé dans `event_status_changes` (voir la section « Historique des statuts » de
+  [clubs.md](clubs.md)).
 
 | Statut      | Sens                                               |
 |-------------|----------------------------------------------------|
@@ -87,8 +89,12 @@ doit un jour se propager d'elle-même aux occurrences à venir.
 
 ## Pointage
 
-Le pointage enregistre une ligne par membre et par événement (`attendances`), avec son rôle à
-l'événement et son statut de présence (`attendance_statuses`, constantes de `AttendanceStatus`).
+Le pointage enregistre une ligne par membre et par événement (`attendances`, modèle
+`Attendance`), avec son propre identifiant, son rôle à l'événement et son statut de présence
+(`attendance_statuses`, constantes de `AttendanceStatus`). Un utilisateur est pointé au plus une
+fois par événement (unicité `(event_id, user_id)`). Chaque statut de présence pris s'historise
+dans `attendance_status_changes`, horodaté et attribué à son auteur (voir la section
+« Historique des statuts » de [clubs.md](clubs.md)).
 
 | Statut    | Sens                                          | Compté présent |
 |-----------|-----------------------------------------------|----------------|
