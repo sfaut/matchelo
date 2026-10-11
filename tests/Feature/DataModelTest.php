@@ -18,7 +18,7 @@ beforeEach(function () {
 });
 
 test('the seeders fill the reference tables', function () {
-    expect(Role::pluck('code')->all())->toEqualCanonicalizing(['PRESIDENT', 'ANIMATOR', 'PLAYER'])
+    expect(Role::pluck('code')->all())->toEqualCanonicalizing(['PRESIDENT', 'ANIMATOR', 'PLAYER', 'REFEREE'])
         ->and(Role::where('description', '')->exists())->toBeFalse()
         ->and(EventType::pluck('code')->all())->toEqualCanonicalizing(['COURSE', 'TOURNAMENT', 'OTHER'])
         ->and(EventStatus::pluck('code')->all())->toEqualCanonicalizing(['DRAFT', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'FINALIZED', 'CANCELLED'])
@@ -176,6 +176,17 @@ test('a role id is found by its code', function () {
 test('role ids are found by their codes', function () {
     expect(Role::idsFor(Role::MANAGERS))->toEqualCanonicalizing([Role::idFor(Role::PRESIDENT), Role::idFor(Role::ANIMATOR)])
         ->and(Role::idsFor(['UNKNOWN']))->toBe([]);
+});
+
+test('a referee does not manage the club', function () {
+    $club = Club::factory()->create();
+    $referee = User::factory()->create();
+    $club->members()->attach($referee, ['role_id' => Role::idFor(Role::REFEREE)]);
+
+    expect(Role::idFor(Role::REFEREE))->not->toBeNull()
+        ->and(Role::MANAGERS)->not->toContain(Role::REFEREE)
+        ->and($referee->managedClubs()->exists())->toBeFalse()
+        ->and($referee->can('manage', $club))->toBeFalse();
 });
 
 test('a user manages a club once they preside or animate it', function () {

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * Rôle d'un membre dans un club (président, animateur, joueur), porté par club_user.role_id.
+ * Rôle d'un membre dans un club (président, animateur, arbitre, joueur), porté par club_user.role_id.
  *
  * @see docs/roles.md
  *
@@ -46,6 +46,13 @@ class Role extends Model
     public const string PLAYER = 'PLAYER';
 
     /**
+     * Code du rôle d'arbitre (valide ou saisit les résultats des parties, sans gérer le club).
+     *
+     * @var string
+     */
+    public const string REFEREE = 'REFEREE';
+
+    /**
      * Codes des rôles qui gèrent un club (mode « Gérer le club »).
      *
      * @var list<string>
@@ -55,7 +62,7 @@ class Role extends Model
     /**
      * Donne l'identifiant du rôle portant un code.
      *
-     * @param  string  $code  code du rôle (Role::PRESIDENT, Role::ANIMATOR, Role::PLAYER)
+     * @param  string  $code  code du rôle (Role::PRESIDENT, Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
      */
     public static function idFor(string $code): ?int
     {
