@@ -34,7 +34,6 @@ use InvalidArgumentException;
  * @property-read Collection<int, User> $members
  * @property-read Collection<int, Membership> $memberships
  * @property-read Collection<int, Event> $events
- * @property-read Collection<int, Section> $sections
  */
 #[Fillable(['name', 'code', 'city', 'description', 'logo_path', 'user_id'])]
 class Club extends Model
@@ -158,25 +157,6 @@ class Club extends Model
             ->orderByRaw("case when memberships.role_id in ({$placeholders}) then 0 else 1 end", $preferred_role_ids)
             ->orderBy('users.last_name')
             ->orderBy('users.first_name');
-    }
-
-    /**
-     * Sections du club, dont la section générale.
-     *
-     * @return HasMany<Section, $this>
-     */
-    public function sections(): HasMany
-    {
-        return $this->hasMany(Section::class);
-    }
-
-    /**
-     * Crée la section générale du club, nommée dans la langue courante ; à appeler à la
-     * création du club, qui compte toujours au moins une section.
-     */
-    public function createDefaultSection(): Section
-    {
-        return $this->sections()->create(['name' => __('clubs.sections.default_name')]);
     }
 
     /**

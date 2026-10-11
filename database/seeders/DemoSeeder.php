@@ -10,10 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Données de démonstration : 3 animateurs (animateur1@matchelo.test… mot de passe « password »),
- * chacun avec 3 à 5 clubs de 8 à 12 élèves, la moitié environ sans compte, tous dans la section
- * générale. Chaque club a une séance par semaine depuis 8 semaines ; le premier club de chaque
- * animateur a en plus une section supplémentaire (la moitié des élèves) et une séance
- * aujourd'hui, appel en cours.
+ * chacun avec 3 à 5 clubs de 8 à 12 élèves, la moitié environ sans compte. Chaque club a une
+ * séance par semaine depuis 8 semaines ; le premier club de chaque animateur a en plus une
+ * séance aujourd'hui, appel en cours.
  */
 class DemoSeeder extends Seeder
 {
@@ -61,7 +60,6 @@ class DemoSeeder extends Seeder
                     Club::factory()
                         ->for($animator, 'creator')
                         ->withStudents(fake()->numberBetween(...self::STUDENTS_PER_CLUB))
-                        ->when($club_number === 1, fn (ClubFactory $factory): ClubFactory => $factory->withExtraSection())
                         ->withSessions(self::WEEKS_OF_SESSIONS)
                         ->when($club_number === 1, fn (ClubFactory $factory): ClubFactory => $factory->withTodaySession())
                         ->create();

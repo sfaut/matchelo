@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Club;
 use App\Models\Event;
-use App\Models\Section;
 use App\Models\User;
 use App\Models\User\Role;
 use Carbon\CarbonImmutable;
@@ -13,8 +12,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Clubs de test : nom d'établissement, code d'invitation unique, section générale, créateur
- * inscrit comme président.
+ * Clubs de test : nom d'établissement, code d'invitation unique, créateur inscrit comme
+ * président.
  * Les rôles (RoleSeeder) doivent exister.
  *
  * @extends Factory<Club>
@@ -77,8 +76,7 @@ class ClubFactory extends Factory
     }
 
     /**
-     * Configure the model factory : le club reçoit sa section générale, et le créateur en
-     * devient président.
+     * Configure the model factory : le créateur du club en devient président.
      */
     public function configure(): static
     {
@@ -86,12 +84,11 @@ class ClubFactory extends Factory
             $club->members()->syncWithoutDetaching([
                 $club->user_id => ['role_id' => Role::idFor(Role::PRESIDENT)],
             ]);
-            $club->createDefaultSection();
         });
     }
 
     /**
-     * Ajoute au club des élèves joueurs, avec ou sans compte, inscrits dans sa section générale.
+     * Ajoute au club des élèves joueurs, avec ou sans compte.
      *
      * @param  int  $count  nombre d'élèves
      * @param  float  $without_account_share  part des élèves sans compte (0 à 1)
@@ -104,23 +101,6 @@ class ClubFactory extends Factory
                 ->concat(User::factory()->count($count - $without_account)->create());
 
             $club->members()->attach($students->pluck('id'), ['role_id' => Role::idFor(Role::PLAYER)]);
-            $club->sections()->oldest('id')->firstOrFail()->players()->attach($students->pluck('id'));
-        });
-    }
-
-    /**
-     * Ajoute une section supplémentaire (SectionFactory::NAMES), où s'inscrit environ la
-     * moitié des joueurs. À appliquer après withStudents().
-     */
-    public function withExtraSection(): static
-    {
-        return $this->afterCreating(function (Club $club): void {
-            $players = $club->members()->wherePivot('role_id', Role::idFor(Role::PLAYER))->get();
-
-            Section::factory()
-                ->for($club)
-                ->withPlayers($players->random(intdiv($players->count(), 2)))
-                ->create();
         });
     }
 

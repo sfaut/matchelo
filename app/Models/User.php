@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -34,7 +33,6 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, Club> $createdClubs
  * @property-read Collection<int, Club> $clubs
  * @property-read Collection<int, Membership> $memberships
- * @property-read Collection<int, Section> $sections
  */
 #[Fillable(['last_name', 'first_name', 'elo_rating', 'email', 'password_hash'])]
 #[Hidden(['password_hash', 'remember_token'])]
@@ -98,18 +96,6 @@ class User extends Authenticatable
     public function memberships(): HasMany
     {
         return $this->hasMany(Membership::class);
-    }
-
-    /**
-     * Sections de club dont l'utilisateur est membre, avec son rôle dans chacune (pivot role_id).
-     *
-     * @return BelongsToMany<Section, $this, Pivot, 'pivot'>
-     */
-    public function sections(): BelongsToMany
-    {
-        return $this->belongsToMany(Section::class)
-            ->withPivot('role_id')
-            ->withTimestamps();
     }
 
     /**

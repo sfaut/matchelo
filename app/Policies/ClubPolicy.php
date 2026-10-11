@@ -32,13 +32,4 @@ class ClubPolicy
     {
         return $user->is_administrator || $user->presides($club);
     }
-
-    /**
-     * Gérer les sections d'un club (créer, renommer, y répartir les joueurs) : l'un de ses
-     * présidents, ou un administrateur.
-     */
-    public function manageSections(User $user, Club $club): bool
-    {
-        return $this->update($user, $club);
-    }
 }

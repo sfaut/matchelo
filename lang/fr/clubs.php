@@ -33,10 +33,6 @@ return [
         'remove_logo' => 'Retirer le logo',
     ],
 
-    'sections' => [
-        'default_name' => 'Section générale',
-    ],
-
     'create' => [
         'title' => 'Nouveau club',
         'president_hint' => 'Vous serez président de ce club.',
@@ -95,9 +91,6 @@ return [
         'no_account' => 'sans compte',
         'added' => ':name ajouté au club',
         'created' => ':name créé et ajouté au club',
-        'section' => 'Section du joueur',
-        'no_section' => 'Aucune section',
-        'section_hint' => 'Facultatif · vaut pour le joueur trouvé comme pour le nouveau joueur',
     ],
 
     'attendance' => [
