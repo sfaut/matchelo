@@ -39,12 +39,34 @@ test('a club may hold several events at the same time', function () {
     expect($this->club->events()->whereDate('scheduled_at', '2026-09-24')->count())->toBe(2);
 });
 
-test('a roll-call session is a completed course, its attendees marked present', function () {
+test('a roll-call session is a completed course, every member expected, its attendees marked present', function () {
     $session = createSession($this->club, '2026-09-24', [$this->lea]);
+    $statuses = DB::table('attendances')->pluck('attendance_status_id', 'user_id');
+    $expected_id = AttendanceStatus::idFor(AttendanceStatus::EXPECTED);
 
     expect($session->type->code)->toBe(EventType::COURSE)
         ->and($session->status->code)->toBe(EventStatus::COMPLETED)
-        ->and(DB::table('attendances')->value('attendance_status_id'))->toBe(AttendanceStatus::idFor(AttendanceStatus::PRESENT));
+        ->and($statuses->keys()->all())->toEqualCanonicalizing($this->club->members()->pluck('users.id')->all())
+        ->and($statuses[$this->lea->id])->toBe(AttendanceStatus::idFor(AttendanceStatus::PRESENT))
+        ->and($statuses->except($this->lea->id)->unique()->values()->all())->toBe([$expected_id]);
+});
+
+test('late and injured members count as attendees, absent and excused ones do not', function () {
+    $session = createSession($this->club, '2026-09-24');
+    $session->setAttendance([$this->lea->id], AttendanceStatus::LATE);
+    $session->setAttendance([$this->tom->id], AttendanceStatus::INJURED);
+    $session->setAttendance([$this->ines->id], AttendanceStatus::EXCUSED);
+
+    expect($session->attendees()->pluck('users.id')->all())->toEqualCanonicalizing([$this->lea->id, $this->tom->id]);
+});
+
+test('resetting the attendance puts every member back to expected', function () {
+    $session = createSession($this->club, '2026-09-24', [$this->lea, $this->tom]);
+    $session->resetAttendance();
+
+    expect($session->attendees()->count())->toBe(0)
+        ->and($session->participants()->wherePivot('attendance_status_id', AttendanceStatus::idFor(AttendanceStatus::EXPECTED))->count())
+        ->toBe($this->club->members()->count());
 });
 
 test('deleting a session deletes its attendances', function () {

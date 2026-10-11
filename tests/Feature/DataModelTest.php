@@ -22,7 +22,7 @@ test('the seeders fill the reference tables', function () {
         ->and(Role::where('description', '')->exists())->toBeFalse()
         ->and(EventType::pluck('code')->all())->toEqualCanonicalizing(['COURSE', 'TOURNAMENT', 'OTHER'])
         ->and(EventStatus::pluck('code')->all())->toEqualCanonicalizing(['DRAFT', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'FINALIZED', 'CANCELLED'])
-        ->and(AttendanceStatus::pluck('code')->all())->toEqualCanonicalizing(['PRESENT', 'ABSENT', 'EXCUSED']);
+        ->and(AttendanceStatus::pluck('code')->all())->toEqualCanonicalizing(['EXPECTED', 'PRESENT', 'ABSENT', 'EXCUSED', 'LATE', 'INJURED']);
 });
 
 test('a user is not an administrator by default', function () {

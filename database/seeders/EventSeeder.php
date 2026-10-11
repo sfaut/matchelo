@@ -38,9 +38,12 @@ class EventSeeder extends Seeder
         }
 
         $attendance_statuses = [
-            ['id' => 1, 'code' => 'PRESENT', 'name' => 'Présent', 'description' => "Membre présent à l'événement"],
-            ['id' => 2, 'code' => 'ABSENT',  'name' => 'Absent',  'description' => "Membre absent de l'événement"],
-            ['id' => 3, 'code' => 'EXCUSED', 'name' => 'Excusé',  'description' => "Membre absent de l'événement, excusé"],
+            ['id' => 1, 'code' => 'EXPECTED', 'name' => 'Prévu',     'description' => 'Joueur attendu'],
+            ['id' => 2, 'code' => 'PRESENT',  'name' => 'Présent',   'description' => 'Joueur présent'],
+            ['id' => 3, 'code' => 'ABSENT',   'name' => 'Absent',    'description' => 'Joueur absent non excusé'],
+            ['id' => 4, 'code' => 'EXCUSED',  'name' => 'Excusé',    'description' => 'Joueur absent avec excuse acceptée'],
+            ['id' => 5, 'code' => 'LATE',     'name' => 'En retard', 'description' => 'Joueur arrivé en retard'],
+            ['id' => 6, 'code' => 'INJURED',  'name' => 'Blessé',    'description' => 'Joueur présent mais blessé / ne participe pas'],
         ];
 
         foreach ($attendance_statuses as $record) {

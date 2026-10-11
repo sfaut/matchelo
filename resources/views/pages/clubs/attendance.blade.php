@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AttendanceStatus;
 use App\Models\Club;
 use App\Models\Event;
 use App\Models\User;
@@ -167,7 +168,10 @@ new class extends Component
         $this->authorize('manage', $this->club);
 
         if ($this->club->members()->whereKey($userId)->exists()) {
-            $this->sessionToFill()->attendees()->toggle([$userId]);
+            $session = $this->sessionToFill();
+            $is_present = $session->attendees()->whereKey($userId)->exists();
+
+            $session->setAttendance([$userId], $is_present ? AttendanceStatus::EXPECTED : AttendanceStatus::PRESENT);
         }
 
         unset($this->session, $this->presentIds);
@@ -182,7 +186,7 @@ new class extends Component
     {
         $this->authorize('manage', $this->club);
 
-        $this->sessionToFill()->attendees()->syncWithoutDetaching($this->club->members()->pluck('users.id'));
+        $this->sessionToFill()->setAttendance($this->club->members()->pluck('users.id'), AttendanceStatus::PRESENT);
 
         unset($this->session, $this->presentIds);
     }
@@ -196,7 +200,7 @@ new class extends Component
     {
         $this->authorize('manage', $this->club);
 
-        $this->session?->attendees()->detach();
+        $this->session?->resetAttendance();
 
         unset($this->session, $this->presentIds);
     }

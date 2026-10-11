@@ -92,18 +92,21 @@ class Club extends Model
     }
 
     /**
-     * Crée un cours du club à une date, au statut terminé (pointage encore modifiable) : c'est
-     * l'événement que crée le pointage d'une séance.
+     * Crée un cours du club à une date, au statut terminé (pointage encore modifiable), chaque
+     * membre attendu : c'est l'événement que crée le pointage d'une séance.
      *
      * @param  string  $date  date du cours (AAAA-MM-JJ)
      */
     public function createCourse(string $date): Event
     {
-        return $this->events()->create([
+        $course = $this->events()->create([
             'scheduled_at' => $date,
             'event_type_id' => EventType::idFor(EventType::COURSE),
             'event_status_id' => EventStatus::idFor(EventStatus::COMPLETED),
         ]);
+        $course->expectMembers();
+
+        return $course;
     }
 
     /**

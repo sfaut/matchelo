@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AttendanceStatus;
 use App\Models\Club;
 use App\Models\Event;
 use App\Models\User;
@@ -90,7 +91,7 @@ function createClubWith(string $name, array $members): Club
 function createSession(Club $club, string $date, array $attendees = []): Event
 {
     $session = $club->createCourse($date);
-    $session->attendees()->attach(collect($attendees)->pluck('id'));
+    $session->setAttendance(collect($attendees)->pluck('id'), AttendanceStatus::PRESENT);
 
     return $session;
 }
