@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 
 /**
  * Club d'échecs, créé par un utilisateur et réunissant des membres avec un rôle.
@@ -106,36 +105,6 @@ class Club extends Model
             'event_status_id' => EventStatus::idFor(EventStatus::COMPLETED),
         ]);
         $course->expectMembers();
-
-        return $course;
-    }
-
-    /**
-     * Planifie un cours du club, avec ses animateurs et ses joueurs (élèves) attendus ; un cours
-     * compte au moins un animateur et au moins un joueur.
-     *
-     * @param  string  $scheduled_at  horodatage du cours (AAAA-MM-JJ HH:MM:SS)
-     * @param  iterable<int|string>  $animator_ids  identifiants des animateurs
-     * @param  iterable<int|string>  $player_ids  identifiants des joueurs
-     *
-     * @throws InvalidArgumentException sans animateur ou sans joueur
-     */
-    public function scheduleCourse(string $scheduled_at, iterable $animator_ids, iterable $player_ids): Event
-    {
-        $animator_ids = collect($animator_ids);
-        $player_ids = collect($player_ids);
-
-        if ($animator_ids->isEmpty() || $player_ids->isEmpty()) {
-            throw new InvalidArgumentException('Un cours compte au moins un animateur et au moins un joueur.');
-        }
-
-        $course = $this->events()->create([
-            'scheduled_at' => $scheduled_at,
-            'event_type_id' => EventType::idFor(EventType::COURSE),
-            'event_status_id' => EventStatus::idFor(EventStatus::SCHEDULED),
-        ]);
-        $course->enrol($animator_ids, Role::ANIMATOR);
-        $course->enrol($player_ids, Role::PLAYER);
 
         return $course;
     }

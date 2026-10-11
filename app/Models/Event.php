@@ -154,20 +154,48 @@ class Event extends Model
     }
 
     /**
-     * Inscrit des membres à l'événement avec un rôle et un statut de présence ; un membre déjà
-     * inscrit y change de rôle et de statut.
+     * Inscrit des membres à l'événement avec un rôle : un nouveau venu y est attendu
+     * (AttendanceStatus::EXPECTED), un membre déjà inscrit y change de rôle et garde son statut de
+     * présence.
      *
      * @param  iterable<int|string>  $user_ids  identifiants des membres
      * @param  string  $role_code  code du rôle à l'événement (Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
-     * @param  string  $status_code  code du statut (constante de AttendanceStatus)
      */
-    public function enrol(iterable $user_ids, string $role_code, string $status_code = AttendanceStatus::EXPECTED): void
+    public function enrol(iterable $user_ids, string $role_code): void
     {
-        $pivot = ['role_id' => Role::idFor($role_code), 'attendance_status_id' => AttendanceStatus::idFor($status_code)];
+        $role_id = Role::idFor($role_code);
+        $user_ids = collect($user_ids)->map(fn (int|string $user_id): int => (int) $user_id)->unique()->values();
+        $enrolled_ids = $this->participants()->whereKey($user_ids)->pluck('users.id');
 
-        $this->participants()->syncWithoutDetaching(
-            collect($user_ids)->mapWithKeys(fn (int|string $user_id): array => [(int) $user_id => $pivot])->all(),
+        $this->participants()->newPivotQuery()->whereIn('user_id', $enrolled_ids)->update([
+            'role_id' => $role_id,
+            'updated_at' => $this->freshTimestampString(),
+        ]);
+
+        $pivot = ['role_id' => $role_id, 'attendance_status_id' => AttendanceStatus::idFor(AttendanceStatus::EXPECTED)];
+
+        $this->participants()->attach(
+            $user_ids->diff($enrolled_ids)->mapWithKeys(fn (int $user_id): array => [$user_id => $pivot])->all(),
         );
+    }
+
+    /**
+     * Retire des membres de l'événement, avec leur pointage.
+     *
+     * @param  iterable<int|string>  $user_ids  identifiants des membres
+     */
+    public function withdraw(iterable $user_ids): void
+    {
+        $this->participants()->detach(collect($user_ids)->map(fn (int|string $user_id): int => (int) $user_id)->all());
+    }
+
+    /**
+     * Indique si l'événement compte au moins un animateur et au moins un joueur, comme l'exige un
+     * cours planifié.
+     */
+    public function isStaffed(): bool
+    {
+        return $this->animators()->exists() && $this->players()->exists();
     }
 
     /**

@@ -1,10 +1,7 @@
 <?php
 
 use App\Models\AttendanceStatus;
-use App\Models\EventStatus;
-use App\Models\EventType;
 use App\Models\User\Role;
-use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
     $this->seed();
@@ -20,20 +17,6 @@ beforeEach(function () {
         Role::PLAYER => $this->tom,
     ]);
 });
-
-/**
- * Donne le code du rôle tenu par chaque participant d'un événement.
- *
- * @return array<int, string> code du rôle, indexé par identifiant d'utilisateur
- */
-function eventRoleCodes(int $event_id): array
-{
-    return DB::table('attendances')
-        ->join('roles', 'roles.id', '=', 'attendances.role_id')
-        ->where('event_id', $event_id)
-        ->pluck('roles.code', 'user_id')
-        ->all();
-}
 
 test('the expected members hold the event role given by their club role', function () {
     $course = $this->club->createCourse('2026-09-24');
@@ -70,29 +53,26 @@ test('a newcomer gets the event role of their club role, a non-member plays', fu
         ->and($course->attendees->pluck('id')->all())->toEqualCanonicalizing([$newcomer->id, $guest->id]);
 });
 
-test('scheduling a course enrols its animators and players as expected', function () {
-    $course = $this->club->scheduleCourse('2026-10-15 17:30:00', [$this->rita->id], [$this->tom->id, $this->lea->id]);
+test('enrolling an enrolled member changes their role and keeps their attendance', function () {
+    $course = $this->club->createCourse('2026-09-24');
+    $course->setAttendance([$this->tom->id], AttendanceStatus::PRESENT);
 
-    expect($course->type->code)->toBe(EventType::COURSE)
-        ->and($course->status->code)->toBe(EventStatus::SCHEDULED)
-        ->and($course->scheduled_at->format('Y-m-d H:i:s'))->toBe('2026-10-15 17:30:00')
-        ->and(eventRoleCodes($course->id))->toEqual([
-            $this->rita->id => Role::ANIMATOR,
-            $this->tom->id => Role::PLAYER,
-            $this->lea->id => Role::PLAYER,
-        ])
-        ->and($course->participants()->wherePivot('attendance_status_id', AttendanceStatus::idFor(AttendanceStatus::EXPECTED))->count())->toBe(3);
+    $course->enrol([$this->tom->id], Role::ANIMATOR);
+
+    expect(eventRoleCodes($course->id)[$this->tom->id])->toBe(Role::ANIMATOR)
+        ->and($course->attendees->pluck('id')->all())->toBe([$this->tom->id]);
 });
 
-test('a course needs at least one animator and one player', function (Closure $participant_ids) {
-    expect(fn () => $this->club->scheduleCourse('2026-10-15 17:30:00', ...$participant_ids->call($this)))
-        ->toThrow(InvalidArgumentException::class);
+test('a course is staffed with at least one animator and one player', function () {
+    $course = $this->club->createCourse('2026-09-24');
 
-    expect($this->club->events()->count())->toBe(0);
-})->with([
-    'no animator' => [fn (): array => [[], [$this->tom->id]]],
-    'no player' => [fn (): array => [[$this->lea->id], []]],
-]);
+    expect($course->isStaffed())->toBeTrue();
+
+    $course->withdraw([$this->tom->id]);
+
+    expect($course->isStaffed())->toBeFalse()
+        ->and($course->participants()->whereKey($this->tom->id)->exists())->toBeFalse();
+});
 
 test('the candidates for an event role list the members of the matching club roles first', function (string $event_role_code, Closure $expected) {
     expect($this->club->candidatesFor($event_role_code)->pluck('users.id')->all())->toBe($expected->call($this));

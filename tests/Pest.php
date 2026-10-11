@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /*
@@ -94,4 +95,18 @@ function createSession(Club $club, string $date, array $attendees = []): Event
     $session->setAttendance(collect($attendees)->pluck('id'), AttendanceStatus::PRESENT);
 
     return $session;
+}
+
+/**
+ * Donne le code du rôle tenu par chaque participant d'un événement.
+ *
+ * @return array<int, string> code du rôle, indexé par identifiant d'utilisateur
+ */
+function eventRoleCodes(int $event_id): array
+{
+    return DB::table('attendances')
+        ->join('roles', 'roles.id', '=', 'attendances.role_id')
+        ->where('event_id', $event_id)
+        ->pluck('roles.code', 'user_id')
+        ->all();
 }
