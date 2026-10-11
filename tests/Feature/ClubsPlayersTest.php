@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\MembershipStatus;
 use App\Models\User;
 use App\Models\User\Role;
 use Livewire\Livewire;
@@ -127,4 +128,21 @@ test('the page lists the club members, flagging players without account', functi
         ->assertSee(trans_choice('clubs.players.members', 2))
         ->assertSeeInOrder(['Nathan Diallo', __('clubs.players.no_account')])
         ->assertSeeInOrder(['Marie Durand', __('clubs.index.animator_badge')]);
+});
+
+test('adding a former member reactivates their membership, role kept', function () {
+    $lea = createUser(['email' => 'lea@example.org', 'first_name' => 'Léa', 'last_name' => 'Martin']);
+    $this->club->members()->attach($lea, ['role_id' => Role::idFor(Role::REFEREE)]);
+    $membership = $this->club->memberships()->where('user_id', $lea->id)->firstOrFail();
+    $membership->changeStatus(MembershipStatus::LEFT);
+
+    Livewire::test('pages::clubs.players.create', ['club' => $this->club])
+        ->set('search', 'léa')
+        ->assertSee('Léa Martin')
+        ->call('add', $lea->id)
+        ->assertHasNoErrors();
+
+    expect($this->club->memberships()->where('user_id', $lea->id)->count())->toBe(1)
+        ->and($membership->fresh()->status->code)->toBe(MembershipStatus::ACTIVE)
+        ->and($membership->fresh()->role->code)->toBe(Role::REFEREE);
 });

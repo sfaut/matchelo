@@ -74,8 +74,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Clubs dont l'utilisateur est membre, chacun avec son adhésion (attribut membership : rôle,
-     * date d'adhésion).
+     * Clubs dont l'utilisateur est membre actif (MembershipStatus::ACTIVE), chacun avec son
+     * adhésion (attribut membership : rôle, statut, date d'adhésion) ; ses droits en découlent.
      *
      * @return BelongsToMany<Club, $this, Membership, 'membership'>
      */
@@ -84,12 +84,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Club::class, 'memberships')
             ->using(Membership::class)
             ->as('membership')
-            ->withPivot('id', 'role_id', 'joined_at')
+            ->withPivot('id', 'role_id', 'membership_status_id', 'joined_at')
+            ->wherePivot('membership_status_id', MembershipStatus::idFor(MembershipStatus::ACTIVE))
             ->withTimestamps();
     }
 
     /**
-     * Adhésions de l'utilisateur aux clubs.
+     * Adhésions de l'utilisateur aux clubs, quel que soit leur statut.
      *
      * @return HasMany<Membership, $this>
      */

@@ -133,9 +133,7 @@ new class extends Component
 
         $player = User::query()->findOrFail($userId);
 
-        if (! $this->club->members()->whereKey($player->id)->exists()) {
-            $this->club->members()->attach($player, ['role_id' => Role::idFor(Role::PLAYER)]);
-        }
+        $this->club->admit($player, Role::PLAYER);
 
         $this->backWithToast(__('clubs.players.added', ['name' => $player->fullName()]));
     }
@@ -160,7 +158,7 @@ new class extends Component
             'elo_rating' => (int) $this->startingElo,
         ]);
 
-        $this->club->members()->attach($player, ['role_id' => Role::idFor(Role::PLAYER)]);
+        $this->club->admit($player, Role::PLAYER);
 
         $this->backWithToast(__('clubs.players.created', ['name' => $player->fullName()]));
     }

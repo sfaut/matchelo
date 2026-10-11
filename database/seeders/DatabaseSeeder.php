@@ -2,13 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * Alimente la base. Les événements de modèle restent actifs : ils historisent les statuts
+ * (RecordsStatusChanges) et complètent les adhésions.
+ */
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         $this->call([

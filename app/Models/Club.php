@@ -129,7 +129,8 @@ class Club extends Model
     }
 
     /**
-     * Membres du club, chacun avec son adhésion (attribut membership : rôle, date d'adhésion).
+     * Membres actifs du club (MembershipStatus::ACTIVE), chacun avec son adhésion (attribut
+     * membership : rôle, statut, date d'adhésion). Une adhésion créée par attach() est active.
      *
      * @return BelongsToMany<User, $this, Membership, 'membership'>
      */
@@ -138,17 +139,38 @@ class Club extends Model
         return $this->belongsToMany(User::class, 'memberships')
             ->using(Membership::class)
             ->as('membership')
-            ->withPivot('id', 'role_id', 'joined_at')
+            ->withPivot('id', 'role_id', 'membership_status_id', 'joined_at')
+            ->wherePivot('membership_status_id', MembershipStatus::idFor(MembershipStatus::ACTIVE))
             ->withTimestamps();
     }
 
     /**
-     * Adhésions au club.
+     * Adhésions au club, quel que soit leur statut (en attente, active, suspendue, partie).
      *
      * @return HasMany<Membership, $this>
      */
     public function memberships(): HasMany
     {
         return $this->hasMany(Membership::class);
+    }
+
+    /**
+     * Fait d'un utilisateur un membre actif du club : crée son adhésion avec un rôle, ou réactive
+     * celle qu'il a déjà (en attente, suspendue, partie), rôle inchangé.
+     *
+     * @param  User  $user  futur membre
+     * @param  string  $role_code  rôle d'une nouvelle adhésion (constante de Role)
+     */
+    public function admit(User $user, string $role_code): Membership
+    {
+        $membership = $this->memberships()->where('user_id', $user->id)->first();
+
+        if ($membership === null) {
+            return $this->memberships()->create(['user_id' => $user->id, 'role_id' => Role::idFor($role_code)]);
+        }
+
+        $membership->changeStatus(MembershipStatus::ACTIVE);
+
+        return $membership;
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventStatus;
 use App\Models\EventType;
 use App\Models\Membership;
+use App\Models\MembershipStatus;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Database\QueryException;
@@ -23,13 +24,15 @@ test('the seeders fill the reference tables', function () {
         ->and(Role::where('description', '')->exists())->toBeFalse()
         ->and(EventType::pluck('code')->all())->toEqualCanonicalizing(['COURSE', 'TOURNAMENT', 'OTHER'])
         ->and(EventStatus::pluck('code')->all())->toEqualCanonicalizing(['DRAFT', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'FINALIZED', 'CANCELLED'])
-        ->and(AttendanceStatus::pluck('code')->all())->toEqualCanonicalizing(['EXPECTED', 'PRESENT', 'ABSENT', 'EXCUSED', 'LATE']);
+        ->and(AttendanceStatus::pluck('code')->all())->toEqualCanonicalizing(['EXPECTED', 'PRESENT', 'ABSENT', 'EXCUSED', 'LATE'])
+        ->and(MembershipStatus::pluck('code')->all())->toEqualCanonicalizing(['PENDING', 'ACTIVE', 'SUSPENDED', 'LEFT']);
 });
 
 test('the statuses list in their display order, set by tens', function () {
     expect(EventStatus::ordered()->pluck('code')->all())->toBe(['DRAFT', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'FINALIZED', 'CANCELLED'])
         ->and(AttendanceStatus::ordered()->pluck('code')->all())->toBe(['EXPECTED', 'PRESENT', 'ABSENT', 'EXCUSED', 'LATE'])
-        ->and(EventStatus::pluck('display_order')->concat(AttendanceStatus::pluck('display_order'))->every(fn (int $order): bool => $order % 10 === 0))->toBeTrue();
+        ->and(MembershipStatus::ordered()->pluck('code')->all())->toBe(['PENDING', 'ACTIVE', 'SUSPENDED', 'LEFT'])
+        ->and(EventStatus::pluck('display_order')->concat(AttendanceStatus::pluck('display_order'))->concat(MembershipStatus::pluck('display_order'))->every(fn (int $order): bool => $order % 10 === 0))->toBeTrue();
 
     AttendanceStatus::where('code', AttendanceStatus::LATE)->update(['display_order' => 25]);
 
