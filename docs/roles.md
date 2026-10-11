@@ -140,6 +140,8 @@ Ces règles sont fixées ; les écrans correspondants restent à faire.
   rôle (président, animateur), le changement de rôle et le retrait d'un membre restent à faire,
   avec la garde du dernier président.
 - **Suppression d'un club**, réservée au président et à l'administrateur.
+- **Demandes d'adhésion** : rejoindre un club par son code crée une adhésion en attente, qu'un
+  gestionnaire valide ; suspension, départ et réactivation d'un membre.
 - **Liste des joueurs du club**.
 - **Saisie et validation des résultats**, **tournois**, **statistiques du joueur**.
 - **Badges** : présidents et animateurs portent le même badge « prof » (« anim. » dans la barre
