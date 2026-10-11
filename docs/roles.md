@@ -8,8 +8,8 @@ référence pour les valeurs (codes, identifiants) : ce fichier y renvoie sans l
 Matchelo distingue deux niveaux :
 
 - **l'administrateur**, global à l'application, signalé par l'indicateur `users.is_administrator` ;
-- **les rôles de club** (président, animateur, joueur), portés par la table pivot `club_user`
-  (`club_user.role_id` → `roles.id`).
+- **les rôles de club** (président, animateur, arbitre, joueur), portés par la table pivot
+  `club_user` (`club_user.role_id` → `roles.id`).
 
 La clef primaire `(club_id, user_id)` de `club_user` limite chaque utilisateur à **un seul rôle
 par club** ; il peut tenir des rôles différents dans des clubs différents (animateur ici, joueur
@@ -25,7 +25,7 @@ Références dans le code :
   `database/migrations/0001_01_01_000000_create_users_table.php` ;
 - valeurs des rôles : `database/seeders/RoleSeeder.php` ;
 - constantes et recherche par code : `App\Models\User\Role` (`Role::PRESIDENT`, `Role::ANIMATOR`,
-  `Role::PLAYER`, `Role::MANAGERS`, `Role::idFor()`, `Role::idsFor()`) ;
+  `Role::REFEREE`, `Role::PLAYER`, `Role::MANAGERS`, `Role::idFor()`, `Role::idsFor()`) ;
 - rôles d'un utilisateur : `User::managedClubs()`, `User::isManager()`, `User::presides()` ;
 - droits sur les clubs : `App\Policies\ClubPolicy`.
 
@@ -40,17 +40,19 @@ ou non. L'indicateur `is_administrator` est exclu de l'assignation de masse.
 |-------------|-----------|----------------------------------------------------------------------|
 | `PRESIDENT` | Président | Dirige le club : droits de l'animateur, plus la gestion de l'équipe. |
 | `ANIMATOR`  | Animateur | Anime le club : séances, présences, joueurs, tournois, résultats.    |
+| `REFEREE`   | Arbitre   | Arbitre les parties : valide ou saisit les résultats.                |
 | `PLAYER`    | Joueur    | Joue au club : classement, statistiques, tournois, résultats.        |
 
 Président et animateur forment les **gestionnaires** du club (`Role::MANAGERS`) : ils accèdent au
-mode « Gérer le club » (`ClubPolicy::manage()`).
+mode « Gérer le club » (`ClubPolicy::manage()`). L'arbitre n'en fait pas partie.
 
 ### Président
 
 Dispose de tous les droits de l'animateur, et en plus :
 
-- ajoute des membres au club avec n'importe quel rôle : présidents, animateurs ou joueurs ;
-- nomme et retire les animateurs et les autres présidents ;
+- ajoute des membres au club avec n'importe quel rôle : présidents, animateurs, arbitres ou
+  joueurs ;
+- nomme et retire les animateurs, les arbitres et les autres présidents ;
 - modifie et supprime le club (`ClubPolicy::update()`) ;
 - personnalise les sections du club : renomme la section générale, en crée d'autres
   (« Section jeunes », « Section mardi »…) ;
@@ -68,6 +70,17 @@ ne peut être ni retiré du club ni changé de rôle. Pour partir, il nomme d'ab
 - Organise les tournois.
 - Valide ou saisit les résultats des parties (voir « Saisie des résultats »).
 
+### Arbitre
+
+Arbitre les parties du club, sans le gérer :
+
+- valide ou saisit les résultats des parties, et tranche les saisies contradictoires
+  (voir la section « Saisie des résultats ») ;
+- consulte le classement du club.
+
+Il n'accède pas au mode « Gérer le club » : ni séances, ni présences, ni joueurs, ni tournois.
+Un seul rôle par club : l'arbitre ne joue pas dans ce club (il peut être joueur dans un autre).
+
 ### Joueur
 
 - Rejoint un club avec son code d'invitation (`clubs.code`).
@@ -80,39 +93,39 @@ ne peut être ni retiré du club ni changé de rôle. Pour partir, il nomme d'ab
 ## Création d'un club
 
 Tout utilisateur connecté peut créer un club ; il en devient le premier président (`ClubForm`).
-Il y ajoute ensuite les autres membres : présidents, animateurs ou joueurs.
+Il y ajoute ensuite les autres membres : présidents, animateurs, arbitres ou joueurs.
 
 ## Saisie des résultats
 
 Chacun des deux joueurs d'une partie peut saisir le résultat. Le résultat s'enregistre selon les
 saisies reçues :
 
-| Saisies des joueurs           | Résultat                                   |
-|-------------------------------|--------------------------------------------|
-| Deux saisies cohérentes       | Validé automatiquement.                    |
-| Deux saisies contradictoires  | En attente : l'animateur tranche.          |
-| Une seule saisie, ou aucune   | En attente : l'animateur valide ou saisit. |
+| Saisies des joueurs           | Résultat                                                |
+|-------------------------------|---------------------------------------------------------|
+| Deux saisies cohérentes       | Validé automatiquement.                                 |
+| Deux saisies contradictoires  | En attente : l'animateur ou l'arbitre tranche.          |
+| Une seule saisie, ou aucune   | En attente : l'animateur ou l'arbitre valide ou saisit. |
 
 ## Matrice des droits
 
 ✅ : autorisé · ❌ : refusé · 🔸 : sous condition (voir la note)
 
-| Action                                   | Administrateur | Président  | Animateur  | Joueur |
-|------------------------------------------|:--------------:|:----------:|:----------:|:------:|
-| Créer un club                            | ✅             | ✅         | ✅         | ✅     |
-| Modifier / supprimer le club             | ✅ tous        | ✅ le sien | ❌         | ❌     |
-| Ajouter / retirer présidents, animateurs | ✅ tous        | ✅ le sien | ❌         | ❌     |
-| Créer / renommer les sections            | ✅ tous        | ✅ le sien | ❌         | ❌     |
-| Répartir les joueurs dans les sections   | ✅ tous        | ✅ le sien | ❌         | ❌     |
-| Gérer le club (tableau de bord)          | ✅ tous        | ✅ le sien | ✅ le sien | ❌     |
-| Ajouter un joueur au club                | ✅             | ✅         | ✅         | ❌     |
-| Gérer les séances et les présences       | ✅             | ✅         | ✅         | ❌     |
-| Organiser un tournoi                     | ✅             | ✅         | ✅         | ❌     |
-| S'inscrire à un tournoi                  | ❌             | ❌         | ❌         | ✅     |
-| Saisir le résultat de sa partie          | ❌             | ❌         | ❌         | 🔸 (1) |
-| Valider / saisir un résultat             | ✅             | ✅         | ✅         | ❌     |
-| Consulter le classement du club          | ✅             | ✅         | ✅         | ✅     |
-| Consulter ses présences / statistiques   | —              | —          | —          | ✅     |
+| Action                                   | Administrateur | Président  | Animateur  | Arbitre | Joueur |
+|------------------------------------------|:--------------:|:----------:|:----------:|:-------:|:------:|
+| Créer un club                            | ✅             | ✅         | ✅         | ✅      | ✅     |
+| Modifier / supprimer le club             | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
+| Ajouter / retirer prés., anim., arbitres | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
+| Créer / renommer les sections            | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
+| Répartir les joueurs dans les sections   | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
+| Gérer le club (tableau de bord)          | ✅ tous        | ✅ le sien | ✅ le sien | ❌      | ❌     |
+| Ajouter un joueur au club                | ✅             | ✅         | ✅         | ❌      | ❌     |
+| Gérer les séances et les présences       | ✅             | ✅         | ✅         | ❌      | ❌     |
+| Organiser un tournoi                     | ✅             | ✅         | ✅         | ❌      | ❌     |
+| S'inscrire à un tournoi                  | ❌             | ❌         | ❌         | ❌      | ✅     |
+| Saisir le résultat de sa partie          | ❌             | ❌         | ❌         | ❌      | 🔸 (1) |
+| Valider / saisir un résultat             | ✅             | ✅         | ✅         | ✅      | ❌     |
+| Consulter le classement du club          | ✅             | ✅         | ✅         | ✅      | ✅     |
+| Consulter ses présences / statistiques   | —              | —          | —          | —       | ✅     |
 
 (1) Le joueur doit avoir un compte et être connecté ; le résultat suit les règles de la section
 « Saisie des résultats ».
