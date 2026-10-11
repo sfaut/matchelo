@@ -24,17 +24,28 @@ enregistre la présence de chacun. L'organisation du club figure dans [clubs.md]
 
 ## Pointage
 
-Le pointage enregistre une ligne par membre pointé (`attendances`), avec son statut de présence :
-présent, absent ou excusé (`attendance_statuses`, constantes de `AttendanceStatus`).
+Le pointage enregistre une ligne par membre et par événement (`attendances`), avec son statut de
+présence (`attendance_statuses`, constantes de `AttendanceStatus`).
 
+| Statut    | Sens                                          | Compté présent |
+|-----------|-----------------------------------------------|----------------|
+| Prévu     | joueur attendu, pas encore pointé             | non            |
+| Présent   | joueur présent                                | oui            |
+| Absent    | joueur absent non excusé                      | non            |
+| Excusé    | joueur absent avec excuse acceptée            | non            |
+| En retard | joueur arrivé en retard                       | oui            |
+| Blessé    | joueur présent mais blessé, ne participe pas  | oui            |
+
+- **Création de l'événement** : chaque membre du club y est inscrit au statut prévu
+  (`Event::expectMembers()`).
 - **Écran de pointage** : pointer une séance crée au besoin un **cours terminé** à cette date
-  (`Club::createCourse()`). Les membres pointés reçoivent le statut présent
-  (`Event::attendees()`) ; les absents n'ont pas encore de ligne.
-- **Statistiques** : taux de présence et assiduité se calculent sur les présents
-  (`AttendanceReport`), tous types d'événement confondus.
+  (`Club::createCourse()`). Pointer un membre le passe à présent ; le dépointer, ou remettre
+  l'appel à zéro, le ramène à prévu.
+- **Statistiques** : taux de présence et assiduité comptent les statuts présent, en retard et
+  blessé (`AttendanceStatus::ATTENDING`), tous types d'événement confondus (`AttendanceReport`).
 
 ## Reste à construire
 
 - Création et planification des événements (tournois notamment), avec leur statut.
-- Pointage des absents et des excusés.
+- Pointage des statuts absent, excusé, en retard et blessé depuis l'écran de pointage.
 - Clôture du pointage (statut clôturé) et limitation des statistiques aux cours.
