@@ -28,8 +28,8 @@ ou joueur (voir [roles.md](roles.md)).
   `(club_id, user_id)`). La date d'adhésion vaut par défaut le jour de l'inscription et peut être
   antérieure, pour un membre arrivé au club avant l'application.
 - **Statut de l'adhésion** : porté par `memberships.membership_status_id`
-  (`membership_statuses`, constantes de `MembershipStatus`), historisé (voir la section
-  « Historique des statuts »).
+  (`membership_statuses`, constantes de `MembershipStatus`), historisé comme le rôle (voir la
+  section « Historique des statuts et des rôles »).
 
 | Statut     | Sens                                                        | Membre du club |
 |------------|-------------------------------------------------------------|----------------|
@@ -50,23 +50,31 @@ ou joueur (voir [roles.md](roles.md)).
 - **Classement ELO** : propre au joueur et commun à tous ses clubs (`users.elo_rating`, 1200 au
   départ). La recherche d'un joueur existant avant d'en créer un nouveau évite les doublons d'ELO.
 
-## Historique des statuts
+## Historique des statuts et des rôles
 
-Les statuts d'adhésion, d'événement et de présence s'historisent de la même façon
-(`App\Models\Concerns\RecordsStatusChanges`) : la création puis chaque changement de statut
-ajoutent une ligne à la table d'historique, avec le statut pris, sa date et son auteur.
+Les statuts et les rôles s'historisent tous de la même façon
+(`App\Models\Concerns\RecordsChanges`) : la création puis chaque changement d'une colonne
+suivie ajoutent une ligne à sa table d'historique, avec la valeur prise, l'horodatage du
+changement et son auteur.
 
-| Statut courant                      | Historique                                         |
-|-------------------------------------|----------------------------------------------------|
-| `memberships.membership_status_id`  | `membership_status_changes` (date sans heure)      |
-| `events.event_status_id`            | `event_status_changes` (horodatage, voir events.md) |
-| `attendances.attendance_status_id`  | `attendance_status_changes` (horodatage, voir events.md) |
+| Colonne suivie                      | Historique                  |
+|-------------------------------------|-----------------------------|
+| `memberships.membership_status_id`  | `membership_status_changes` |
+| `memberships.role_id`               | `membership_role_changes`   |
+| `events.event_status_id`            | `event_status_changes`      |
+| `attendances.attendance_status_id`  | `attendance_status_changes` |
+| `attendances.role_id`               | `attendance_role_changes`   |
 
-- **Statut courant** : il reste sur l'enregistrement lui-même, pour les requêtes courantes ;
+- **Valeur courante** : elle reste sur l'enregistrement lui-même, pour les requêtes courantes ;
   l'historique en garde chaque valeur, et ses lignes ne se modifient pas.
-- **Changement** : `changeStatus()` change le statut et l'historise ; garder le même statut
-  n'ajoute rien. Une date antérieure reprend l'historique d'un club existant ; l'adhésion inscrit
-  son statut initial à sa date d'adhésion.
+- **Horodatage** : `changed_at`, à la microseconde, est la colonne métier du changement ; il
+  double `created_at` à la création de la ligne, qui reste une colonne technique. Un horodatage
+  antérieur reprend l'historique d'un club existant.
+- **Changement** : `changeStatus()` et `changeRole()` changent la valeur et l'historisent ; garder
+  la même valeur n'ajoute rien. Tout changement passé par le modèle s'historise, y compris par une
+  relation (`updateExistingPivot()`).
+- **Valeurs initiales d'une adhésion** : historisées à l'instant de sa création, ou à sa date
+  d'adhésion quand elle est antérieure à l'application.
 - **Auteur** : l'utilisateur connecté ; à défaut (seeders, console), le créateur du club.
 - **Suppression** : supprimer une adhésion, un événement ou un pointage supprime son historique.
 
@@ -74,6 +82,6 @@ ajoutent une ligne à la table d'historique, avec le statut pris, sa date et son
 
 ```
 clubs n ── n users                           (memberships : role_id → roles, membership_status_id, joined_at)
-memberships 1 ── n membership_status_changes
+memberships 1 ── n membership_status_changes, membership_role_changes
 clubs 1 ── n events n ── n users             (attendances : role_id → roles, attendance_status_id, voir events.md)
 ```
