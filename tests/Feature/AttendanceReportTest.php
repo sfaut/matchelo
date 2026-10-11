@@ -51,11 +51,11 @@ test('a roll-call session is a completed course, every member expected, its atte
         ->and($statuses->except($this->lea->id)->unique()->values()->all())->toBe([$expected_id]);
 });
 
-test('late and injured members count as attendees, absent and excused ones do not', function () {
-    $session = createSession($this->club, '2026-09-24');
+test('late members count as attendees, absent and excused ones do not', function () {
+    $session = createSession($this->club, '2026-09-24', [$this->tom]);
     $session->setAttendance([$this->lea->id], AttendanceStatus::LATE);
-    $session->setAttendance([$this->tom->id], AttendanceStatus::INJURED);
     $session->setAttendance([$this->ines->id], AttendanceStatus::EXCUSED);
+    $session->setAttendance([$this->hugo->id], AttendanceStatus::ABSENT);
 
     expect($session->attendees()->pluck('users.id')->all())->toEqualCanonicalizing([$this->lea->id, $this->tom->id]);
 });

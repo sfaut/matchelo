@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * Statut de présence d'un membre à un événement : prévu à la création de l'événement, puis
- * présent, absent, excusé, en retard ou blessé une fois pointé.
+ * présent, absent, excusé ou en retard une fois pointé.
  *
  * @see docs/events.md
  *
@@ -61,18 +61,11 @@ class AttendanceStatus extends Model
     public const string LATE = 'LATE';
 
     /**
-     * Code du statut présent mais blessé, qui ne participe pas.
-     *
-     * @var string
-     */
-    public const string INJURED = 'INJURED';
-
-    /**
      * Codes des statuts comptés comme présents (taux de présence, assiduité).
      *
      * @var list<string>
      */
-    public const array ATTENDING = [self::PRESENT, self::LATE, self::INJURED];
+    public const array ATTENDING = [self::PRESENT, self::LATE];
 
     /**
      * Donne l'identifiant de l'enregistrement portant un code.
