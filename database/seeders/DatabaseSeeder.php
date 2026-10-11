@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * Alimente la base. Les événements de modèle restent actifs : ils historisent les statuts
- * (RecordsStatusChanges) et complètent les adhésions.
+ * et les rôles (RecordsChanges) et complètent les adhésions.
  */
 class DatabaseSeeder extends Seeder
 {

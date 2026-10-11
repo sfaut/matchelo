@@ -36,7 +36,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('role_id')->comment('Rôle du membre au club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('role_id')->comment('Rôle courant du membre au club, historisé dans membership_role_changes')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('membership_status_id')->comment("Statut courant de l'adhésion, historisé dans membership_status_changes")->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->date('joined_at')->useCurrent()->comment("Date d'adhésion au club");
             $table->dateTime('created_at', precision: 6)->useCurrent();
@@ -50,17 +50,30 @@ return new class extends Migration
             $table->id();
             $table->foreignId('membership_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('membership_status_id')->comment("Statut pris par l'adhésion")->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->date('changed_at')->useCurrent()->comment('Date du changement de statut');
+            $table->dateTime('changed_at', precision: 6)->useCurrent()->comment('Horodatage du changement de statut');
             $table->foreignId('user_id')->comment('Auteur du changement')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
             $table->comment("Historique des statuts d'une adhésion : une ligne par changement, statut initial compris");
         });
+
+        Schema::create('membership_role_changes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('membership_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('role_id')->comment('Rôle pris au club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('changed_at', precision: 6)->useCurrent()->comment('Horodatage du changement de rôle');
+            $table->foreignId('user_id')->comment('Auteur du changement')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
+
+            $table->comment("Historique des rôles d'un membre au club : une ligne par changement, rôle initial compris");
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('membership_role_changes');
         Schema::dropIfExists('membership_status_changes');
         Schema::dropIfExists('memberships');
         Schema::dropIfExists('membership_statuses');

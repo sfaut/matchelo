@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasMicrosecondDates;
-use App\Models\Concerns\RecordsStatusChanges;
+use App\Models\Concerns\RecordsChanges;
 use App\Models\User\Role;
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection as BaseCollection;
+use InvalidArgumentException;
 
 /**
  * Événement d'un club (cours, tournoi…), horodaté, avec son statut historisé
@@ -49,8 +51,7 @@ class Event extends Model
     /** @use HasFactory<EventFactory> */
     use HasFactory, HasMicrosecondDates;
 
-    /** @use RecordsStatusChanges<EventStatusChange> */
-    use RecordsStatusChanges;
+    use RecordsChanges;
 
     /**
      * Get the attributes that should be cast.
@@ -196,10 +197,8 @@ class Event extends Model
         $user_ids = collect($user_ids)->map(fn (int|string $user_id): int => (int) $user_id)->unique()->values();
         $enrolled_ids = $this->participants()->whereKey($user_ids)->pluck('users.id');
 
-        $this->participants()->newPivotQuery()->whereIn('user_id', $enrolled_ids)->update([
-            'role_id' => $role_id,
-            'updated_at' => $this->freshTimestampString(),
-        ]);
+        $this->attendances()->whereIn('user_id', $enrolled_ids)->get()
+            ->each(fn (Attendance $attendance) => $attendance->changeRole($role_code));
 
         $pivot = ['role_id' => $role_id, 'attendance_status_id' => AttendanceStatus::idFor(AttendanceStatus::EXPECTED)];
 
@@ -263,32 +262,6 @@ class Event extends Model
     }
 
     /**
-     * Nom de la colonne de statut, commun à l'événement et à son historique.
-     */
-    protected function statusColumn(): string
-    {
-        return 'event_status_id';
-    }
-
-    /**
-     * Donne l'identifiant d'un statut d'événement d'après son code.
-     *
-     * @param  string  $status_code  code du statut (constante de EventStatus)
-     */
-    protected function statusIdFor(string $status_code): ?int
-    {
-        return EventStatus::idFor($status_code);
-    }
-
-    /**
-     * Auteur d'un changement fait sans utilisateur connecté : le créateur du club.
-     */
-    protected function fallbackStatusAuthorId(): int
-    {
-        return $this->club->user_id;
-    }
-
-    /**
      * Donne le rôle tenu par défaut à l'événement par des utilisateurs : celui de leur rôle de club
      * (Role::EVENT_ROLE_BY_CLUB_ROLE), joueur pour qui n'est pas membre du club (invité d'un
      * tournoi, par exemple).
@@ -309,5 +282,50 @@ class Event extends Model
         return $user_ids->mapWithKeys(fn (int $user_id): array => [
             $user_id => isset($club_role_ids[$user_id]) ? $event_role_ids[$club_role_ids[$user_id]] : $player_role_id,
         ]);
+    }
+
+    /**
+     * Change le statut de l'événement et l'historise ; sans effet si le statut ne change pas.
+     *
+     * @param  string  $status_code  code du statut (constante de EventStatus)
+     * @param  CarbonInterface|string|null  $changed_at  horodatage du changement, à défaut l'instant présent
+     */
+    public function changeStatus(string $status_code, CarbonInterface|string|null $changed_at = null): void
+    {
+        $this->changeRecorded('event_status_id', EventStatus::idFor($status_code), $changed_at);
+    }
+
+    /**
+     * Colonnes historisées : statut.
+     *
+     * @return list<string>
+     */
+    protected function recordedColumns(): array
+    {
+        return ['event_status_id'];
+    }
+
+    /**
+     * Historique d'une colonne historisée.
+     *
+     * @param  string  $column  colonne historisée (recordedColumns())
+     * @return HasMany<EventStatusChange, $this>
+     *
+     * @throws InvalidArgumentException pour une colonne non historisée
+     */
+    protected function historyOf(string $column): HasMany
+    {
+        return match ($column) {
+            'event_status_id' => $this->statusChanges(),
+            default => throw new InvalidArgumentException("Colonne non historisée : {$column}"),
+        };
+    }
+
+    /**
+     * Auteur d'un changement fait sans utilisateur connecté : le créateur du club.
+     */
+    protected function fallbackChangeAuthorId(): int
+    {
+        return $this->club->user_id;
     }
 }

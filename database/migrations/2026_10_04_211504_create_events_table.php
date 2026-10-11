@@ -72,7 +72,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('role_id')->comment("Rôle tenu à l'événement : animateur, joueur (élève), arbitre")->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('role_id')->comment("Rôle courant tenu à l'événement (animateur, joueur, arbitre), historisé dans attendance_role_changes")->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('attendance_status_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
@@ -92,10 +92,23 @@ return new class extends Migration
 
             $table->comment("Historique des statuts de présence d'un pointage : une ligne par changement, statut initial compris");
         });
+
+        Schema::create('attendance_role_changes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('attendance_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('role_id')->comment("Rôle pris à l'événement")->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('changed_at', precision: 6)->useCurrent()->comment('Horodatage du changement de rôle');
+            $table->foreignId('user_id')->comment('Auteur du changement')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
+
+            $table->comment("Historique des rôles d'un participant à un événement : une ligne par changement, rôle initial compris");
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('attendance_role_changes');
         Schema::dropIfExists('attendance_status_changes');
         Schema::dropIfExists('attendances');
         Schema::dropIfExists('attendance_statuses');

@@ -4,13 +4,12 @@ namespace App\Models;
 
 use App\Models\Concerns\HasMicrosecondDates;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Changement de statut d'une adhésion, daté et attribué à son auteur ; le premier enregistre le
+ * Changement de statut d'une adhésion, horodaté et attribué à son auteur ; le premier enregistre le
  * statut initial.
  *
  * @see docs/clubs.md
@@ -39,21 +38,8 @@ class MembershipStatusChange extends Model
     protected function casts(): array
     {
         return [
-            'changed_at' => 'date',
+            'changed_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Écrit la date du changement sans heure, comme sa colonne (`date`), en dépit du format à
-     * microsecondes de HasMicrosecondDates.
-     *
-     * @return Attribute<never, string>
-     */
-    protected function changedAt(): Attribute
-    {
-        return Attribute::make(
-            set: fn (mixed $value): string => $this->asDateTime($value)->format('Y-m-d'),
-        );
     }
 
     /**
