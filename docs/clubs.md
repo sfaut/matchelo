@@ -19,9 +19,14 @@ Un club réunit des membres autour des échecs, le plus souvent dans un établis
 
 ## Membres
 
-Un membre est un utilisateur inscrit au club avec **un seul rôle** : président, animateur ou
-joueur (table `club_user`, voir [roles.md](roles.md)).
+Un membre est un utilisateur inscrit au club avec **un seul rôle** : président, animateur, arbitre
+ou joueur (voir [roles.md](roles.md)).
 
+- **Adhésion** : l'inscription d'un utilisateur à un club (`memberships`, modèle `Membership`),
+  avec son rôle et sa date d'adhésion (`joined_at`). Elle porte son propre identifiant ; un
+  utilisateur adhère au plus une fois à chaque club (unicité `(club_id, user_id)`). La date
+  d'adhésion vaut par défaut l'horodatage de l'inscription et peut être antérieure, pour un
+  membre arrivé au club avant l'application.
 - **Président** : un club en compte toujours au moins un. La garde sera appliquée par l'écran
   de gestion des membres, qui reste à construire.
 - **Joueur sans compte** : créé par un président ou un animateur, sans e-mail ni mot de passe. Il
@@ -44,7 +49,7 @@ Une section regroupe une partie des joueurs d'un club, par âge, niveau ou crén
 
 - **Section générale** : créée avec le club (`Club::createDefaultSection()`), nommée dans la
   langue courante (« Section générale », « General section »). Le président peut la renommer.
-- **Rôle dans la section** : distinct du rôle au club (`club_user`), il permet par exemple
+- **Rôle dans la section** : distinct du rôle au club (`memberships`), il permet par exemple
   d'attitrer un animateur à une section. Un joueur ajouté à une section y reçoit le rôle de
   joueur (`Section::players()`).
 - **Répartition** : réservée au président et à l'administrateur
@@ -59,6 +64,6 @@ Une section regroupe une partie des joueurs d'un club, par âge, niveau ou crén
 
 ```
 clubs 1 ── n sections n ── n users           (section_user, avec role_id → roles)
-clubs n ── n users                           (club_user, avec role_id → roles)
+clubs n ── n users                           (memberships, avec role_id → roles et joined_at)
 clubs 1 ── n events n ── n users             (attendances, avec role_id → roles, voir events.md)
 ```

@@ -8,10 +8,10 @@ référence pour les valeurs (codes, identifiants) : ce fichier y renvoie sans l
 Matchelo distingue deux niveaux :
 
 - **l'administrateur**, global à l'application, signalé par l'indicateur `users.is_administrator` ;
-- **les rôles de club** (président, animateur, arbitre, joueur), portés par la table pivot
-  `club_user` (`club_user.role_id` → `roles.id`).
+- **les rôles de club** (président, animateur, arbitre, joueur), portés par les adhésions
+  (`memberships.role_id` → `roles.id`, modèle `Membership`).
 
-La clef primaire `(club_id, user_id)` de `club_user` limite chaque utilisateur à **un seul rôle
+L'unicité `(club_id, user_id)` des adhésions limite chaque utilisateur à **un seul rôle
 par club** ; il peut tenir des rôles différents dans des clubs différents (animateur ici, joueur
 là).
 
