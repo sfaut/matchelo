@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use App\Models\Club;
-use App\Models\ClubSession;
+use App\Models\Event;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,9 +37,9 @@ class AttendanceReport
     /**
      * Séance du jour, avec son nombre de présents, ou null s'il n'y en a pas encore.
      */
-    public function todaySession(): ?ClubSession
+    public function todaySession(): ?Event
     {
-        return $this->club->sessions()
+        return $this->club->events()
             ->withCount('attendees')
             ->whereDate('scheduled_at', $this->today)
             ->first();
@@ -50,11 +50,11 @@ class AttendanceReport
      * leur nombre de présents.
      *
      * @param  int  $count  nombre de séances
-     * @return Collection<int, ClubSession>
+     * @return Collection<int, Event>
      */
     public function recentSessions(int $count): Collection
     {
-        return $this->club->sessions()
+        return $this->club->events()
             ->withCount('attendees')
             ->whereDate('scheduled_at', '<=', $this->today)
             ->orderByDesc('scheduled_at')
@@ -67,10 +67,10 @@ class AttendanceReport
     /**
      * Taux de présence d'une séance, en pourcentage arrondi.
      *
-     * @param  ClubSession  $session  séance chargée avec attendees_count
+     * @param  Event  $session  séance chargée avec attendees_count
      * @param  int  $members_count  nombre de membres du club
      */
-    public function rate(ClubSession $session, int $members_count): int
+    public function rate(Event $session, int $members_count): int
     {
         return $members_count === 0 ? 0 : (int) round(100 * ($session->attendees_count ?? 0) / $members_count);
     }
@@ -78,7 +78,7 @@ class AttendanceReport
     /**
      * Taux de présence moyen de séances, en pourcentage arrondi, ou null sans séance.
      *
-     * @param  Collection<int, ClubSession>  $sessions  séances chargées avec attendees_count
+     * @param  Collection<int, Event>  $sessions  séances chargées avec attendees_count
      * @param  int  $members_count  nombre de membres du club
      */
     public function averageRate(Collection $sessions, int $members_count): ?int
@@ -87,7 +87,7 @@ class AttendanceReport
             return null;
         }
 
-        return (int) round($sessions->avg(fn (ClubSession $session): int => $this->rate($session, $members_count)));
+        return (int) round($sessions->avg(fn (Event $session): int => $this->rate($session, $members_count)));
     }
 
     /**
@@ -100,7 +100,7 @@ class AttendanceReport
      */
     public function consecutiveAbsences(int $minimum = 2, int $limit = 5): BaseCollection
     {
-        $past_sessions = $this->club->sessions()
+        $past_sessions = $this->club->events()
             ->with('attendees:id')
             ->whereDate('scheduled_at', '<', $this->today)
             ->orderByDesc('scheduled_at')
@@ -113,7 +113,7 @@ class AttendanceReport
             ->map(fn (User $member): array => [
                 'user' => $member,
                 'absences' => $past_sessions
-                    ->takeWhile(fn (ClubSession $session): bool => ! $session->attendees->contains($member))
+                    ->takeWhile(fn (Event $session): bool => ! $session->attendees->contains($member))
                     ->count(),
             ])
             ->filter(fn (array $row): bool => $row['absences'] >= $minimum)
@@ -130,13 +130,13 @@ class AttendanceReport
      */
     public function pastPresences(): array
     {
-        $past_sessions = $this->club->sessions()
+        $past_sessions = $this->club->events()
             ->with('attendees:id')
             ->whereDate('scheduled_at', '<', $this->today)
             ->get();
 
         $presences = $past_sessions
-            ->flatMap(fn (ClubSession $session): BaseCollection => $session->attendees->pluck('id'))
+            ->flatMap(fn (Event $session): BaseCollection => $session->attendees->pluck('id'))
             ->countBy()
             ->all();
 

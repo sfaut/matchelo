@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Club;
-use App\Models\ClubSession;
+use App\Models\Event;
 use App\Models\User;
 use App\Support\AttendanceReport;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -84,7 +84,7 @@ new class extends Component
      * Séance du jour, ou null tant que personne n'y est pointé.
      */
     #[Computed]
-    public function todaySession(): ?ClubSession
+    public function todaySession(): ?Event
     {
         return $this->report->todaySession();
     }
@@ -99,7 +99,7 @@ new class extends Component
     public function attendanceBars(): array
     {
         return $this->report->recentSessions(self::ATTENDANCE_SESSIONS)
-            ->map(fn (ClubSession $session): array => [
+            ->map(fn (Event $session): array => [
                 'label' => $session->scheduled_at->isToday()
                     ? __('clubs.dashboard.today_short')
                     : $session->scheduled_at->locale(app()->getLocale())->isoFormat(__('clubs.dashboard.bar_date_format')),

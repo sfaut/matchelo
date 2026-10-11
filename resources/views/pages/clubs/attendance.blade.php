@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Club;
-use App\Models\ClubSession;
+use App\Models\Event;
 use App\Models\User;
 use App\Support\AttendanceReport;
 use Carbon\CarbonImmutable;
@@ -73,7 +73,7 @@ new class extends Component
     #[Computed]
     public function availableDates(): array
     {
-        $previous_dates = $this->club->sessions()
+        $previous_dates = $this->club->events()
             ->whereDate('scheduled_at', '<', $this->today())
             ->orderByDesc('scheduled_at')
             ->limit(self::PREVIOUS_SESSIONS)
@@ -88,9 +88,9 @@ new class extends Component
      * Séance de la date choisie, ou null tant que personne n'y est pointé.
      */
     #[Computed]
-    public function session(): ?ClubSession
+    public function session(): ?Event
     {
-        return $this->club->sessions()->whereDate('scheduled_at', $this->date)->first();
+        return $this->club->events()->whereDate('scheduled_at', $this->date)->first();
     }
 
     /**
@@ -214,14 +214,14 @@ new class extends Component
     /**
      * Séance de la date choisie, créée si besoin (seules les dates proposées sont pointables).
      */
-    protected function sessionToFill(): ClubSession
+    protected function sessionToFill(): Event
     {
         abort_unless(in_array($this->date, $this->availableDates, true), 404);
 
         // whereDate et non firstOrCreate : scheduled_at est stocké avec une heure (00:00:00), une
         // comparaison avec la date seule ne retrouverait pas la séance existante
-        return $this->club->sessions()->whereDate('scheduled_at', $this->date)->first()
-            ?? $this->club->sessions()->create(['scheduled_at' => $this->date]);
+        return $this->club->events()->whereDate('scheduled_at', $this->date)->first()
+            ?? $this->club->createCourse($this->date);
     }
 
     /**

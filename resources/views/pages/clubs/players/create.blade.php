@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Club;
-use App\Models\ClubSection;
+use App\Models\Section;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -131,7 +131,7 @@ new class extends Component
     /**
      * Sections du club, la section générale en tête.
      *
-     * @return Collection<int, ClubSection>
+     * @return Collection<int, Section>
      */
     #[Computed]
     public function sections(): Collection
@@ -240,7 +240,7 @@ new class extends Component
             'lastName' => ['required', 'string', 'max:30'],
             'firstName' => ['required', 'string', 'max:30'],
             'startingElo' => ['required', 'integer', 'between:100,3000'],
-            'sectionId' => ['nullable', 'integer', Rule::exists('club_sections', 'id')->where('club_id', $this->club->id)],
+            'sectionId' => ['nullable', 'integer', Rule::exists('sections', 'id')->where('club_id', $this->club->id)],
         ];
     }
 
@@ -290,8 +290,8 @@ new class extends Component
                         <label for="section" class="mx-label">{{ __('clubs.players.section') }}</label>
                         <select id="section" wire:model="sectionId" class="mx-input" @error('sectionId') aria-invalid="true" @enderror>
                             <option value="">{{ __('clubs.players.no_section') }}</option>
-                            @foreach ($this->sections as $club_section)
-                                <option value="{{ $club_section->id }}" wire:key="section-{{ $club_section->id }}">{{ $club_section->name }}</option>
+                            @foreach ($this->sections as $section)
+                                <option value="{{ $section->id }}" wire:key="section-{{ $section->id }}">{{ $section->name }}</option>
                             @endforeach
                         </select>
                         <p class="text-sm text-muted">{{ __('clubs.players.section_hint') }}</p>

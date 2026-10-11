@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             ClubSeeder::class,
+            EventSeeder::class,
         ]);
 
         // Données de démonstration en local seulement : les tests (environnement testing)

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\ClubSession;
+use App\Models\Event;
 use App\Models\User\Role;
 use Illuminate\Support\Carbon;
 use Livewire\Livewire;
@@ -20,9 +20,9 @@ beforeEach(function () {
 /**
  * Séance du club à une date, ou null.
  */
-function sessionOn(string $date): ?ClubSession
+function sessionOn(string $date): ?Event
 {
-    return ClubSession::whereDate('scheduled_at', $date)->first();
+    return Event::whereDate('scheduled_at', $date)->first();
 }
 
 test('only animators and administrators can take the roll call', function () {

@@ -31,8 +31,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read User $creator
  * @property-read Collection<int, User> $members
- * @property-read Collection<int, ClubSession> $sessions
- * @property-read Collection<int, ClubSection> $sections
+ * @property-read Collection<int, Event> $events
+ * @property-read Collection<int, Section> $sections
  */
 #[Fillable(['name', 'code', 'city', 'description', 'logo_path', 'user_id'])]
 class Club extends Model
@@ -82,30 +82,45 @@ class Club extends Model
     }
 
     /**
-     * Séances du club.
+     * Événements du club : cours, tournois…
      *
-     * @return HasMany<ClubSession, $this>
+     * @return HasMany<Event, $this>
      */
-    public function sessions(): HasMany
+    public function events(): HasMany
     {
-        return $this->hasMany(ClubSession::class);
+        return $this->hasMany(Event::class);
+    }
+
+    /**
+     * Crée un cours du club à une date, au statut terminé (pointage encore modifiable) : c'est
+     * l'événement que crée le pointage d'une séance.
+     *
+     * @param  string  $date  date du cours (AAAA-MM-JJ)
+     */
+    public function createCourse(string $date): Event
+    {
+        return $this->events()->create([
+            'scheduled_at' => $date,
+            'event_type_id' => EventType::idFor(EventType::COURSE),
+            'event_status_id' => EventStatus::idFor(EventStatus::COMPLETED),
+        ]);
     }
 
     /**
      * Sections du club, dont la section générale.
      *
-     * @return HasMany<ClubSection, $this>
+     * @return HasMany<Section, $this>
      */
     public function sections(): HasMany
     {
-        return $this->hasMany(ClubSection::class);
+        return $this->hasMany(Section::class);
     }
 
     /**
      * Crée la section générale du club, nommée dans la langue courante ; à appeler à la
      * création du club, qui compte toujours au moins une section.
      */
-    public function createDefaultSection(): ClubSection
+    public function createDefaultSection(): Section
     {
         return $this->sections()->create(['name' => __('clubs.sections.default_name')]);
     }

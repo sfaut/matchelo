@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasMicrosecondDates;
 use Carbon\CarbonImmutable;
-use Database\Factories\ClubSessionFactory;
+use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,21 +14,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Séance d'un club, horodatée ; ses présents sont les membres pointés (table attendances).
+ * Événement d'un club (cours, tournoi…), horodaté ; ses membres pointés figurent dans la table
+ * attendances, avec leur statut de présence.
+ *
+ * @see docs/events.md
  *
  * @property int $id
- * @property int $club_id
  * @property CarbonImmutable $scheduled_at
+ * @property string $description
+ * @property int $event_type_id
+ * @property int $event_status_id
+ * @property int $club_id
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property int|null $attendees_count
  * @property-read Club $club
+ * @property-read EventType $type
+ * @property-read EventStatus $status
  * @property-read Collection<int, User> $attendees
  */
-#[Fillable(['club_id', 'scheduled_at'])]
-class ClubSession extends Model
+#[Fillable(['scheduled_at', 'description', 'event_type_id', 'event_status_id', 'club_id'])]
+class Event extends Model
 {
-    /** @use HasFactory<ClubSessionFactory> */
+    /** @use HasFactory<EventFactory> */
     use HasFactory, HasMicrosecondDates;
 
     /**
@@ -44,7 +52,7 @@ class ClubSession extends Model
     }
 
     /**
-     * Écrit l'horodatage de la séance à la seconde, comme sa colonne (`precision: 0`), en dépit
+     * Écrit l'horodatage de l'événement à la seconde, comme sa colonne (`precision: 0`), en dépit
      * du format à microsecondes de HasMicrosecondDates.
      *
      * @return Attribute<never, string>
@@ -57,7 +65,7 @@ class ClubSession extends Model
     }
 
     /**
-     * Club de la séance.
+     * Club de l'événement.
      *
      * @return BelongsTo<Club, $this>
      */
@@ -67,12 +75,35 @@ class ClubSession extends Model
     }
 
     /**
-     * Membres présents à la séance.
+     * Type de l'événement (cours, tournoi, autre).
+     *
+     * @return BelongsTo<EventType, $this>
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(EventType::class, 'event_type_id');
+    }
+
+    /**
+     * Statut de l'événement.
+     *
+     * @return BelongsTo<EventStatus, $this>
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(EventStatus::class, 'event_status_id');
+    }
+
+    /**
+     * Membres présents à l'événement : pointés avec le statut AttendanceStatus::PRESENT, qu'un
+     * attach() leur donne d'office.
      *
      * @return BelongsToMany<User, $this>
      */
     public function attendees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'attendances')->withTimestamps();
+        return $this->belongsToMany(User::class, 'attendances')
+            ->withPivotValue('attendance_status_id', AttendanceStatus::idFor(AttendanceStatus::PRESENT))
+            ->withTimestamps();
     }
 }

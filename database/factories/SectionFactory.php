@@ -3,16 +3,16 @@
 namespace Database\Factories;
 
 use App\Models\Club;
-use App\Models\ClubSection;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * Sections de test : un nom courant de section, pour un club.
  *
- * @extends Factory<ClubSection>
+ * @extends Factory<Section>
  */
-class ClubSectionFactory extends Factory
+class SectionFactory extends Factory
 {
     /**
      * Noms de section proposés, en plus de la section générale.
@@ -41,7 +41,7 @@ class ClubSectionFactory extends Factory
      */
     public function withPlayers(iterable $players): static
     {
-        return $this->afterCreating(function (ClubSection $section) use ($players): void {
+        return $this->afterCreating(function (Section $section) use ($players): void {
             $section->players()->attach(collect($players)->pluck('id'));
         });
     }

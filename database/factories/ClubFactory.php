@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Club;
-use App\Models\ClubSection;
-use App\Models\ClubSession;
+use App\Models\Event;
+use App\Models\Section;
 use App\Models\User;
 use App\Models\User\Role;
 use Carbon\CarbonImmutable;
@@ -109,7 +109,7 @@ class ClubFactory extends Factory
     }
 
     /**
-     * Ajoute une section supplémentaire (ClubSectionFactory::NAMES), où s'inscrit environ la
+     * Ajoute une section supplémentaire (SectionFactory::NAMES), où s'inscrit environ la
      * moitié des joueurs. À appliquer après withStudents().
      */
     public function withExtraSection(): static
@@ -117,7 +117,7 @@ class ClubFactory extends Factory
         return $this->afterCreating(function (Club $club): void {
             $players = $club->members()->wherePivot('role_id', Role::idFor(Role::PLAYER))->get();
 
-            ClubSection::factory()
+            Section::factory()
                 ->for($club)
                 ->withPlayers($players->random(intdiv($players->count(), 2)))
                 ->create();
@@ -147,7 +147,7 @@ class ClubFactory extends Factory
                 $date = $last_date->subWeeks($week);
                 $checked_share = $date->isToday() ? self::TODAY_CHECKED_SHARE : 1.0;
 
-                ClubSession::factory()
+                Event::factory()
                     ->for($club)
                     ->attendedBy($this->drawAttendees($assiduity, $checked_share))
                     ->create(['scheduled_at' => $date->toDateString()]);
@@ -161,11 +161,11 @@ class ClubFactory extends Factory
     public function withTodaySession(): static
     {
         return $this->afterCreating(function (Club $club): void {
-            if ($club->sessions()->whereDate('scheduled_at', CarbonImmutable::today())->exists()) {
+            if ($club->events()->whereDate('scheduled_at', CarbonImmutable::today())->exists()) {
                 return;
             }
 
-            ClubSession::factory()
+            Event::factory()
                 ->for($club)
                 ->attendedBy($this->drawAttendees($this->assiduityOf($club->members()->get()), self::TODAY_CHECKED_SHARE))
                 ->create(['scheduled_at' => CarbonImmutable::today()->toDateString()]);

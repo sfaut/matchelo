@@ -1,9 +1,11 @@
 <?php
 
-use App\Models\ClubSession;
+use App\Models\AttendanceStatus;
+use App\Models\Event;
+use App\Models\EventStatus;
+use App\Models\EventType;
 use App\Models\User\Role;
 use App\Support\AttendanceReport;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 
 beforeEach(function () {
@@ -27,13 +29,22 @@ test('a session belongs to its club and lists its attendees', function () {
     expect($session->club->is($this->club))->toBeTrue()
         ->and($session->scheduled_at->toDateString())->toBe('2026-09-24')
         ->and($session->attendees->pluck('id')->all())->toEqualCanonicalizing([$this->lea->id, $this->tom->id])
-        ->and($this->club->sessions->pluck('id')->all())->toBe([$session->id]);
+        ->and($this->club->events->pluck('id')->all())->toBe([$session->id]);
 });
 
-test('a club has a single session per date', function () {
+test('a club may hold several events at the same time', function () {
+    createSession($this->club, '2026-09-24');
     createSession($this->club, '2026-09-24');
 
-    expect(fn () => createSession($this->club, '2026-09-24'))->toThrow(QueryException::class);
+    expect($this->club->events()->whereDate('scheduled_at', '2026-09-24')->count())->toBe(2);
+});
+
+test('a roll-call session is a completed course, its attendees marked present', function () {
+    $session = createSession($this->club, '2026-09-24', [$this->lea]);
+
+    expect($session->type->code)->toBe(EventType::COURSE)
+        ->and($session->status->code)->toBe(EventStatus::COMPLETED)
+        ->and(DB::table('attendances')->value('attendance_status_id'))->toBe(AttendanceStatus::idFor(AttendanceStatus::PRESENT));
 });
 
 test('deleting a session deletes its attendances', function () {
@@ -57,7 +68,7 @@ test('the recent sessions run from oldest to newest, up to today', function () {
     }
 
     $dates = AttendanceReport::for($this->club)->recentSessions(3)
-        ->map(fn (ClubSession $session): string => $session->scheduled_at->toDateString())
+        ->map(fn (Event $session): string => $session->scheduled_at->toDateString())
         ->all();
 
     expect($dates)->toBe(['2026-09-17', '2026-09-24', '2026-10-01']);

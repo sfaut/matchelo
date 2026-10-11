@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Club;
-use App\Models\ClubSection;
+use App\Models\Section;
 use App\Models\User;
 use App\Models\User\Role;
 use Livewire\Livewire;
@@ -134,7 +134,7 @@ test('the page lists the club members, flagging players without account', functi
 /**
  * Ajoute au club un président, avec la section générale et une section « Section jeunes ».
  *
- * @return array{User, ClubSection, ClubSection}
+ * @return array{User, Section, Section}
  */
 function givePresidentAndSections(Club $club): array
 {
@@ -177,7 +177,7 @@ test('a president can put a found player in a section', function () {
         ->assertHasNoErrors();
 
     expect($this->club->members()->whereKey($lea->id)->exists())->toBeTrue()
-        ->and($lea->clubSections->pluck('id')->all())->toBe([$youth_section->id]);
+        ->and($lea->sections->pluck('id')->all())->toBe([$youth_section->id]);
 });
 
 test('a president can put a new player in a section', function () {
@@ -193,7 +193,7 @@ test('a president can put a new player in a section', function () {
 
     $nathan = User::where('last_name', 'Diallo')->firstOrFail();
 
-    expect($nathan->clubSections->pluck('id')->all())->toBe([$general_section->id]);
+    expect($nathan->sections->pluck('id')->all())->toBe([$general_section->id]);
 });
 
 test('a player added without a section belongs to none', function () {
@@ -204,7 +204,7 @@ test('a player added without a section belongs to none', function () {
     Livewire::test('pages::clubs.players.create', ['club' => $this->club])->call('add', $lea->id);
 
     expect($this->club->members()->whereKey($lea->id)->exists())->toBeTrue()
-        ->and($lea->clubSections)->toBeEmpty();
+        ->and($lea->sections)->toBeEmpty();
 });
 
 test('an animator cannot force a section, and nothing is written', function () {

@@ -8,31 +8,32 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('club_sections', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->string('name', length: 50)->comment('Nom de la section (ex. Section générale, Section jeunes)');
+            $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
-            $table->unique(['club_id', 'name']);
+            $table->unique(['name', 'club_id']);
             $table->comment("Sections d'un club : au moins une, la section générale créée avec le club");
         });
 
-        Schema::create('club_section_user', function (Blueprint $table) {
-            $table->foreignId('club_section_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+        Schema::create('section_user', function (Blueprint $table) {
+            $table->foreignId('section_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('role_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
-            $table->primary(['club_section_id', 'user_id']);
-            $table->comment('Joueurs des sections : un joueur appartient à zéro, une ou plusieurs sections');
+            $table->primary(['section_id', 'user_id']);
+            $table->comment('Membres des sections, avec leur rôle dans la section : un joueur appartient à zéro, une ou plusieurs sections');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('club_section_user');
-        Schema::dropIfExists('club_sections');
+        Schema::dropIfExists('section_user');
+        Schema::dropIfExists('sections');
     }
 };

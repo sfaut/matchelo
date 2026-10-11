@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\AttendanceStatus;
 use App\Models\Club;
-use App\Models\ClubSession;
+use App\Models\Event;
+use App\Models\EventStatus;
+use App\Models\EventType;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Database\QueryException;
@@ -16,7 +19,10 @@ beforeEach(function () {
 
 test('the seeders fill the reference tables', function () {
     expect(Role::pluck('code')->all())->toEqualCanonicalizing(['PRESIDENT', 'ANIMATOR', 'PLAYER'])
-        ->and(Role::where('description', '')->exists())->toBeFalse();
+        ->and(Role::where('description', '')->exists())->toBeFalse()
+        ->and(EventType::pluck('code')->all())->toEqualCanonicalizing(['COURSE', 'TOURNAMENT', 'OTHER'])
+        ->and(EventStatus::pluck('code')->all())->toEqualCanonicalizing(['DRAFT', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'FINALIZED', 'CANCELLED'])
+        ->and(AttendanceStatus::pluck('code')->all())->toEqualCanonicalizing(['PRESENT', 'ABSENT', 'EXCUSED']);
 });
 
 test('a user is not an administrator by default', function () {
@@ -74,8 +80,8 @@ test('a club section belongs to its club and gathers players', function () {
     expect($general_section->name)->toBe(__('clubs.sections.default_name'))
         ->and($general_section->club->is($club))->toBeTrue()
         ->and($club->sections->pluck('name')->all())->toEqualCanonicalizing([__('clubs.sections.default_name'), 'Section jeunes'])
-        ->and($player->clubSections->pluck('id')->all())->toEqualCanonicalizing([$general_section->id, $youth_section->id])
-        ->and($creator->clubSections)->toBeEmpty();
+        ->and($player->sections->pluck('id')->all())->toEqualCanonicalizing([$general_section->id, $youth_section->id])
+        ->and($creator->sections)->toBeEmpty();
 });
 
 test('the general section is named in the current language', function () {
@@ -99,18 +105,40 @@ test('a section name is unique within its club only', function () {
         ->and(fn () => $club->createDefaultSection())->toThrow(QueryException::class);
 });
 
-test('a club with sections cannot be deleted, and deleting a section frees its players', function () {
+test('deleting a section frees its players, and deleting a club deletes its sections', function () {
     $creator = createUser();
     $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
     $section = $club->createDefaultSection();
     $section->players()->attach($creator);
 
-    expect(fn () => $club->delete())->toThrow(QueryException::class);
-
     $section->delete();
 
-    expect(DB::table('club_section_user')->count())->toBe(0)
+    expect(DB::table('section_user')->count())->toBe(0)
         ->and($creator->fresh())->not->toBeNull();
+
+    $club->createDefaultSection();
+    $club->delete();
+
+    expect(DB::table('sections')->count())->toBe(0);
+});
+
+test('a section member holds a role, the player role when added as a player', function () {
+    $creator = createUser();
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => $creator->id]);
+    $section = $club->createDefaultSection();
+    $section->players()->attach($creator);
+
+    expect($creator->sections->first()->pivot->role_id)->toBe(Role::idFor(Role::PLAYER));
+});
+
+test('deleting a user deletes their section memberships', function () {
+    $player = createUser();
+    $club = Club::create(['name' => 'Échiquier Nord', 'code' => 'EN-1177', 'user_id' => createUser(['email' => 'tom@example.org'])->id]);
+    $club->createDefaultSection()->players()->attach($player);
+
+    $player->delete();
+
+    expect(DB::table('section_user')->count())->toBe(0);
 });
 
 test('a user who created a club cannot be deleted', function () {
@@ -199,12 +227,12 @@ test('the model timestamps keep their microseconds', function (Closure $create_m
     'role' => fn (): Role => Role::create(['code' => 'COACH', 'name' => 'Coach']),
     'user' => fn (): User => createUser(),
     'club' => fn (): Club => Club::factory()->create(),
-    'club session' => fn (): ClubSession => ClubSession::factory()->create(),
+    'club session' => fn (): Event => Event::factory()->create(),
 ]);
 
 test('a club session is scheduled to the second', function () {
-    $session = ClubSession::factory()->create(['scheduled_at' => Carbon::parse('2026-10-09 18:30:15.987654')]);
+    $session = Event::factory()->create(['scheduled_at' => Carbon::parse('2026-10-09 18:30:15.987654')]);
 
-    expect(DB::table('club_sessions')->where('id', $session->id)->value('scheduled_at'))->toBe('2026-10-09 18:30:15')
+    expect(DB::table('events')->where('id', $session->id)->value('scheduled_at'))->toBe('2026-10-09 18:30:15')
         ->and($session->refresh()->scheduled_at->format('Y-m-d H:i:s.u'))->toBe('2026-10-09 18:30:15.000000');
 });

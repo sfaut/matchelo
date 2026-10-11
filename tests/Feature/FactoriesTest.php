@@ -1,12 +1,12 @@
 <?php
 
 use App\Models\Club;
-use App\Models\ClubSession;
+use App\Models\Event;
 use App\Models\User;
 use App\Models\User\Role;
 use Carbon\CarbonImmutable;
 use Database\Factories\ClubFactory;
-use Database\Factories\ClubSectionFactory;
+use Database\Factories\SectionFactory;
 use Database\Factories\UserFactory;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Support\Carbon;
@@ -62,7 +62,7 @@ test('a factory club can get an extra section with half of its students', functi
     $extra_section = $club->sections()->where('name', '!=', __('clubs.sections.default_name'))->firstOrFail();
 
     expect($club->sections)->toHaveCount(2)
-        ->and(ClubSectionFactory::NAMES)->toContain($extra_section->name)
+        ->and(SectionFactory::NAMES)->toContain($extra_section->name)
         ->and($extra_section->players)->toHaveCount(5)
         ->and($club->members()->whereKey($extra_section->players->pluck('id'))->count())->toBe(5);
 });
@@ -103,7 +103,7 @@ test('the demo seeder makes 3 animators with 3 to 5 clubs of 8 to 12 students', 
 
 test('a factory session belongs to a club and can be attended', function () {
     $club = Club::factory()->withStudents(4)->create();
-    $session = ClubSession::factory()->for($club)->attendedBy($club->members->take(2))->create();
+    $session = Event::factory()->for($club)->attendedBy($club->members->take(2))->create();
 
     expect($session->club->is($club))->toBeTrue()
         ->and($session->scheduled_at->lessThanOrEqualTo(today()))->toBeTrue()
@@ -118,14 +118,14 @@ test('weekly factory sessions fall on the club day, the latest at most today', f
         ->withStudents(6)
         ->withSessions(4)
         ->create();
-    $dates = $club->sessions()->orderBy('scheduled_at')->pluck('scheduled_at')
+    $dates = $club->events()->orderBy('scheduled_at')->pluck('scheduled_at')
         ->map(fn (CarbonImmutable $date): string => $date->toDateString())
         ->all();
     $member_ids = $club->members()->pluck('users.id')->all();
 
     expect($dates)->toBe(['2026-09-08', '2026-09-15', '2026-09-22', '2026-09-29']);
 
-    foreach ($club->sessions as $session) {
+    foreach ($club->events as $session) {
         expect(array_diff($session->attendees->pluck('id')->all(), $member_ids))->toBe([]);
     }
 });
@@ -133,8 +133,8 @@ test('weekly factory sessions fall on the club day, the latest at most today', f
 test('a club without day in its description still gets weekly sessions', function () {
     $club = Club::factory()->bare()->withSessions(3)->create();
 
-    expect($club->sessions()->count())->toBe(3)
-        ->and($club->sessions->pluck('scheduled_at')->map(fn (CarbonImmutable $date): int => $date->dayOfWeekIso)->unique())->toHaveCount(1);
+    expect($club->events()->count())->toBe(3)
+        ->and($club->events->pluck('scheduled_at')->map(fn (CarbonImmutable $date): int => $date->dayOfWeekIso)->unique())->toHaveCount(1);
 });
 
 test('the factory can add a session today, only once', function () {
@@ -147,12 +147,12 @@ test('the factory can add a session today, only once', function () {
         ->withTodaySession()
         ->create();
 
-    expect($club->sessions()->whereDate('scheduled_at', '2026-10-01')->count())->toBe(1)
-        ->and($club->sessions()->count())->toBe(2);
+    expect($club->events()->whereDate('scheduled_at', '2026-10-01')->count())->toBe(1)
+        ->and($club->events()->count())->toBe(2);
 
     $other_club = Club::factory()->withStudents(10)->withTodaySession()->create();
 
-    expect($other_club->sessions()->whereDate('scheduled_at', '2026-10-01')->count())->toBe(1);
+    expect($other_club->events()->whereDate('scheduled_at', '2026-10-01')->count())->toBe(1);
 });
 
 test('the demo clubs have weekly sessions, the first club of each animator one today', function () {
@@ -164,11 +164,11 @@ test('the demo clubs have weekly sessions, the first club of each animator one t
         $clubs = $animator->createdClubs()->orderBy('id')->get();
 
         foreach ($clubs as $club) {
-            expect($club->sessions()->whereDate('scheduled_at', '<', '2026-10-01')->count())
+            expect($club->events()->whereDate('scheduled_at', '<', '2026-10-01')->count())
                 ->toBeGreaterThanOrEqual(DemoSeeder::WEEKS_OF_SESSIONS - 1);
         }
 
-        expect($clubs->first()->sessions()->whereDate('scheduled_at', '2026-10-01')->exists())->toBeTrue();
+        expect($clubs->first()->events()->whereDate('scheduled_at', '2026-10-01')->exists())->toBeTrue();
     }
 
     $club = Club::query()->orderBy('id')->first();
