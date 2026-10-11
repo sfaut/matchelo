@@ -42,8 +42,8 @@ ou non. L'indicateur `is_administrator` est exclu de l'assignation de masse.
 
 | Code        | Nom       | Résumé                                                               |
 |-------------|-----------|----------------------------------------------------------------------|
-| `PRESIDENT` | Président | Dirige le club : droits de l'animateur, plus la gestion de l'équipe. |
-| `ANIMATOR`  | Animateur | Anime le club : séances, présences, joueurs, tournois, résultats.    |
+| `PRESIDENT` | Président | Dirige le club : droits de l'animateur, plus l'équipe et les tournois. |
+| `ANIMATOR`  | Animateur | Anime le club : séances, présences, joueurs, résultats.              |
 | `REFEREE`   | Arbitre   | Arbitre les parties : valide ou saisit les résultats.                |
 | `PLAYER`    | Joueur    | Joue au club : classement, statistiques, tournois, résultats.        |
 
@@ -58,6 +58,7 @@ Dispose de tous les droits de l'animateur, et en plus :
   joueurs ;
 - nomme et retire les animateurs, les arbitres et les autres présidents ;
 - modifie et supprime le club (`ClubPolicy::update()`) ;
+- organise les tournois du club : l'animateur peut y animer, sans pouvoir en créer ;
 - planifie les événements du club en masse : génération, modification, suppression et
   composition (`ClubPolicy::planEvents()`, voir [events.md](events.md)).
 
@@ -68,7 +69,6 @@ ne peut être ni retiré du club ni changé de rôle. Pour partir, il nomme d'ab
 
 - Gère les séances et saisit les présences.
 - Ajoute des joueurs au club, y compris des joueurs sans compte.
-- Organise les tournois.
 - Valide ou saisit les résultats des parties (voir « Saisie des résultats »).
 
 ### Arbitre
@@ -120,7 +120,7 @@ saisies reçues :
 | Planifier les événements en masse        | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
 | Ajouter un joueur au club                | ✅             | ✅         | ✅         | ❌      | ❌     |
 | Gérer les séances et les présences       | ✅             | ✅         | ✅         | ❌      | ❌     |
-| Organiser un tournoi                     | ✅             | ✅         | ✅         | ❌      | ❌     |
+| Organiser un tournoi                     | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
 | S'inscrire à un tournoi                  | ❌             | ❌         | ❌         | ❌      | ✅     |
 | Saisir le résultat de sa partie          | ❌             | ❌         | ❌         | ❌      | 🔸 (1) |
 | Valider / saisir un résultat             | ✅             | ✅         | ✅         | ✅      | ❌     |

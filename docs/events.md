@@ -36,7 +36,7 @@ club (`roles`, constantes de `Role`, voir [roles.md](roles.md)) :
 
 | Rôle      | À l'événement                              |
 |-----------|--------------------------------------------|
-| Animateur | anime le cours, organise le tournoi        |
+| Animateur | anime le cours, encadre le tournoi         |
 | Joueur    | reçoit le cours (élève), joue au tournoi   |
 | Arbitre   | arbitre les parties                        |
 
