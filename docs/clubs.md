@@ -1,7 +1,8 @@
 # Clubs
 
-Ce document décrit l'organisation d'un club : ses membres, ses sections et ses séances. Les droits
-de chacun figurent dans [roles.md](roles.md).
+Ce document décrit l'organisation d'un club : ses membres et ses sections. Les droits de chacun
+figurent dans [roles.md](roles.md), les événements (cours, tournois) et le pointage dans
+[events.md](events.md).
 
 ## Club
 
@@ -35,32 +36,29 @@ Une section regroupe une partie des joueurs d'un club, par âge, niveau ou crén
 
 | Règle                                                  | Mise en œuvre                          |
 |--------------------------------------------------------|----------------------------------------|
-| Une section appartient à un seul club                  | `club_sections.club_id`, obligatoire   |
+| Une section appartient à un seul club                  | `sections.club_id`, obligatoire        |
 | Un club compte une à plusieurs sections                | section générale créée avec le club    |
-| Noms uniques au sein d'un club                         | unicité `(club_id, name)`              |
-| Un joueur appartient à zéro, une ou plusieurs sections | table `club_section_user`              |
+| Noms uniques au sein d'un club                         | unicité `(name, club_id)`              |
+| Un joueur appartient à zéro, une ou plusieurs sections | table `section_user`                   |
+| Un membre tient un rôle dans chacune de ses sections   | `section_user.role_id`                 |
 
 - **Section générale** : créée avec le club (`Club::createDefaultSection()`), nommée dans la
   langue courante (« Section générale », « General section »). Le président peut la renommer.
+- **Rôle dans la section** : distinct du rôle au club (`club_user`), il permet par exemple
+  d'attitrer un animateur à une section. Un joueur ajouté à une section y reçoit le rôle de
+  joueur (`Section::players()`).
 - **Répartition** : réservée au président et à l'administrateur
   (`ClubPolicy::manageSections()`). À l'ajout d'un joueur, le choix de sa section reste
   facultatif.
-- **Suppression** : supprimer une section libère ses joueurs ; un club qui a encore des sections
-  ne peut pas être supprimé directement.
+- **Suppression** : supprimer une section libère ses membres ; supprimer un club supprime ses
+  sections, et supprimer un utilisateur le retire de ses sections.
 - **Garde à construire** : rien n'empêche encore la suppression de la dernière section d'un club ;
   la règle sera appliquée par l'écran de gestion des sections.
-
-## Séances et présences
-
-- **Séance** : horodatée à la seconde ; deux séances d'un même club ne partagent pas le même
-  horodatage (`club_sessions`).
-- **Présence** : un membre pointé présent à une séance (`attendances`) ; supprimer une séance
-  supprime ses présences.
 
 ## Modèle de données
 
 ```
-clubs 1 ── n club_sections n ── n users      (club_section_user)
+clubs 1 ── n sections n ── n users           (section_user, avec role_id → roles)
 clubs n ── n users                           (club_user, avec role_id → roles)
-clubs 1 ── n club_sessions n ── n users      (attendances)
+clubs 1 ── n events n ── n users             (attendances, voir events.md)
 ```
