@@ -46,7 +46,7 @@ test('a factory club has an invite code and its creator as president', function 
         ->and($club->city)->not->toBe('')
         ->and($club->members)->toHaveCount(1)
         ->and($club->members->first()->is($club->creator))->toBeTrue()
-        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT))
+        ->and($club->members->first()->membership->role_id)->toBe(Role::idFor(Role::PRESIDENT))
         ->and($club->sections->pluck('name')->all())->toBe([__('clubs.sections.default_name')]);
 });
 

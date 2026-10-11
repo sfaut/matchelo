@@ -59,7 +59,7 @@ test('adding a found player makes them a player of the club', function () {
         ->call('add', $lea->id)
         ->assertRedirectToRoute('clubs.players.create', $this->club);
 
-    expect($this->club->members()->whereKey($lea->id)->first()->pivot->role_id)->toBe(Role::idFor(Role::PLAYER))
+    expect($this->club->members()->whereKey($lea->id)->first()->membership->role_id)->toBe(Role::idFor(Role::PLAYER))
         ->and(session('toast'))->toBe(__('clubs.players.added', ['name' => 'Léa Martin']));
 });
 

@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Club> $createdClubs
  * @property-read Collection<int, Club> $clubs
+ * @property-read Collection<int, Membership> $memberships
  * @property-read Collection<int, Section> $sections
  */
 #[Fillable(['last_name', 'first_name', 'elo_rating', 'email', 'password_hash'])]
@@ -75,15 +76,28 @@ class User extends Authenticatable
     }
 
     /**
-     * Clubs dont l'utilisateur est membre, avec son rôle (club_user.role_id).
+     * Clubs dont l'utilisateur est membre, chacun avec son adhésion (attribut membership : rôle,
+     * date d'adhésion).
      *
-     * @return BelongsToMany<Club, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<Club, $this, Membership, 'membership'>
      */
     public function clubs(): BelongsToMany
     {
-        return $this->belongsToMany(Club::class)
-            ->withPivot('role_id')
+        return $this->belongsToMany(Club::class, 'memberships')
+            ->using(Membership::class)
+            ->as('membership')
+            ->withPivot('id', 'role_id', 'joined_at')
             ->withTimestamps();
+    }
+
+    /**
+     * Adhésions de l'utilisateur aux clubs.
+     *
+     * @return HasMany<Membership, $this>
+     */
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(Membership::class);
     }
 
     /**
@@ -101,7 +115,7 @@ class User extends Authenticatable
     /**
      * Clubs que l'utilisateur gère, comme président ou animateur (Role::MANAGERS).
      *
-     * @return BelongsToMany<Club, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<Club, $this, Membership, 'membership'>
      */
     public function managedClubs(): BelongsToMany
     {

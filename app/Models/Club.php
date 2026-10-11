@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -33,6 +32,7 @@ use InvalidArgumentException;
  * @property Carbon|null $updated_at
  * @property-read User $creator
  * @property-read Collection<int, User> $members
+ * @property-read Collection<int, Membership> $memberships
  * @property-read Collection<int, Event> $events
  * @property-read Collection<int, Section> $sections
  */
@@ -147,7 +147,7 @@ class Club extends Model
      * chaque groupe par ordre alphabétique.
      *
      * @param  string  $event_role_code  code du rôle d'événement (Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
-     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<User, $this, Membership, 'membership'>
      */
     public function candidatesFor(string $event_role_code): BelongsToMany
     {
@@ -155,7 +155,7 @@ class Club extends Model
         $placeholders = implode(', ', array_fill(0, count($preferred_role_ids), '?'));
 
         return $this->members()
-            ->orderByRaw("case when club_user.role_id in ({$placeholders}) then 0 else 1 end", $preferred_role_ids)
+            ->orderByRaw("case when memberships.role_id in ({$placeholders}) then 0 else 1 end", $preferred_role_ids)
             ->orderBy('users.last_name')
             ->orderBy('users.first_name');
     }
@@ -180,14 +180,26 @@ class Club extends Model
     }
 
     /**
-     * Membres du club, avec leur rôle (club_user.role_id).
+     * Membres du club, chacun avec son adhésion (attribut membership : rôle, date d'adhésion).
      *
-     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<User, $this, Membership, 'membership'>
      */
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)
-            ->withPivot('role_id')
+        return $this->belongsToMany(User::class, 'memberships')
+            ->using(Membership::class)
+            ->as('membership')
+            ->withPivot('id', 'role_id', 'joined_at')
             ->withTimestamps();
+    }
+
+    /**
+     * Adhésions au club.
+     *
+     * @return HasMany<Membership, $this>
+     */
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(Membership::class);
     }
 }

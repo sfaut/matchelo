@@ -20,20 +20,23 @@ return new class extends Migration
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
         });
 
-        Schema::create('club_user', function (Blueprint $table) {
+        Schema::create('memberships', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('role_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('role_id')->comment('Rôle du membre au club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('joined_at', precision: 6)->useCurrent()->comment("Horodatage de l'adhésion au club");
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
-            $table->primary(['club_id', 'user_id']);
+            $table->unique(['club_id', 'user_id']);
+            $table->comment("Adhésions : un membre d'un club, avec son rôle au club");
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('club_user');
+        Schema::dropIfExists('memberships');
         Schema::dropIfExists('clubs');
     }
 };

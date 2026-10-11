@@ -49,7 +49,7 @@ test('creating a club makes the creator its president, opens the general section
         ->and($club->logo_path)->toBe('')
         ->and($club->logoUrl())->toBeNull()
         ->and($club->creator->is($this->user))->toBeTrue()
-        ->and($club->members->first()->pivot->role_id)->toBe(Role::idFor(Role::PRESIDENT))
+        ->and($club->members->first()->membership->role_id)->toBe(Role::idFor(Role::PRESIDENT))
         ->and($this->user->presides($club))->toBeTrue()
         ->and($club->sections->pluck('name')->all())->toBe([__('clubs.sections.default_name')])
         ->and(session('toast'))->toBe(__('clubs.create.created', ['name' => 'Échiquier Nord']));

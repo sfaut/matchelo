@@ -221,7 +221,7 @@ class Event extends Model
         }
 
         $event_role_ids = Role::eventRoleIds();
-        $club_role_ids = $this->club->members()->whereKey($user_ids)->pluck('club_user.role_id', 'users.id');
+        $club_role_ids = $this->club->members()->whereKey($user_ids)->pluck('memberships.role_id', 'users.id');
         $player_role_id = Role::idFor(Role::PLAYER);
 
         return $user_ids->mapWithKeys(fn (int $user_id): array => [

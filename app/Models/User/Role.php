@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * Rôle d'un membre (président, animateur, arbitre, joueur) : dans un club (club_user.role_id), une
+ * Rôle d'un membre (président, animateur, arbitre, joueur) : dans un club (memberships.role_id), une
  * section (section_user.role_id) ou un événement (attendances.role_id). À un événement, le rôle de
  * club donne le rôle par défaut (Role::EVENT_ROLE_BY_CLUB_ROLE).
  *

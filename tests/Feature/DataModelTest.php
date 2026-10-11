@@ -5,6 +5,7 @@ use App\Models\Club;
 use App\Models\Event;
 use App\Models\EventStatus;
 use App\Models\EventType;
+use App\Models\Membership;
 use App\Models\User;
 use App\Models\User\Role;
 use Illuminate\Database\QueryException;
@@ -74,7 +75,32 @@ test('a club has a creator and members with a role', function () {
     expect($club->creator->is($creator))->toBeTrue()
         ->and($creator->createdClubs->pluck('id')->all())->toBe([$club->id])
         ->and($club->members->pluck('id')->all())->toEqualCanonicalizing([$creator->id, $player->id])
-        ->and($player->clubs->first()->pivot->role_id)->toBe(Role::where('code', 'PLAYER')->value('id'));
+        ->and($player->clubs->first()->membership->role_id)->toBe(Role::where('code', 'PLAYER')->value('id'));
+});
+
+test('a membership has its own id, its role and its joining date', function () {
+    $this->travelTo(Carbon::parse('2026-09-01 18:00:00'));
+    $user = createUser();
+    $club = Club::factory()->create(['user_id' => $user->id]);
+    $player = createUser(['email' => 'tom.bernard@example.org']);
+
+    $club->members()->attach($player, ['role_id' => Role::idFor(Role::PLAYER)]);
+    $membership = $club->members()->whereKey($player->id)->first()->membership;
+
+    expect($membership)->toBeInstanceOf(Membership::class)
+        ->and($membership->id)->toBeInt()
+        ->and($membership->joined_at->toDateString())->toBe('2026-09-01')
+        ->and(Membership::find($membership->id)->role->code)->toBe(Role::PLAYER)
+        ->and($player->memberships->pluck('club_id')->all())->toBe([$club->id])
+        ->and($club->memberships()->count())->toBe(2);
+});
+
+test('a user joins a club only once', function () {
+    $user = createUser();
+    $club = Club::factory()->create(['user_id' => $user->id]);
+
+    expect(fn () => Membership::create(['club_id' => $club->id, 'user_id' => $user->id, 'role_id' => Role::idFor(Role::PLAYER)]))
+        ->toThrow(QueryException::class);
 });
 
 test('a club section belongs to its club and gathers players', function () {
@@ -165,7 +191,7 @@ test('a reference id change cascades to the rows using it', function () {
 
     DB::table('roles')->where('code', Role::PLAYER)->update(['id' => 40]);
 
-    expect($club->members()->first()->pivot->role_id)->toBe(40);
+    expect($club->members()->first()->membership->role_id)->toBe(40);
 });
 
 test('a role id is found by its code', function () {
@@ -249,6 +275,7 @@ test('the model timestamps keep their microseconds', function (Closure $create_m
     'user' => fn (): User => createUser(),
     'club' => fn (): Club => Club::factory()->create(),
     'club session' => fn (): Event => Event::factory()->create(),
+    'membership' => fn (): Membership => Club::factory()->create()->memberships()->first(),
 ]);
 
 test('a club session is scheduled to the second', function () {

@@ -374,7 +374,7 @@ new class extends Component
                             @unless ($member->hasAccount())
                                 <span class="mx-badge text-muted">{{ __('clubs.players.no_account') }}</span>
                             @endunless
-                            @if (in_array($member->pivot->role_id, $this->managerRoleIds, true))
+                            @if (in_array($member->membership->role_id, $this->managerRoleIds, true))
                                 <span class="mx-badge">{{ __('clubs.index.animator_badge') }}</span>
                             @endif
                             <span class="tabular-nums text-muted">{{ Number::format($member->elo_rating) }}</span>
