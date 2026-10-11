@@ -38,6 +38,16 @@ function generateCourses(EventPlanner $planner, User $animator, User $player, ar
     return $planner->generate($dates, EventType::COURSE, [$animator->id], [$player->id])->modelKeys();
 }
 
+test('only the presidents of the club and the administrators plan its events', function (Closure $user, bool $allowed) {
+    expect($user->call($this)->can('planEvents', $this->club))->toBe($allowed);
+})->with([
+    'president of the club' => [fn (): User => $this->paul, true],
+    'animator of the club' => [fn (): User => $this->lea, false],
+    'player of the club' => [fn (): User => $this->tom, false],
+    'president of another club' => [fn (): User => tap(createUser(['email' => 'a@example.org']), fn (User $user) => createClubWith('Échiquier Nord', [Role::PRESIDENT => $user])), false],
+    'administrator outside the club' => [fn (): User => tap(createUser(['email' => 'admin@example.org']), fn (User $user) => $user->forceFill(['is_administrator' => true])->save()), true],
+]);
+
 test('the occurrences fall on the chosen weekdays between two dates included, at the chosen time', function () {
     $format = fn (array $occurrences): array => array_map(fn (CarbonImmutable $occurrence): string => $occurrence->format('Y-m-d H:i'), $occurrences);
 

@@ -32,4 +32,13 @@ class ClubPolicy
     {
         return $user->is_administrator || $user->presides($club);
     }
+
+    /**
+     * Planifier les événements d'un club en masse (EventPlanner : génération, modification,
+     * suppression, composition) : l'un de ses présidents, ou un administrateur.
+     */
+    public function planEvents(User $user, Club $club): bool
+    {
+        return $user->is_administrator || $user->presides($club);
+    }
 }
