@@ -57,7 +57,9 @@ Dispose de tous les droits de l'animateur, et en plus :
 - ajoute des membres au club avec n'importe quel rôle : présidents, animateurs, arbitres ou
   joueurs ;
 - nomme et retire les animateurs, les arbitres et les autres présidents ;
-- modifie et supprime le club (`ClubPolicy::update()`).
+- modifie et supprime le club (`ClubPolicy::update()`) ;
+- planifie les événements du club en masse : génération, modification, suppression et
+  composition (`ClubPolicy::planEvents()`, voir [events.md](events.md)).
 
 Un club compte **un ou plusieurs présidents**, et **toujours au moins un** : le dernier président
 ne peut être ni retiré du club ni changé de rôle. Pour partir, il nomme d'abord un autre président.
@@ -115,6 +117,7 @@ saisies reçues :
 | Modifier / supprimer le club             | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
 | Ajouter / retirer prés., anim., arbitres | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
 | Gérer le club (tableau de bord)          | ✅ tous        | ✅ le sien | ✅ le sien | ❌      | ❌     |
+| Planifier les événements en masse        | ✅ tous        | ✅ le sien | ❌         | ❌      | ❌     |
 | Ajouter un joueur au club                | ✅             | ✅         | ✅         | ❌      | ❌     |
 | Gérer les séances et les présences       | ✅             | ✅         | ✅         | ❌      | ❌     |
 | Organiser un tournoi                     | ✅             | ✅         | ✅         | ❌      | ❌     |

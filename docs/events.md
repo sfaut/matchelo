@@ -73,6 +73,9 @@ doit un jour se propager d'elle-même aux occurrences à venir.
 | `withdraw()`             | retire des membres, avec leur pointage                            |
 | `copyParticipants()`     | reprend les participants d'un événement, avec leur rôle (groupe du mardi, des jeunes…) |
 
+- **Droits** : réservés aux présidents du club et aux administrateurs
+  (`ClubPolicy::planEvents()`, voir [roles.md](roles.md)). `EventPlanner` n'en vérifie aucun :
+  l'écran qui l'appelle les contrôle.
 - **Portée** : chaque opération porte sur des événements du club ; un événement d'un autre club
   fait échouer l'opération entière.
 - **Atomicité** : chaque opération s'exécute en une transaction ; un échec n'en laisse rien.
@@ -109,6 +112,5 @@ l'événement et son statut de présence (`attendance_statuses`, constantes de `
 
 - **Écrans de planification** : génération avec aperçu des dates, sélection filtrée des
   événements, opérations en masse et composition, sur `EventPlanner` et `Club::candidatesFor()`.
-  Les droits restent à fixer (gestionnaires du club, a priori).
 - Pointage des statuts absent, excusé et en retard depuis l'écran de pointage.
 - Clôture du pointage (statut clôturé) et limitation des statistiques aux cours.
