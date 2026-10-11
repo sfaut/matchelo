@@ -92,7 +92,19 @@ test('a membership has its own id, its role and its joining date', function () {
         ->and($membership->joined_at->toDateString())->toBe('2026-09-01')
         ->and(Membership::find($membership->id)->role->code)->toBe(Role::PLAYER)
         ->and($player->memberships->pluck('club_id')->all())->toBe([$club->id])
-        ->and($club->memberships()->count())->toBe(2);
+        ->and($club->memberships()->count())->toBe(2)
+        ->and(DB::table('memberships')->where('id', $membership->id)->value('joined_at'))->toBe('2026-09-01');
+});
+
+test('a membership may have joined before its creation, stored as a date', function () {
+    $user = createUser();
+    $club = Club::factory()->create(['user_id' => $user->id]);
+    $player = createUser(['email' => 'tom.bernard@example.org']);
+
+    $membership = Membership::create(['club_id' => $club->id, 'user_id' => $player->id, 'role_id' => Role::idFor(Role::PLAYER), 'joined_at' => '2024-09-12 18:30:00']);
+
+    expect(DB::table('memberships')->where('id', $membership->id)->value('joined_at'))->toBe('2024-09-12')
+        ->and($membership->fresh()->joined_at->toDateString())->toBe('2024-09-12');
 });
 
 test('a user joins a club only once', function () {

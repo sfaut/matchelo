@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\HasMicrosecondDates;
 use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
@@ -47,14 +48,27 @@ class Membership extends Pivot
     protected $table = 'memberships';
 
     /**
-     * Date l'adhésion à sa création, sauf date fournie (adhésion antérieure à l'application) :
-     * l'horloge de l'application prévaut sur la valeur par défaut de la colonne.
+     * Date l'adhésion du jour de sa création, sauf date fournie (adhésion antérieure à
+     * l'application) : l'horloge de l'application prévaut sur la valeur par défaut de la colonne.
      */
     protected static function booted(): void
     {
         static::creating(function (Membership $membership): void {
             $membership->joined_at ??= $membership->freshTimestamp();
         });
+    }
+
+    /**
+     * Écrit la date d'adhésion sans heure, comme sa colonne (`date`), en dépit du format à
+     * microsecondes de HasMicrosecondDates.
+     *
+     * @return Attribute<never, string>
+     */
+    protected function joinedAt(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value): string => $this->asDateTime($value)->format('Y-m-d'),
+        );
     }
 
     /**
@@ -65,7 +79,7 @@ class Membership extends Pivot
     protected function casts(): array
     {
         return [
-            'joined_at' => 'datetime',
+            'joined_at' => 'date',
         ];
     }
 

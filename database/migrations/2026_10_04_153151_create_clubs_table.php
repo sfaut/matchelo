@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('club_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('role_id')->comment('Rôle du membre au club')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->dateTime('joined_at', precision: 6)->useCurrent()->comment("Horodatage de l'adhésion au club");
+            $table->date('joined_at')->useCurrent()->comment("Date d'adhésion au club");
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
