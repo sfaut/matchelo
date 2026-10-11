@@ -22,6 +22,13 @@ enregistre la présence de chacun. L'organisation du club figure dans [clubs.md]
 - **Suppression** : supprimer un événement supprime son pointage ; un club qui a des événements
   ne peut pas être supprimé directement.
 
+## Ordre d'affichage
+
+Les statuts d'événement et de présence portent un ordre d'affichage (`display_order`), utilisé
+par les menus de choix (portée `ordered()`). Il est valorisé par dizaines (10, 20, 30…) : on
+insère un statut entre deux autres sans renuméroter (25 entre 20 et 30). Les tableaux de ce
+document suivent cet ordre.
+
 ## Pointage
 
 Le pointage enregistre une ligne par membre et par événement (`attendances`), avec son statut de
@@ -34,18 +41,17 @@ présence (`attendance_statuses`, constantes de `AttendanceStatus`).
 | Absent    | joueur absent non excusé                      | non            |
 | Excusé    | joueur absent avec excuse acceptée            | non            |
 | En retard | joueur arrivé en retard                       | oui            |
-| Blessé    | joueur présent mais blessé, ne participe pas  | oui            |
 
 - **Création de l'événement** : chaque membre du club y est inscrit au statut prévu
   (`Event::expectMembers()`).
 - **Écran de pointage** : pointer une séance crée au besoin un **cours terminé** à cette date
   (`Club::createCourse()`). Pointer un membre le passe à présent ; le dépointer, ou remettre
   l'appel à zéro, le ramène à prévu.
-- **Statistiques** : taux de présence et assiduité comptent les statuts présent, en retard et
-  blessé (`AttendanceStatus::ATTENDING`), tous types d'événement confondus (`AttendanceReport`).
+- **Statistiques** : taux de présence et assiduité comptent les statuts présent et en retard
+  (`AttendanceStatus::ATTENDING`), tous types d'événement confondus (`AttendanceReport`).
 
 ## Reste à construire
 
 - Création et planification des événements (tournois notamment), avec leur statut.
-- Pointage des statuts absent, excusé, en retard et blessé depuis l'écran de pointage.
+- Pointage des statuts absent, excusé et en retard depuis l'écran de pointage.
 - Clôture du pointage (statut clôturé) et limitation des statistiques aux cours.
