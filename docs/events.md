@@ -52,6 +52,36 @@ Le président n'est pas un rôle d'événement : un président qui participe y a
 - **Pointage** : pointer un participant ne change pas son rôle ; un membre pointé sans être
   inscrit reçoit le rôle par défaut.
 
+## Planification en masse
+
+Les événements se planifient et se composent en masse (`App\Support\EventPlanner`).
+
+**Décision : des événements indépendants.** Chaque événement généré vit sa propre vie, détaché
+des événements générés avec lui ; le modèle ne connaît pas de série. Les occurrences d'un créneau divergent vite
+(vacances, annulation, animateur remplacé, cours déplacé), et chaque écart serait une exception à
+gérer dans une série. Les opérations en masse portent donc sur une **sélection d'événements**, que
+l'écran filtrera (période, jour, heure, type). Une série s'ajoutera plus tard si une modification
+doit un jour se propager d'elle-même aux occurrences à venir.
+
+| Opération                | Effet                                                              |
+|--------------------------|--------------------------------------------------------------------|
+| `occurrences()`          | horodatages des jours choisis sur une période : aperçu avant génération, pour retirer des dates |
+| `generate()`             | un événement planifié par horodatage, avec ses animateurs et joueurs attendus |
+| `update()`               | heure (date conservée), statut, description ; un champ omis reste en place |
+| `delete()`               | supprime les événements et leur pointage                          |
+| `enrol()`                | inscrit des membres avec un rôle ; un membre déjà inscrit change de rôle et garde son statut de présence |
+| `withdraw()`             | retire des membres, avec leur pointage                            |
+| `copyParticipants()`     | reprend les participants d'un événement, avec leur rôle (groupe du mardi, des jeunes…) |
+
+- **Portée** : chaque opération porte sur des événements du club ; un événement d'un autre club
+  fait échouer l'opération entière.
+- **Atomicité** : chaque opération s'exécute en une transaction ; un échec n'en laisse rien.
+- **Cours complet** : un cours compte **au moins un animateur et au moins un joueur**
+  (`Event::isStaffed()`). Une génération ou un changement de composition qui laisserait un cours
+  sans l'un ou l'autre est refusé. Les autres types d'événement n'y sont pas tenus : un tournoi
+  peut se passer d'animateur.
+- **Événement clôturé** : son pointage est définitivement clos, sa composition ne change plus.
+
 ## Pointage
 
 Le pointage enregistre une ligne par membre et par événement (`attendances`), avec son rôle à
@@ -65,8 +95,8 @@ l'événement et son statut de présence (`attendance_statuses`, constantes de `
 | Excusé    | joueur absent avec excuse acceptée            | non            |
 | En retard | joueur arrivé en retard                       | oui            |
 
-- **Planification d'un cours** : un cours planifié compte **au moins un animateur et au moins un
-  joueur**, inscrits au statut prévu (`Club::scheduleCourse()`).
+- **Événement planifié** : ses participants y sont inscrits au statut prévu
+  (voir la section « Planification en masse »).
 - **Cours créé par le pointage** : chaque membre du club y est inscrit au statut prévu, avec son
   rôle par défaut (`Event::expectMembers()`).
 - **Écran de pointage** : pointer une séance crée au besoin un **cours terminé** à cette date
@@ -77,14 +107,8 @@ l'événement et son statut de présence (`attendance_statuses`, constantes de `
 
 ## Reste à construire
 
-- Création et planification des événements (tournois notamment), avec leur statut ; l'écran de
-  planification d'un cours (choix des animateurs et des joueurs) s'appuiera sur
-  `Club::scheduleCourse()` et `Club::candidatesFor()`.
-- **Gestion en masse** des événements : générer une série (un cours chaque mardi de l'année,
-  par exemple), modifier ou supprimer plusieurs événements à la fois.
-- **Composition en masse** : inscrire, changer de rôle ou retirer des membres sur plusieurs
-  événements à la fois, et reprendre les participants d'un événement pour en composer un autre.
-  Ce besoin couvre le regroupement durable des membres (groupe du mardi, des jeunes), auparavant
-  confié aux sections, retirées du modèle.
+- **Écrans de planification** : génération avec aperçu des dates, sélection filtrée des
+  événements, opérations en masse et composition, sur `EventPlanner` et `Club::candidatesFor()`.
+  Les droits restent à fixer (gestionnaires du club, a priori).
 - Pointage des statuts absent, excusé et en retard depuis l'écran de pointage.
 - Clôture du pointage (statut clôturé) et limitation des statistiques aux cours.
