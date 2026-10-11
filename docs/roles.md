@@ -15,6 +15,10 @@ La clef primaire `(club_id, user_id)` de `club_user` limite chaque utilisateur �
 par club** ; il peut tenir des rôles différents dans des clubs différents (animateur ici, joueur
 là).
 
+Le rôle de club est le rôle premier du membre. Il donne son rôle par défaut à chaque événement,
+où il peut en tenir un autre (voir [events.md](events.md)) ; une section porte aussi son propre
+rôle (voir [clubs.md](clubs.md)). Les droits décrits ici découlent du seul rôle de club.
+
 **Seuls les utilisateurs connectés agissent dans l'application**, ce qui suppose un compte avec
 e-mail. Un joueur sans compte (`users.email` à `NULL`) figure dans son club et au classement,
 mais n'interagit pas : l'animateur agit pour lui.

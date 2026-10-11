@@ -60,5 +60,5 @@ Une section regroupe une partie des joueurs d'un club, par âge, niveau ou crén
 ```
 clubs 1 ── n sections n ── n users           (section_user, avec role_id → roles)
 clubs n ── n users                           (club_user, avec role_id → roles)
-clubs 1 ── n events n ── n users             (attendances, voir events.md)
+clubs 1 ── n events n ── n users             (attendances, avec role_id → roles, voir events.md)
 ```
