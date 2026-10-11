@@ -80,5 +80,11 @@ l'événement et son statut de présence (`attendance_statuses`, constantes de `
 - Création et planification des événements (tournois notamment), avec leur statut ; l'écran de
   planification d'un cours (choix des animateurs et des joueurs) s'appuiera sur
   `Club::scheduleCourse()` et `Club::candidatesFor()`.
+- **Gestion en masse** des événements : générer une série (un cours chaque mardi de l'année,
+  par exemple), modifier ou supprimer plusieurs événements à la fois.
+- **Composition en masse** : inscrire, changer de rôle ou retirer des membres sur plusieurs
+  événements à la fois, et reprendre les participants d'un événement pour en composer un autre.
+  Ce besoin couvre le regroupement durable des membres (groupe du mardi, des jeunes), auparavant
+  confié aux sections, retirées du modèle.
 - Pointage des statuts absent, excusé et en retard depuis l'écran de pointage.
 - Clôture du pointage (statut clôturé) et limitation des statistiques aux cours.

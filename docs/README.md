@@ -5,6 +5,6 @@ les valeurs (codes, longueurs, identifiants) : ces pages y renvoient sans les re
 
 | Fichier                | Contenu                                                              |
 |------------------------|----------------------------------------------------------------------|
-| [clubs.md](clubs.md)   | Club, membres, sections ; modèle de données.                         |
+| [clubs.md](clubs.md)   | Club, membres et adhésions ; modèle de données.                      |
 | [events.md](events.md) | Événements (cours, tournois), statuts, pointage des présences.       |
 | [roles.md](roles.md)   | Administrateur, rôles de club, matrice des droits, saisie des résultats. |
