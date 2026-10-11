@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('code', length: 20)->unique();
             $table->string('name', length: 20)->unique();
             $table->string('description', length: 100)->default('');
+            $table->unsignedSmallInteger('display_order')->default(0)->comment("Ordre d'affichage (menus de choix), par dizaines pour faciliter les insertions");
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
@@ -48,6 +49,7 @@ return new class extends Migration
             $table->string('code', length: 20)->unique();
             $table->string('name', length: 20)->unique();
             $table->string('description', length: 100)->default('');
+            $table->unsignedSmallInteger('display_order')->default(0)->comment("Ordre d'affichage (menus de choix), par dizaines pour faciliter les insertions");
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 

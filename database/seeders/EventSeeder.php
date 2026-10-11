@@ -25,12 +25,12 @@ class EventSeeder extends Seeder
         }
 
         $statuses = [
-            ['id' => 1, 'code' => 'DRAFT',       'name' => 'Brouillon', 'description' => 'Événement en cours de création, non visible'],
-            ['id' => 2, 'code' => 'SCHEDULED',   'name' => 'Planifié',  'description' => 'Événement confirmé et planifié'],
-            ['id' => 3, 'code' => 'IN_PROGRESS', 'name' => 'En cours',  'description' => 'Événement en cours de réalisation'],
-            ['id' => 4, 'code' => 'COMPLETED',   'name' => 'Terminé',   'description' => 'Événement terminé, pointage encore modifiable'],
-            ['id' => 5, 'code' => 'FINALIZED',   'name' => 'Clôturé',   'description' => 'Événement terminé et pointage définitivement clos'],
-            ['id' => 6, 'code' => 'CANCELLED',   'name' => 'Annulé',    'description' => 'Événement annulé'],
+            ['id' => 1, 'code' => 'DRAFT',       'name' => 'Brouillon', 'description' => 'Événement en cours de création, non visible', 'display_order' => 10],
+            ['id' => 2, 'code' => 'SCHEDULED',   'name' => 'Planifié',  'description' => 'Événement confirmé et planifié', 'display_order' => 20],
+            ['id' => 3, 'code' => 'IN_PROGRESS', 'name' => 'En cours',  'description' => 'Événement en cours de réalisation', 'display_order' => 30],
+            ['id' => 4, 'code' => 'COMPLETED',   'name' => 'Terminé',   'description' => 'Événement terminé, pointage encore modifiable', 'display_order' => 40],
+            ['id' => 5, 'code' => 'FINALIZED',   'name' => 'Clôturé',   'description' => 'Événement terminé et pointage définitivement clos', 'display_order' => 50],
+            ['id' => 6, 'code' => 'CANCELLED',   'name' => 'Annulé',    'description' => 'Événement annulé', 'display_order' => 60],
         ];
 
         foreach ($statuses as $record) {
@@ -38,11 +38,11 @@ class EventSeeder extends Seeder
         }
 
         $attendance_statuses = [
-            ['id' => 1, 'code' => 'EXPECTED', 'name' => 'Prévu',     'description' => 'Joueur attendu'],
-            ['id' => 2, 'code' => 'PRESENT',  'name' => 'Présent',   'description' => 'Joueur présent'],
-            ['id' => 3, 'code' => 'ABSENT',   'name' => 'Absent',    'description' => 'Joueur absent non excusé'],
-            ['id' => 4, 'code' => 'EXCUSED',  'name' => 'Excusé',    'description' => 'Joueur absent avec excuse acceptée'],
-            ['id' => 5, 'code' => 'LATE',     'name' => 'En retard', 'description' => 'Joueur arrivé en retard'],
+            ['id' => 1, 'code' => 'EXPECTED', 'name' => 'Prévu',     'description' => 'Joueur attendu', 'display_order' => 10],
+            ['id' => 2, 'code' => 'PRESENT',  'name' => 'Présent',   'description' => 'Joueur présent', 'display_order' => 20],
+            ['id' => 3, 'code' => 'ABSENT',   'name' => 'Absent',    'description' => 'Joueur absent non excusé', 'display_order' => 30],
+            ['id' => 4, 'code' => 'EXCUSED',  'name' => 'Excusé',    'description' => 'Joueur absent avec excuse acceptée', 'display_order' => 40],
+            ['id' => 5, 'code' => 'LATE',     'name' => 'En retard', 'description' => 'Joueur arrivé en retard', 'display_order' => 50],
         ];
 
         foreach ($attendance_statuses as $record) {

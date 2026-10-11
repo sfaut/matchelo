@@ -25,6 +25,16 @@ test('the seeders fill the reference tables', function () {
         ->and(AttendanceStatus::pluck('code')->all())->toEqualCanonicalizing(['EXPECTED', 'PRESENT', 'ABSENT', 'EXCUSED', 'LATE']);
 });
 
+test('the statuses list in their display order, set by tens', function () {
+    expect(EventStatus::ordered()->pluck('code')->all())->toBe(['DRAFT', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'FINALIZED', 'CANCELLED'])
+        ->and(AttendanceStatus::ordered()->pluck('code')->all())->toBe(['EXPECTED', 'PRESENT', 'ABSENT', 'EXCUSED', 'LATE'])
+        ->and(EventStatus::pluck('display_order')->concat(AttendanceStatus::pluck('display_order'))->every(fn (int $order): bool => $order % 10 === 0))->toBeTrue();
+
+    AttendanceStatus::where('code', AttendanceStatus::LATE)->update(['display_order' => 25]);
+
+    expect(AttendanceStatus::ordered()->pluck('code')->all())->toBe(['EXPECTED', 'PRESENT', 'LATE', 'ABSENT', 'EXCUSED']);
+});
+
 test('a user is not an administrator by default', function () {
     $user = User::create([
         'last_name' => 'Kaci',
