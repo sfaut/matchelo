@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasMicrosecondDates;
+use App\Models\Concerns\RecordsStatusChanges;
 use App\Models\User\Role;
 use Carbon\CarbonImmutable;
 use Database\Factories\EventFactory;
@@ -13,12 +14,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection as BaseCollection;
 
 /**
- * Événement d'un club (cours, tournoi…), horodaté ; ses membres pointés figurent dans la table
- * attendances, avec leur rôle à l'événement (animateur, joueur, arbitre) et leur statut de présence.
+ * Événement d'un club (cours, tournoi…), horodaté, avec son statut historisé
+ * (event_status_changes) ; ses participants sont pointés dans la table attendances (modèle
+ * Attendance), avec leur rôle à l'événement (animateur, joueur, arbitre) et leur statut de présence.
  *
  * @see docs/events.md
  *
@@ -34,6 +36,8 @@ use Illuminate\Support\Collection as BaseCollection;
  * @property-read Club $club
  * @property-read EventType $type
  * @property-read EventStatus $status
+ * @property-read Collection<int, EventStatusChange> $statusChanges
+ * @property-read Collection<int, Attendance> $attendances
  * @property-read Collection<int, User> $participants
  * @property-read Collection<int, User> $attendees
  * @property-read Collection<int, User> $animators
@@ -44,6 +48,9 @@ class Event extends Model
 {
     /** @use HasFactory<EventFactory> */
     use HasFactory, HasMicrosecondDates;
+
+    /** @use RecordsStatusChanges<EventStatusChange> */
+    use RecordsStatusChanges;
 
     /**
      * Get the attributes that should be cast.
@@ -101,22 +108,44 @@ class Event extends Model
     }
 
     /**
-     * Membres attendus ou pointés à l'événement, avec leur rôle à l'événement (pivot role_id) et
-     * leur statut de présence (pivot attendance_status_id).
+     * Historique des statuts de l'événement, du plus ancien au plus récent.
      *
-     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     * @return HasMany<EventStatusChange, $this>
+     */
+    public function statusChanges(): HasMany
+    {
+        return $this->hasMany(EventStatusChange::class)->orderBy('changed_at')->orderBy('id');
+    }
+
+    /**
+     * Pointage de l'événement : une ligne par participant.
+     *
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * Membres attendus ou pointés à l'événement, chacun avec son pointage (attribut attendance :
+     * rôle à l'événement, statut de présence).
+     *
+     * @return BelongsToMany<User, $this, Attendance, 'attendance'>
      */
     public function participants(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'attendances')
-            ->withPivot('role_id', 'attendance_status_id')
+            ->using(Attendance::class)
+            ->as('attendance')
+            ->withPivot('id', 'role_id', 'attendance_status_id')
             ->withTimestamps();
     }
 
     /**
      * Membres présents à l'événement : statut compté comme présent (AttendanceStatus::ATTENDING).
      *
-     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<User, $this, Attendance, 'attendance'>
      */
     public function attendees(): BelongsToMany
     {
@@ -127,7 +156,7 @@ class Event extends Model
     /**
      * Membres qui animent l'événement (rôle Role::ANIMATOR à l'événement).
      *
-     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<User, $this, Attendance, 'attendance'>
      */
     public function animators(): BelongsToMany
     {
@@ -137,7 +166,7 @@ class Event extends Model
     /**
      * Membres qui reçoivent le cours ou jouent à l'événement (rôle Role::PLAYER à l'événement).
      *
-     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     * @return BelongsToMany<User, $this, Attendance, 'attendance'>
      */
     public function players(): BelongsToMany
     {
@@ -199,39 +228,64 @@ class Event extends Model
     }
 
     /**
-     * Donne un statut de présence à des membres, attendus ou non : un membre déjà inscrit garde
-     * son rôle à l'événement, un nouveau venu reçoit celui de son rôle de club.
+     * Donne un statut de présence à des membres, attendus ou non, et l'historise : un membre déjà
+     * inscrit garde son rôle à l'événement, un nouveau venu reçoit celui de son rôle de club.
      *
      * @param  iterable<int|string>  $user_ids  identifiants des membres
      * @param  string  $status_code  code du statut (constante de AttendanceStatus)
      */
     public function setAttendance(iterable $user_ids, string $status_code): void
     {
-        $status_id = AttendanceStatus::idFor($status_code);
         $user_ids = collect($user_ids)->map(fn (int|string $user_id): int => (int) $user_id)->unique()->values();
-        $enrolled_ids = $this->participants()->whereKey($user_ids)->pluck('users.id');
+        $attendances = $this->attendances()->whereIn('user_id', $user_ids)->get();
 
-        $this->participants()->newPivotQuery()->whereIn('user_id', $enrolled_ids)->update([
-            'attendance_status_id' => $status_id,
-            'updated_at' => $this->freshTimestampString(),
-        ]);
+        $attendances->each(fn (Attendance $attendance) => $attendance->changeStatus($status_code));
+
+        $status_id = AttendanceStatus::idFor($status_code);
 
         $this->participants()->attach(
-            $this->defaultRoleIds($user_ids->diff($enrolled_ids))
+            $this->defaultRoleIds($user_ids->diff($attendances->pluck('user_id')))
                 ->map(fn (int $role_id): array => ['role_id' => $role_id, 'attendance_status_id' => $status_id])
                 ->all(),
         );
     }
 
     /**
-     * Remet chaque membre au statut attendu : l'événement reste enregistré, sans présent.
+     * Remet chaque membre au statut attendu, historisé : l'événement reste enregistré, sans
+     * présent.
      */
     public function resetAttendance(): void
     {
-        $this->participants()->newPivotQuery()->update([
-            'attendance_status_id' => AttendanceStatus::idFor(AttendanceStatus::EXPECTED),
-            'updated_at' => $this->freshTimestampString(),
-        ]);
+        $this->attendances()
+            ->where('attendance_status_id', '!=', AttendanceStatus::idFor(AttendanceStatus::EXPECTED))
+            ->get()
+            ->each(fn (Attendance $attendance) => $attendance->changeStatus(AttendanceStatus::EXPECTED));
+    }
+
+    /**
+     * Nom de la colonne de statut, commun à l'événement et à son historique.
+     */
+    protected function statusColumn(): string
+    {
+        return 'event_status_id';
+    }
+
+    /**
+     * Donne l'identifiant d'un statut d'événement d'après son code.
+     *
+     * @param  string  $status_code  code du statut (constante de EventStatus)
+     */
+    protected function statusIdFor(string $status_code): ?int
+    {
+        return EventStatus::idFor($status_code);
+    }
+
+    /**
+     * Auteur d'un changement fait sans utilisateur connecté : le créateur du club.
+     */
+    protected function fallbackStatusAuthorId(): int
+    {
+        return $this->club->user_id;
     }
 
     /**
@@ -249,7 +303,7 @@ class Event extends Model
         }
 
         $event_role_ids = Role::eventRoleIds();
-        $club_role_ids = $this->club->members()->whereKey($user_ids)->pluck('memberships.role_id', 'users.id');
+        $club_role_ids = $this->club->memberships()->whereIn('user_id', $user_ids)->pluck('role_id', 'user_id');
         $player_role_id = Role::idFor(Role::PLAYER);
 
         return $user_ids->mapWithKeys(fn (int $user_id): array => [

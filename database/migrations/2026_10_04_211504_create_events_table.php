@@ -44,6 +44,18 @@ return new class extends Migration
             $table->comment("Événements d'un club : cours, tournois…");
         });
 
+        Schema::create('event_status_changes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('event_status_id')->comment("Statut pris par l'événement")->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('changed_at', precision: 6)->useCurrent()->comment('Horodatage du changement de statut');
+            $table->foreignId('user_id')->comment('Auteur du changement')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
+
+            $table->comment("Historique des statuts d'un événement : une ligne par changement, statut initial compris");
+        });
+
         Schema::create('attendance_statuses', function (Blueprint $table) {
             $table->id();
             $table->string('code', length: 20)->unique();
@@ -57,6 +69,7 @@ return new class extends Migration
         });
 
         Schema::create('attendances', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('event_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('role_id')->comment("Rôle tenu à l'événement : animateur, joueur (élève), arbitre")->constrained()->cascadeOnUpdate()->restrictOnDelete();
@@ -64,15 +77,29 @@ return new class extends Migration
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
-            $table->primary(['event_id', 'user_id']);
+            $table->unique(['event_id', 'user_id']);
             $table->comment('Pointage : une ligne par membre pointé à un événement, avec son rôle et son statut de présence');
+        });
+
+        Schema::create('attendance_status_changes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('attendance_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('attendance_status_id')->comment('Statut de présence pris')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('changed_at', precision: 6)->useCurrent()->comment('Horodatage du changement de statut');
+            $table->foreignId('user_id')->comment('Auteur du changement')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->dateTime('created_at', precision: 6)->useCurrent();
+            $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
+
+            $table->comment("Historique des statuts de présence d'un pointage : une ligne par changement, statut initial compris");
         });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('attendance_status_changes');
         Schema::dropIfExists('attendances');
         Schema::dropIfExists('attendance_statuses');
+        Schema::dropIfExists('event_status_changes');
         Schema::dropIfExists('events');
         Schema::dropIfExists('event_statuses');
         Schema::dropIfExists('event_types');
