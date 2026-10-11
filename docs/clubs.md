@@ -23,10 +23,10 @@ Un membre est un utilisateur inscrit au club avec **un seul rôle** : président
 ou joueur (voir [roles.md](roles.md)).
 
 - **Adhésion** : l'inscription d'un utilisateur à un club (`memberships`, modèle `Membership`),
-  avec son rôle et sa date d'adhésion (`joined_at`). Elle porte son propre identifiant ; un
-  utilisateur adhère au plus une fois à chaque club (unicité `(club_id, user_id)`). La date
-  d'adhésion vaut par défaut l'horodatage de l'inscription et peut être antérieure, pour un
-  membre arrivé au club avant l'application.
+  avec son rôle et sa date d'adhésion (`joined_at`, une date sans heure). Elle porte son propre
+  identifiant ; un utilisateur adhère au plus une fois à chaque club (unicité
+  `(club_id, user_id)`). La date d'adhésion vaut par défaut le jour de l'inscription et peut être
+  antérieure, pour un membre arrivé au club avant l'application.
 - **Président** : un club en compte toujours au moins un. La garde sera appliquée par l'écran
   de gestion des membres, qui reste à construire.
 - **Joueur sans compte** : créé par un président ou un animateur, sans e-mail ni mot de passe. Il
