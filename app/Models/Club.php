@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasMicrosecondDates;
+use App\Models\User\Role;
 use Closure;
 use Database\Factories\ClubFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 /**
  * Club d'échecs, créé par un utilisateur et réunissant des membres avec un rôle.
@@ -107,6 +109,55 @@ class Club extends Model
         $course->expectMembers();
 
         return $course;
+    }
+
+    /**
+     * Planifie un cours du club, avec ses animateurs et ses joueurs (élèves) attendus ; un cours
+     * compte au moins un animateur et au moins un joueur.
+     *
+     * @param  string  $scheduled_at  horodatage du cours (AAAA-MM-JJ HH:MM:SS)
+     * @param  iterable<int|string>  $animator_ids  identifiants des animateurs
+     * @param  iterable<int|string>  $player_ids  identifiants des joueurs
+     *
+     * @throws InvalidArgumentException sans animateur ou sans joueur
+     */
+    public function scheduleCourse(string $scheduled_at, iterable $animator_ids, iterable $player_ids): Event
+    {
+        $animator_ids = collect($animator_ids);
+        $player_ids = collect($player_ids);
+
+        if ($animator_ids->isEmpty() || $player_ids->isEmpty()) {
+            throw new InvalidArgumentException('Un cours compte au moins un animateur et au moins un joueur.');
+        }
+
+        $course = $this->events()->create([
+            'scheduled_at' => $scheduled_at,
+            'event_type_id' => EventType::idFor(EventType::COURSE),
+            'event_status_id' => EventStatus::idFor(EventStatus::SCHEDULED),
+        ]);
+        $course->enrol($animator_ids, Role::ANIMATOR);
+        $course->enrol($player_ids, Role::PLAYER);
+
+        return $course;
+    }
+
+    /**
+     * Membres du club proposés pour un rôle d'événement : d'abord ceux dont le rôle de club y
+     * conduit (Role::clubRolesFor(), ex. présidents et animateurs pour animer), puis les autres,
+     * chaque groupe par ordre alphabétique.
+     *
+     * @param  string  $event_role_code  code du rôle d'événement (Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
+     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     */
+    public function candidatesFor(string $event_role_code): BelongsToMany
+    {
+        $preferred_role_ids = Role::idsFor(Role::clubRolesFor($event_role_code));
+        $placeholders = implode(', ', array_fill(0, count($preferred_role_ids), '?'));
+
+        return $this->members()
+            ->orderByRaw("case when club_user.role_id in ({$placeholders}) then 0 else 1 end", $preferred_role_ids)
+            ->orderBy('users.last_name')
+            ->orderBy('users.first_name');
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasMicrosecondDates;
+use App\Models\User\Role;
 use Carbon\CarbonImmutable;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,10 +14,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Événement d'un club (cours, tournoi…), horodaté ; ses membres pointés figurent dans la table
- * attendances, avec leur statut de présence.
+ * attendances, avec leur rôle à l'événement (animateur, joueur, arbitre) et leur statut de présence.
  *
  * @see docs/events.md
  *
@@ -34,6 +36,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property-read EventStatus $status
  * @property-read Collection<int, User> $participants
  * @property-read Collection<int, User> $attendees
+ * @property-read Collection<int, User> $animators
+ * @property-read Collection<int, User> $players
  */
 #[Fillable(['scheduled_at', 'description', 'event_type_id', 'event_status_id', 'club_id'])]
 class Event extends Model
@@ -97,15 +101,15 @@ class Event extends Model
     }
 
     /**
-     * Membres attendus ou pointés à l'événement, avec leur statut de présence
-     * (pivot attendance_status_id).
+     * Membres attendus ou pointés à l'événement, avec leur rôle à l'événement (pivot role_id) et
+     * leur statut de présence (pivot attendance_status_id).
      *
      * @return BelongsToMany<User, $this, Pivot, 'pivot'>
      */
     public function participants(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'attendances')
-            ->withPivot('attendance_status_id')
+            ->withPivot('role_id', 'attendance_status_id')
             ->withTimestamps();
     }
 
@@ -121,8 +125,28 @@ class Event extends Model
     }
 
     /**
-     * Inscrit chaque membre du club comme attendu (AttendanceStatus::EXPECTED) ; à appeler à la
-     * création de l'événement.
+     * Membres qui animent l'événement (rôle Role::ANIMATOR à l'événement).
+     *
+     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     */
+    public function animators(): BelongsToMany
+    {
+        return $this->participants()->wherePivot('role_id', Role::idFor(Role::ANIMATOR));
+    }
+
+    /**
+     * Membres qui reçoivent le cours ou jouent à l'événement (rôle Role::PLAYER à l'événement).
+     *
+     * @return BelongsToMany<User, $this, Pivot, 'pivot'>
+     */
+    public function players(): BelongsToMany
+    {
+        return $this->participants()->wherePivot('role_id', Role::idFor(Role::PLAYER));
+    }
+
+    /**
+     * Inscrit chaque membre du club comme attendu (AttendanceStatus::EXPECTED), avec le rôle que
+     * lui donne son rôle de club ; à appeler à la création de l'événement.
      */
     public function expectMembers(): void
     {
@@ -130,7 +154,25 @@ class Event extends Model
     }
 
     /**
-     * Donne un statut de présence à des membres, attendus ou non.
+     * Inscrit des membres à l'événement avec un rôle et un statut de présence ; un membre déjà
+     * inscrit y change de rôle et de statut.
+     *
+     * @param  iterable<int|string>  $user_ids  identifiants des membres
+     * @param  string  $role_code  code du rôle à l'événement (Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
+     * @param  string  $status_code  code du statut (constante de AttendanceStatus)
+     */
+    public function enrol(iterable $user_ids, string $role_code, string $status_code = AttendanceStatus::EXPECTED): void
+    {
+        $pivot = ['role_id' => Role::idFor($role_code), 'attendance_status_id' => AttendanceStatus::idFor($status_code)];
+
+        $this->participants()->syncWithoutDetaching(
+            collect($user_ids)->mapWithKeys(fn (int|string $user_id): array => [(int) $user_id => $pivot])->all(),
+        );
+    }
+
+    /**
+     * Donne un statut de présence à des membres, attendus ou non : un membre déjà inscrit garde
+     * son rôle à l'événement, un nouveau venu reçoit celui de son rôle de club.
      *
      * @param  iterable<int|string>  $user_ids  identifiants des membres
      * @param  string  $status_code  code du statut (constante de AttendanceStatus)
@@ -138,9 +180,18 @@ class Event extends Model
     public function setAttendance(iterable $user_ids, string $status_code): void
     {
         $status_id = AttendanceStatus::idFor($status_code);
+        $user_ids = collect($user_ids)->map(fn (int|string $user_id): int => (int) $user_id)->unique()->values();
+        $enrolled_ids = $this->participants()->whereKey($user_ids)->pluck('users.id');
 
-        $this->participants()->syncWithoutDetaching(
-            collect($user_ids)->mapWithKeys(fn (int|string $user_id): array => [(int) $user_id => ['attendance_status_id' => $status_id]])->all(),
+        $this->participants()->newPivotQuery()->whereIn('user_id', $enrolled_ids)->update([
+            'attendance_status_id' => $status_id,
+            'updated_at' => $this->freshTimestampString(),
+        ]);
+
+        $this->participants()->attach(
+            $this->defaultRoleIds($user_ids->diff($enrolled_ids))
+                ->map(fn (int $role_id): array => ['role_id' => $role_id, 'attendance_status_id' => $status_id])
+                ->all(),
         );
     }
 
@@ -152,6 +203,29 @@ class Event extends Model
         $this->participants()->newPivotQuery()->update([
             'attendance_status_id' => AttendanceStatus::idFor(AttendanceStatus::EXPECTED),
             'updated_at' => $this->freshTimestampString(),
+        ]);
+    }
+
+    /**
+     * Donne le rôle tenu par défaut à l'événement par des utilisateurs : celui de leur rôle de club
+     * (Role::EVENT_ROLE_BY_CLUB_ROLE), joueur pour qui n'est pas membre du club (invité d'un
+     * tournoi, par exemple).
+     *
+     * @param  BaseCollection<int, int>  $user_ids  identifiants des utilisateurs
+     * @return BaseCollection<int, int> identifiant du rôle d'événement, indexé par identifiant d'utilisateur
+     */
+    protected function defaultRoleIds(BaseCollection $user_ids): BaseCollection
+    {
+        if ($user_ids->isEmpty()) {
+            return collect();
+        }
+
+        $event_role_ids = Role::eventRoleIds();
+        $club_role_ids = $this->club->members()->whereKey($user_ids)->pluck('club_user.role_id', 'users.id');
+        $player_role_id = Role::idFor(Role::PLAYER);
+
+        return $user_ids->mapWithKeys(fn (int $user_id): array => [
+            $user_id => isset($club_role_ids[$user_id]) ? $event_role_ids[$club_role_ids[$user_id]] : $player_role_id,
         ]);
     }
 }

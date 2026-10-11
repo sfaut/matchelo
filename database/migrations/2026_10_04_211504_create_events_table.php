@@ -59,12 +59,13 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->foreignId('event_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('role_id')->comment("Rôle tenu à l'événement : animateur, joueur (élève), arbitre")->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('attendance_status_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->dateTime('created_at', precision: 6)->useCurrent();
             $table->dateTime('updated_at', precision: 6)->useCurrent()->useCurrentOnUpdate();
 
             $table->primary(['event_id', 'user_id']);
-            $table->comment('Pointage : une ligne par membre pointé à un événement, avec son statut de présence');
+            $table->comment('Pointage : une ligne par membre pointé à un événement, avec son rôle et son statut de présence');
         });
     }
 

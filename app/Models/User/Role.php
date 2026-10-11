@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * Rôle d'un membre dans un club (président, animateur, arbitre, joueur), porté par club_user.role_id.
+ * Rôle d'un membre (président, animateur, arbitre, joueur) : dans un club (club_user.role_id), une
+ * section (section_user.role_id) ou un événement (attendances.role_id). À un événement, le rôle de
+ * club donne le rôle par défaut (Role::EVENT_ROLE_BY_CLUB_ROLE).
  *
  * @see docs/roles.md
  *
@@ -60,6 +62,19 @@ class Role extends Model
     public const array MANAGERS = [self::PRESIDENT, self::ANIMATOR];
 
     /**
+     * Rôle tenu par défaut à un événement selon le rôle de club : le président y anime, les
+     * autres y gardent leur rôle. Le président n'est pas un rôle d'événement.
+     *
+     * @var array<string, string>
+     */
+    public const array EVENT_ROLE_BY_CLUB_ROLE = [
+        self::PRESIDENT => self::ANIMATOR,
+        self::ANIMATOR => self::ANIMATOR,
+        self::REFEREE => self::REFEREE,
+        self::PLAYER => self::PLAYER,
+    ];
+
+    /**
      * Donne l'identifiant du rôle portant un code.
      *
      * @param  string  $code  code du rôle (Role::PRESIDENT, Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
@@ -78,5 +93,32 @@ class Role extends Model
     public static function idsFor(array $codes): array
     {
         return array_values(static::query()->whereIn('code', $codes)->get()->map(fn (Role $role): int => $role->id)->all());
+    }
+
+    /**
+     * Donne, pour chaque rôle de club, l'identifiant du rôle tenu par défaut à un événement
+     * (Role::EVENT_ROLE_BY_CLUB_ROLE).
+     *
+     * @return array<int, int> identifiant du rôle d'événement, indexé par identifiant du rôle de club
+     */
+    public static function eventRoleIds(): array
+    {
+        $ids = static::query()->pluck('id', 'code');
+
+        return collect(self::EVENT_ROLE_BY_CLUB_ROLE)
+            ->mapWithKeys(fn (string $event_role_code, string $club_role_code): array => [$ids[$club_role_code] => $ids[$event_role_code]])
+            ->all();
+    }
+
+    /**
+     * Donne les codes des rôles de club qui tiennent par défaut un rôle d'événement ; ex. président
+     * et animateur pour Role::ANIMATOR.
+     *
+     * @param  string  $event_role_code  code du rôle d'événement (Role::ANIMATOR, Role::PLAYER, Role::REFEREE)
+     * @return list<string>
+     */
+    public static function clubRolesFor(string $event_role_code): array
+    {
+        return array_keys(array_filter(self::EVENT_ROLE_BY_CLUB_ROLE, fn (string $code): bool => $code === $event_role_code));
     }
 }
